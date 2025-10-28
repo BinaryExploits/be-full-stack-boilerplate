@@ -1,4 +1,4 @@
-# 🧩 BE Tech Stack Monorepo
+# 🧩 BE Full Stack Boilerplate
 
 A **modern full-stack TypeScript monorepo** using:
 
@@ -32,7 +32,7 @@ Make sure the following are installed **before** setup:
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/Ansi007/full-stack.git
+git clone https://github.com/BinaryExploits/be-full-stack-boilerplate.git
 cd full-stack
 ```
 
@@ -154,7 +154,6 @@ This command runs all apps (API, Web, and Mobile) concurrently using Turborepo.
 
 ## 🧑‍💻 Development Notes
 
-* If you face network issues on mobile, ensure Expo can reach your local IP (use `ifconfig` or `ipconfig` to find it).
 * Keep Docker running while developing backend/API.
 * Use `pnpm` consistently — **do not use npm or yarn**.
 
