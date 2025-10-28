@@ -1,0 +1,14 @@
+# ─────────────────────────────────────────────────────────────
+# CODEOWNERS file for BinaryExploits Boilerplate Repository
+# ─────────────────────────────────────────────────────────────
+# NOTE: Team handles only work within the BinaryExploits org.
+# Forks of this repo may ignore these team references.
+# ─────────────────────────────────────────────────────────────
+
+# Default owners for everything in the repo
+* @BinaryExploits/boilerplate-code-owners
+
+
+# ─────────────────────────────────────────────────────────────
+# End of CODEOWNERS
+# ─────────────────────────────────────────────────────────────
