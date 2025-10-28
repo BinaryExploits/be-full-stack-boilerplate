@@ -1,7 +1,8 @@
 {
   "name": "mobile",
   "main": "expo-router/entry",
-  "version": "1.0.0",
+  "version": "0.0.1",
+  "private": true,
   "scripts": {
     "start": "expo start",
     "dev": "expo start",
@@ -46,6 +47,5 @@
     "typescript": "~5.9.2",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0"
-  },
-  "private": true
+  }
 }

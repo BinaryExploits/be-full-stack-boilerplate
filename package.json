@@ -1,6 +1,12 @@
 {
-  "name": "app",
+  "name": "be-full-stack-boilerplate",
+  "version": "0.0.1",
   "private": true,
+  "author": {
+    "name": "Binary Exploits LLC",
+    "url": "https://www.binaryexploits.com"
+  },
+  "license": "AGPL-3.0-or-later",
   "scripts": {
     "dev": "turbo run dev --parallel",
     "dev:web": "pnpm --filter web dev",
