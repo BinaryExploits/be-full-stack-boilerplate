@@ -8,6 +8,13 @@ For local analysis of your project’s code quality.
 
 ### 1. Copy and Create `.env`
 
+Before any action, make sure you are in the sonarqube directory (if not, run this command from the root of the project):
+```bash
+cd packages/sonarqube
+```
+
+Copy the `.env.example` file to `.env`:
+
 ```bash
 cp .env.example .env
 ```
@@ -41,10 +48,14 @@ Once complete, open your browser at:
 
 2. **Change your password** (recommended).
 
-3. **Create a new project** in the SonarQube UI:
+3. **Create a new local project**:
 
-    * Choose **“Manually”**
-    * Use **previous/default config**
+    * At http://localhost:9000/projects/create Click **Create a local project**
+    * Enter a **project name**
+    * Enter a **project key**
+    * Set **main** as **main branch**
+    * At step 2, choose **instance's default** option
+    * Choose to analyze **locally**
     * Generate a **non-expiring token**
 
 4. Copy your **project key**, **project name**, and **token**
