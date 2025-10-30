@@ -7,10 +7,13 @@ services:
     volumes:
       # Mount mono repo root (2 levels up from packages/sonarqube)
       - ../..:/usr/src
-      # Mount sonarqube config directory for sonar-project.properties
-      - ./sonar-project.properties:/usr/src/sonar-project.properties:ro
+      # Mount sonar-project.properties from sonarqube package
+      - ./sonar-project.properties:/usr/src/packages/sonarqube/sonar-project.properties:ro
       # Cache directory for faster subsequent scans
       - sonarqube-scanner-cache:/opt/sonar-scanner/.sonar/cache
+    command: >
+      -Dsonar.projectBaseDir=/usr/src
+      -Dproject.settings=/usr/src/packages/sonarqube/sonar-project.properties
     environment:
       # SonarQube server connection (uses .env file)
       SONAR_HOST_URL: ${SONAR_HOST_URL:-http://sonarqube-server:9000}
@@ -27,13 +30,23 @@ services:
       SONAR_SOURCES: ${SONAR_SOURCES:-.}
 
       # Exclusions (uses .env file)
-      SONAR_EXCLUSIONS: ${SONAR_EXCLUSIONS:-**/node_modules/**,**/dist/**,**/build/**,**/.next/**,**/.expo/**,**/coverage/**,**/.git/**,**/.docker/**}
+      SONAR_EXCLUSIONS: ${SONAR_EXCLUSIONS:-**/node_modules/**,**/dist/**,**/build/**,**/.next/**,**/.expo/**,**/coverage/**,**/.git/**,**/.docker/**,**/.venv/**,**/venv/**,**/__pycache__/**,**/*.min.js,**/vendor/**,**/tmp/**,**/temp/**,**/.cache/**}
 
-      # TypeScript configuration
-      SONAR_TYPESCRIPT_TSLINT_CONFIGPATH: ./tsconfig.json
+      # File type configuration (separate JS and TS to avoid conflicts)
+      SONAR_JAVASCRIPT_FILE_SUFFIXES: ${SONAR_JAVASCRIPT_FILE_SUFFIXES:-.js,.jsx,.mjs,.cjs}
+      SONAR_TYPESCRIPT_FILE_SUFFIXES: ${SONAR_TYPESCRIPT_FILE_SUFFIXES:-.ts,.tsx,.cts,.mts}
 
       # Coverage reports (uses .env file)
       SONAR_JAVASCRIPT_LCOV_REPORTPATHS: ${SONAR_JAVASCRIPT_LCOV_REPORTPATHS:-coverage/lcov.info}
+
+      # Coverage exclusions
+      SONAR_COVERAGE_EXCLUSIONS: ${SONAR_COVERAGE_EXCLUSIONS:-**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/tests/**,**/__tests__/**,**/test/**}
+
+      # Code duplication exclusions
+      SONAR_CPD_EXCLUSIONS: ${SONAR_CPD_EXCLUSIONS:-**/tests/**,**/*.test.ts,**/*.spec.ts,**/node_modules/**,**/dist/**,**/build/**}
+
+      # Encoding
+      SONAR_SOURCE_ENCODING: ${SONAR_SOURCEENCODING:-UTF-8}
 
       # Performance
       SONAR_WS_TIMEOUT: "300"

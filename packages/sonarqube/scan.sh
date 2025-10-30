@@ -126,7 +126,9 @@ echo ""
 echo "Running scanner... (this may take a few minutes)"
 echo ""
 
-docker compose -f docker-compose-scanner.yml run --rm sonarqube-scanner
+# Note: The orphan containers warning can be safely ignored
+# It appears because the scanner compose file doesn't define the server containers
+docker compose -f docker-compose-scanner.yml run --rm sonarqube-scanner 2>&1 | grep -v "Found orphan containers"
 
 # Check exit code
 if [ $? -eq 0 ]; then
