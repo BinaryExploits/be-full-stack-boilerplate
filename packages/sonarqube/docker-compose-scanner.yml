@@ -1,7 +1,7 @@
 services:
   sonarqube-scanner:
-    image: sonarsource/sonar-scanner-cli:latest
-    container_name: sonarqube-scanner
+    image: sonarsource/sonar-scanner-cli:${SONAR_SCANNER_VERSION:-latest}
+    container_name: ${SCANNER_CONTAINER_NAME:-sonarqube-scanner}
     platform: linux/amd64  # macOS compatibility
     working_dir: /usr/src
     volumes:
@@ -55,7 +55,7 @@ services:
       SONAR_VERBOSE: ${SONAR_VERBOSE:-false}
 
     networks:
-      - sonarqube-network
+      - ${SONARQUBE_NETWORK_NAME:-sonarqube-network}
 
 volumes:
   sonarqube-scanner-cache:
@@ -64,4 +64,4 @@ volumes:
 networks:
   sonarqube-network:
     external: true
-    name: sonarqube_sonarqube-network
+    name: ${COMPOSE_PROJECT_NAME:-sonarqube}_${SONARQUBE_NETWORK_NAME:-sonarqube-network}
