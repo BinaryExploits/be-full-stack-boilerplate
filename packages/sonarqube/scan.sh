@@ -85,7 +85,7 @@ echo "Checking server health..."
 max_attempts=10
 attempt=0
 while [ $attempt -lt $max_attempts ]; do
-    if docker exec sonarqube-server curl -s http://localhost:9000/api/system/status 2>/dev/null | grep -q '"status":"UP"'; then
+    if docker exec sonarqube-server wget -qO- http://localhost:9000/api/system/status 2>/dev/null | grep -q '"status":"UP"'; then
         echo -e "${GREEN}✓ SonarQube server is UP${NC}"
         break
     fi

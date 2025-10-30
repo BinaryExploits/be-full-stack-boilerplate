@@ -50,7 +50,7 @@ services:
     ports:
       - "${SONARQUBE_PORT_EXTERNAL:-9000}:${SONARQUBE_PORT_INTERNAL:-9000}"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:${SONARQUBE_PORT_INTERNAL:-9000}/api/system/health"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:${SONARQUBE_PORT_INTERNAL:-9000}/api/system/health"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -64,13 +64,9 @@ services:
 
 volumes:
   postgres_data:
-    driver: local
   sonarqube_data:
-    driver: local
   sonarqube_logs:
-    driver: local
   sonarqube_extensions:
-    driver: local
 
 networks:
   sonarqube-network:
