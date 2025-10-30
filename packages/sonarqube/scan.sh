@@ -119,6 +119,7 @@ echo -e "${YELLOW}[Step 6/6]${NC} Starting code analysis..."
 echo ""
 echo -e "${BLUE}Project: ${SONAR_PROJECT_NAME:-my-monorepo}${NC}"
 echo -e "${BLUE}Version: ${SONAR_PROJECT_VERSION:-1.0.0}${NC}"
+echo -e "${BLUE}Scanning: ${SONAR_SOURCES:-.}${NC} (from monorepo root)"
 echo ""
 
 # Run the scanner

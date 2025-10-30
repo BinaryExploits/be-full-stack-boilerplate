@@ -5,8 +5,10 @@ services:
     platform: linux/amd64  # macOS compatibility
     working_dir: /usr/src
     volumes:
-      # Mount mono repo root
-      - .:/usr/src
+      # Mount mono repo root (2 levels up from packages/sonarqube)
+      - ../..:/usr/src
+      # Mount sonarqube config directory for sonar-project.properties
+      - ./sonar-project.properties:/usr/src/sonar-project.properties:ro
       # Cache directory for faster subsequent scans
       - sonarqube-scanner-cache:/opt/sonar-scanner/.sonar/cache
     environment:
