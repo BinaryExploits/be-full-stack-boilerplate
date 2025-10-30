@@ -15,7 +15,7 @@ services:
       -Dproject.settings=/usr/src/packages/sonarqube/sonar-project.properties
     environment:
       # SonarQube server connection
-      SONAR_HOST_URL: ${SONAR_HOST_URL:-http://sonarqube:9000}
+      SONAR_HOST_URL: ${SONAR_HOST_URL:-http://sonarqube-server:9000}
       SONAR_TOKEN: ${SONAR_TOKEN}
 
       # Project identification
