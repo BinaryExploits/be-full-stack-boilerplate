@@ -1,6 +1,6 @@
 services:
   sonarqube-scanner:
-    image: ${SONAR_SCANNER_IMAGE:-sonarsource/sonar-scanner-cli:${SONAR_SCANNER_VERSION:-latest}}
+    image: sonarsource/sonar-scanner-cli:latest
     container_name: ${SCANNER_CONTAINER_NAME:-sonarqube-scanner}
     working_dir: /usr/src
     volumes:
@@ -19,8 +19,8 @@ services:
       SONAR_TOKEN: ${SONAR_TOKEN}
 
       # Project identification
-      SONAR_PROJECT_KEY: ${SONAR_PROJECT_KEY:-my-monorepo}
-      SONAR_PROJECT_NAME: ${SONAR_PROJECT_NAME:-NestJS + Expo + tRPC Monorepo}
+      SONAR_PROJECT_KEY: ${SONAR_PROJECT_KEY:-my-project}
+      SONAR_PROJECT_NAME: ${SONAR_PROJECT_NAME:-my-project}
       SONAR_PROJECT_VERSION: ${SONAR_PROJECT_VERSION:-1.0.0}
 
       # Source configuration

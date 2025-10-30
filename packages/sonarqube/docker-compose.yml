@@ -1,6 +1,6 @@
 services:
   db:
-    image: ${POSTGRES_IMAGE:-postgres:12}
+    image: postgres:12
     container_name: ${POSTGRES_CONTAINER_NAME:-sonarqube-db}
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-sonar}
@@ -20,7 +20,7 @@ services:
       - sonarqube-net
 
   sonarqube:
-    image: ${SONAR_IMAGE:-sonarqube:community}
+    image: sonarqube:community
     container_name: ${SONAR_CONTAINER_NAME:-sonarqube}
     depends_on:
       db:

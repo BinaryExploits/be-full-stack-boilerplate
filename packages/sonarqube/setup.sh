@@ -1,187 +1,152 @@
 #!/bin/bash
-
-# SonarQube Local Setup Script for macOS
-# Optimized for NestJS + Expo + tRPC Mono Repo
-# PostgreSQL runs on port 5433 (5432 assumed to be in use)
+# SonarQube Local Setup Script for macOS — uses .env configuration
 
 set -e
 
-echo "=========================================="
-echo "SonarQube macOS Setup Script"
-echo "For: NestJS + Expo + tRPC Mono Repo"
-echo "=========================================="
+# ----------------------------------------
+# Load environment variables
+# ----------------------------------------
+if [ -f .env ]; then
+    set -a
+    source .env
+    set +a
+else
+    echo "⚠️  .env file not found in current directory."
+    echo "Please create one first (see example in README)."
+    exit 1
+fi
 
+# Default fallbacks if missing in .env
+POSTGRES_PORT_HOST=${POSTGRES_PORT_HOST:-5433}
+SONARQUBE_PORT_HOST=${SONARQUBE_PORT_HOST:-9000}
+POSTGRES_CONTAINER_NAME=${POSTGRES_CONTAINER_NAME:-sonarqube-db}
+SONAR_CONTAINER_NAME=${SONAR_CONTAINER_NAME:-sonarqube}
+POSTGRES_USER=${POSTGRES_USER:-sonar}
+POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-sonar}
+POSTGRES_DB=${POSTGRES_DB:-sonar}
+
+# ----------------------------------------
 # Color codes
+# ----------------------------------------
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Step 1: Check system
+echo "=========================================="
+echo "SonarQube macOS Setup Script"
+echo "=========================================="
+
+# Step 1: macOS check
 echo -e "${YELLOW}[Step 1/7]${NC} Checking macOS system..."
-if [[ "$OSTYPE" != "darwin"* ]]; then
-    echo -e "${RED}✗ This script is for macOS only${NC}"
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    echo -e "${GREEN}✓ macOS detected${NC}"
+else
+    echo -e "${RED}✗ Not macOS${NC}"
     exit 1
 fi
-echo -e "${GREEN}✓ macOS detected${NC}"
 
-# Step 2: Check Docker Desktop
+# Step 2: Docker check
 echo -e "${YELLOW}[Step 2/7]${NC} Checking Docker Desktop..."
-if ! command -v docker &> /dev/null; then
-    echo -e "${RED}✗ Docker Desktop is not installed${NC}"
-    echo "Install from: https://www.docker.com/products/docker-desktop"
+if ! command -v docker &>/dev/null; then
+    echo -e "${RED}✗ Docker not found${NC}"
     exit 1
 fi
-
-if ! docker ps &> /dev/null; then
-    echo -e "${RED}✗ Docker daemon is not running${NC}"
-    echo "Please start Docker Desktop and try again"
+if ! docker ps &>/dev/null; then
+    echo -e "${RED}✗ Docker daemon not running${NC}"
     exit 1
 fi
+echo -e "${GREEN}✓ Docker is running${NC}"
 
-DOCKER_VERSION=$(docker --version)
-echo -e "${GREEN}✓ Docker is running: $DOCKER_VERSION${NC}"
-
-# Step 3: Check Docker Compose
+# Step 3: Compose check
 echo -e "${YELLOW}[Step 3/7]${NC} Checking Docker Compose..."
-if ! docker compose version &> /dev/null; then
-    echo -e "${RED}✗ Docker Compose is not available${NC}"
+if ! docker compose version &>/dev/null; then
+    echo -e "${RED}✗ Docker Compose not available${NC}"
     exit 1
 fi
-COMPOSE_VERSION=$(docker compose version)
-echo -e "${GREEN}✓ Docker Compose available: $COMPOSE_VERSION${NC}"
+echo -e "${GREEN}✓ Docker Compose OK${NC}"
 
-# Step 4: Check port availability
-echo -e "${YELLOW}[Step 4/7]${NC} Checking port availability..."
-
-# Check port 9000 (SonarQube)
-if lsof -Pi :9000 -sTCP:LISTEN -t >/dev/null 2>&1 ; then
-    echo -e "${YELLOW}⚠ Port 9000 is in use. SonarQube will use it anyway (will fail if already taken).${NC}"
+# Step 4: Port checks
+echo -e "${YELLOW}[Step 4/7]${NC} Checking ports..."
+if lsof -Pi :$SONARQUBE_PORT_HOST -sTCP:LISTEN -t >/dev/null; then
+    echo -e "${YELLOW}⚠ Port $SONARQUBE_PORT_HOST is in use${NC}"
 else
-    echo -e "${GREEN}✓ Port 9000 is available${NC}"
+    echo -e "${GREEN}✓ Port $SONARQUBE_PORT_HOST available${NC}"
 fi
 
-# Check port 5433 (PostgreSQL)
-if lsof -Pi :5433 -sTCP:LISTEN -t >/dev/null 2>&1 ; then
-    echo -e "${RED}✗ Port 5433 is already in use${NC}"
-    echo "Either:"
-    echo "  - Kill the process using port 5433: lsof -ti:5433 | xargs kill -9"
-    echo "  - Or change port in docker-compose.yml"
+if lsof -Pi :$POSTGRES_PORT_HOST -sTCP:LISTEN -t >/dev/null; then
+    echo -e "${RED}✗ Port $POSTGRES_PORT_HOST is in use${NC}"
     exit 1
 else
-    echo -e "${GREEN}✓ Port 5433 is available${NC}"
+    echo -e "${GREEN}✓ Port $POSTGRES_PORT_HOST available${NC}"
 fi
 
-# Step 5: Stop existing containers
-echo -e "${YELLOW}[Step 5/7]${NC} Cleaning up existing containers..."
-docker compose down --remove-orphans 2>/dev/null || true
-docker compose -f docker-compose-scanner.yml down 2>/dev/null || true
+# Step 5: Cleanup
+echo -e "${YELLOW}[Step 5/7]${NC} Cleaning up containers..."
+docker compose down --remove-orphans >/dev/null 2>&1 || true
+docker compose -f docker-compose-scanner.yml down >/dev/null 2>&1 || true
 echo -e "${GREEN}✓ Cleanup complete${NC}"
 
-# Step 6: Start containers
-echo -e "${YELLOW}[Step 6/7]${NC} Starting SonarQube and PostgreSQL..."
-echo "This may take a moment on first run..."
+# Step 6: Start services
+echo -e "${YELLOW}[Step 6/7]${NC} Starting SonarQube + PostgreSQL..."
 docker compose up -d
 
-# Verify containers started
 sleep 3
-if ! docker ps | grep -q sonarqube; then
-    echo -e "${RED}✗ SonarQube container failed to start${NC}"
-    echo "Checking logs..."
-    docker compose logs sonarqube
+if ! docker ps | grep -q "$SONAR_CONTAINER_NAME"; then
+    echo -e "${RED}✗ SonarQube failed${NC}"
+    docker compose logs $SONAR_CONTAINER_NAME
     exit 1
 fi
 
-if ! docker ps | grep -q sonarqube-db; then
-    echo -e "${RED}✗ PostgreSQL container failed to start${NC}"
-    docker compose logs postgres
+if ! docker ps | grep -q "$POSTGRES_CONTAINER_NAME"; then
+    echo -e "${RED}✗ PostgreSQL failed${NC}"
+    docker compose logs $POSTGRES_CONTAINER_NAME
     exit 1
 fi
 
 echo -e "${GREEN}✓ Containers started successfully${NC}"
 
-# Step 7: Wait for SonarQube
-echo -e "${YELLOW}[Step 7/7]${NC} Waiting for SonarQube to initialize..."
-echo "This may take 1-2 minutes on first run..."
-
+# Step 7: Wait for SonarQube health
+echo -e "${YELLOW}[Step 7/7]${NC} Waiting for SonarQube..."
 max_attempts=60
 attempt=0
 while [ $attempt -lt $max_attempts ]; do
-    if docker exec sonarqube wget -qO- http://localhost:9000/api/system/status 2>/dev/null | grep -q '"status":"UP"'; then
+    if docker exec $SONAR_CONTAINER_NAME wget -qO- http://localhost:$SONARQUBE_PORT_HOST/api/system/status 2>/dev/null | grep -q '"status":"UP"'; then
         echo -e "${GREEN}✓ SonarQube is ready!${NC}"
         break
     fi
     attempt=$((attempt + 1))
-    echo -n "."
     sleep 2
 done
-
 if [ $attempt -eq $max_attempts ]; then
-    echo -e "${RED}✗ SonarQube failed to start within timeout${NC}"
-    echo ""
-    echo "Check logs with:"
-    echo "  docker compose logs -f sonarqube"
+    echo -e "${RED}✗ Timeout waiting for SonarQube${NC}"
     exit 1
 fi
 
-echo ""
+# ----------------------------------------
+# Done summary
+# ----------------------------------------
 echo ""
 echo -e "${GREEN}=========================================="
-echo "✓ Setup Complete!${NC}"
-echo "=========================================="
+echo "✓ Setup Complete!"
+echo -e "==========================================${NC}"
 echo ""
 echo -e "${BLUE}Access SonarQube:${NC}"
-echo "  URL: ${GREEN}http://localhost:9000${NC}"
-echo "  Username: ${GREEN}admin${NC}"
-echo "  Password: ${GREEN}admin${NC}"
+echo -e "  URL: ${GREEN}http://localhost:$SONARQUBE_PORT_HOST${NC}"
+echo -e "  Username: ${GREEN}admin${NC}"
+echo -e "  Password: ${GREEN}admin${NC}"
 echo ""
-echo -e "${BLUE}Database Info:${NC}"
-echo "  Host: ${GREEN}localhost${NC}"
-echo "  Port: ${GREEN}5433${NC} (external) / 5432 (internal)"
-echo "  Database: ${GREEN}sonarqube${NC}"
-echo "  User: ${GREEN}sonarqube${NC}"
-echo ""
-echo -e "${BLUE}Next Steps:${NC}"
-echo "1. Open ${GREEN}http://localhost:9000${NC} in your browser"
-echo "2. Login with admin / admin"
-echo "3. ${YELLOW}IMPORTANT: Change your password immediately${NC}"
-echo "4. Create a security token:"
-echo "   - Go to: Administration → Security → Users → admin → Tokens"
-echo "   - Generate a token (e.g., 'local-scanner')"
-echo "5. Run the scanner from your mono repo root:"
-echo ""
-echo -e "${YELLOW}   # Method 1: Using Docker Compose${NC}"
-echo "   docker compose -f docker-compose-scanner.yml run sonarqube-scanner \\"
-echo "     -Dsonar.login=YOUR_TOKEN_HERE"
-echo ""
-echo -e "${YELLOW}   # Method 2: Direct command${NC}"
-echo "   docker run --rm \\
-  --network sonarqube-network \\
-  -v \$(pwd):/usr/src \\
-  sonarsource/sonar-scanner-cli \\
-  -Dsonar.projectKey=my-monorepo \\
-  -Dsonar.sources=. \\
-  -Dsonar.host.url=http://sonarqube:9000 \\
-  -Dsonar.login=YOUR_TOKEN_HERE"
-echo ""
-echo "6. View results in the SonarQube dashboard"
+echo -e "${BLUE}Database:${NC}"
+echo -e "  Host: ${GREEN}localhost${NC}"
+echo -e "  Port: ${GREEN}$POSTGRES_PORT_HOST${NC}"
+echo -e "  DB: ${GREEN}$POSTGRES_DB${NC}"
+echo -e "  User: ${GREEN}$POSTGRES_USER${NC}"
 echo ""
 echo -e "${BLUE}Useful Commands:${NC}"
-echo "  View logs:          ${YELLOW}docker compose logs -f sonarqube${NC}"
-echo "  Stop services:      ${YELLOW}docker compose down${NC}"
-echo "  Stop + remove data: ${YELLOW}docker compose down -v${NC}"
-echo "  Restart:            ${YELLOW}docker compose restart${NC}"
-echo "  Container status:   ${YELLOW}docker compose ps${NC}"
+echo "  docker compose logs -f $SONAR_CONTAINER_NAME"
+echo "  docker compose down"
+echo "  docker compose restart"
+echo "  docker compose ps"
 echo ""
-echo -e "${BLUE}For your Mono Repo Structure:${NC}"
-echo "  Edit sonar-project.properties to customize:"
-echo "  - apps/api (NestJS backend)"
-echo "  - apps/mobile (Expo app)"
-echo "  - packages/trpc (tRPC utilities)"
-echo "  - packages/shared (Shared types/utils)"
-echo ""
-echo -e "${BLUE}Documentation:${NC}"
-echo "  See README.md for complete guide"
-echo "  SonarQube Docs: https://docs.sonarqube.org"
-echo ""
+echo "Next: open http://localhost:$SONARQUBE_PORT_HOST and create your token for scanning."

@@ -7,7 +7,6 @@ set -e
 
 echo "=========================================="
 echo "SonarQube Code Analysis Scanner"
-echo "For: NestJS + Expo + tRPC Mono Repo"
 echo "=========================================="
 
 # Color codes
@@ -36,7 +35,9 @@ if [ ! -f .env ]; then
 fi
 
 # Load environment variables
-export $(cat .env | grep -v '^#' | xargs)
+set -a
+source .env
+set +a
 
 # Step 2: Validate token
 echo -e "${YELLOW}[Step 2/6]${NC} Validating authentication token..."
@@ -45,7 +46,7 @@ if [ -z "$SONAR_TOKEN" ]; then
     echo ""
     echo "Please add your SonarQube token to .env file:"
     echo ""
-    echo "1. Open http://localhost:9000"
+    echo "1. Open ${SONAR_HOST_URL:-http://localhost:9000}"
     echo "2. Login as admin"
     echo "3. Go to: Administration → Security → Users → admin → Tokens"
     echo "4. Generate a token (e.g., 'scanner-token')"
@@ -68,7 +69,7 @@ echo -e "${GREEN}✓ Docker is running${NC}"
 
 # Step 4: Check SonarQube server
 echo -e "${YELLOW}[Step 4/6]${NC} Checking SonarQube server..."
-if ! docker ps | grep -q sonarqube; then
+if ! docker ps | grep -q "${SONAR_CONTAINER_NAME:-sonarqube}"; then
     echo -e "${RED}✗ SonarQube server is not running${NC}"
     echo ""
     echo "Please start SonarQube server first:"
@@ -80,12 +81,11 @@ if ! docker ps | grep -q sonarqube; then
     exit 1
 fi
 
-# Check if server is healthy
 echo "Checking server health..."
 max_attempts=10
 attempt=0
 while [ $attempt -lt $max_attempts ]; do
-    if docker exec sonarqube wget -qO- http://localhost:9000/api/system/status 2>/dev/null | grep -q '"status":"UP"'; then
+    if docker exec ${SONAR_CONTAINER_NAME:-sonarqube} wget -qO- ${SONAR_HOST_URL:-http://localhost:9000}/api/system/status 2>/dev/null | grep -q '"status":"UP"'; then
         echo -e "${GREEN}✓ SonarQube server is UP${NC}"
         break
     fi
@@ -100,16 +100,14 @@ done
 if [ $attempt -eq $max_attempts ]; then
     echo ""
     echo -e "${RED}✗ SonarQube server is not responding${NC}"
-    echo "Check logs: docker compose logs -f sonarqube"
+    echo "Check logs: docker compose logs -f ${SONAR_CONTAINER_NAME:-sonarqube}"
     exit 1
 fi
 echo ""
 
 # Step 5: Check network
 echo -e "${YELLOW}[Step 5/6]${NC} Checking Docker network..."
-
-# Try to detect network automatically
-SONARQUBE_NETWORK=$(docker network ls --format '{{.Name}}' | grep -E "${SONARQUBE_NETWORK_NAME:-sonarqube-network}|sonarqube_sonarqube-network" | head -n 1)
+SONARQUBE_NETWORK=$(docker network ls --format '{{.Name}}' | grep -E "${SONARQUBE_NETWORK_NAME:-sonarqube_sonarqube-net}|sonarqube_sonarqube-net" | head -n 1)
 
 if [ -z "$SONARQUBE_NETWORK" ]; then
     echo -e "${RED}✗ SonarQube network not found${NC}"
@@ -123,49 +121,45 @@ echo -e "${GREEN}✓ Network detected:${NC} $SONARQUBE_NETWORK"
 # Step 6: Run scanner
 echo -e "${YELLOW}[Step 6/6]${NC} Starting code analysis..."
 echo ""
-echo -e "${BLUE}Project: ${SONAR_PROJECT_NAME:-my-monorepo}${NC}"
+echo -e "${BLUE}Project: ${SONAR_PROJECT_NAME:-my-project}${NC}"
 echo -e "${BLUE}Version: ${SONAR_PROJECT_VERSION:-1.0.0}${NC}"
-echo -e "${BLUE}Scanning: ${SONAR_SOURCES:-.}${NC} (from monorepo root)"
+echo -e "${BLUE}Scanning: ${SONAR_SOURCES:-.}${NC} (from project root)"
 echo ""
 
-# Run the scanner
 echo "Running scanner... (this may take a few minutes)"
 echo ""
 
-# Note: The orphan containers warning can be safely ignored
-# It appears because the scanner compose file doesn't define the server containers
 docker compose -f docker-compose-scanner.yml run --rm sonarqube-scanner 2>&1 | grep -v "Found orphan containers"
 
-# Check exit code
 if [ $? -eq 0 ]; then
     echo ""
     echo ""
     echo -e "${GREEN}=========================================="
-    echo "✓ Analysis Complete!${NC}"
+    echo -e "✓ Analysis Complete!${NC}"
     echo "=========================================="
     echo ""
     echo -e "${BLUE}View Results:${NC}"
-    echo "  URL: ${GREEN}http://localhost:9000${NC}"
-    echo "  Project: ${GREEN}${SONAR_PROJECT_KEY:-my-monorepo}${NC}"
+    echo -e "  URL: ${GREEN}${SONAR_HOST_URL:-http://localhost:9000}${NC}"
+    echo -e "  Project: ${GREEN}${SONAR_PROJECT_KEY:-my-monorepo}${NC}"
     echo ""
     echo -e "${BLUE}Next Steps:${NC}"
-    echo "1. Open ${GREEN}http://localhost:9000${NC}"
-    echo "2. Click on your project: ${GREEN}${SONAR_PROJECT_NAME:-my-monorepo}${NC}"
+    echo -e "1. Open ${GREEN}${SONAR_HOST_URL:-http://localhost:9000}${NC}"
+    echo -e "2. Click on your project: ${GREEN}${SONAR_PROJECT_NAME:-my-monorepo}${NC}"
     echo "3. Review:"
-    echo "   - ${YELLOW}Issues${NC} - Code quality problems"
-    echo "   - ${YELLOW}Security${NC} - Vulnerabilities & hotspots"
-    echo "   - ${YELLOW}Coverage${NC} - Test coverage metrics"
-    echo "   - ${YELLOW}Duplications${NC} - Repeated code blocks"
+    echo -e "   - ${YELLOW}Issues${NC} - Code quality problems"
+    echo -e "   - ${YELLOW}Security${NC} - Vulnerabilities & hotspots"
+    echo -e "   - ${YELLOW}Coverage${NC} - Test coverage metrics"
+    echo -e "   - ${YELLOW}Duplications${NC} - Repeated code blocks"
     echo ""
     echo -e "${BLUE}Useful Commands:${NC}"
-    echo "  Re-run analysis:    ${YELLOW}./scan.sh${NC}"
-    echo "  View server logs:   ${YELLOW}docker compose logs -f sonarqube${NC}"
-    echo "  View scanner logs:  ${YELLOW}docker compose -f docker-compose-scanner.yml logs${NC}"
+    echo -e "  Re-run analysis:    ${YELLOW}./scan.sh${NC}"
+    echo -e "  View server logs:   ${YELLOW}docker compose logs -f ${SONAR_CONTAINER_NAME:-sonarqube}${NC}"
+    echo -e "  View scanner logs:  ${YELLOW}docker compose -f docker-compose-scanner.yml logs${NC}"
     echo ""
 else
     echo ""
     echo -e "${RED}=========================================="
-    echo "✗ Analysis Failed${NC}"
+    echo -e "✗ Analysis Failed${NC}"
     echo "=========================================="
     echo ""
     echo "Common issues:"
