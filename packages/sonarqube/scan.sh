@@ -68,7 +68,7 @@ echo -e "${GREEN}✓ Docker is running${NC}"
 
 # Step 4: Check SonarQube server
 echo -e "${YELLOW}[Step 4/6]${NC} Checking SonarQube server..."
-if ! docker ps | grep -q sonarqube-server; then
+if ! docker ps | grep -q sonarqube; then
     echo -e "${RED}✗ SonarQube server is not running${NC}"
     echo ""
     echo "Please start SonarQube server first:"
@@ -85,7 +85,7 @@ echo "Checking server health..."
 max_attempts=10
 attempt=0
 while [ $attempt -lt $max_attempts ]; do
-    if docker exec sonarqube-server wget -qO- http://localhost:9000/api/system/status 2>/dev/null | grep -q '"status":"UP"'; then
+    if docker exec sonarqube wget -qO- http://localhost:9000/api/system/status 2>/dev/null | grep -q '"status":"UP"'; then
         echo -e "${GREEN}✓ SonarQube server is UP${NC}"
         break
     fi
@@ -107,12 +107,18 @@ echo ""
 
 # Step 5: Check network
 echo -e "${YELLOW}[Step 5/6]${NC} Checking Docker network..."
-if ! docker network inspect sonarqube_sonarqube-network &> /dev/null; then
+
+# Try to detect network automatically
+SONARQUBE_NETWORK=$(docker network ls --format '{{.Name}}' | grep -E "${SONARQUBE_NETWORK_NAME:-sonarqube-network}|sonarqube_sonarqube-network" | head -n 1)
+
+if [ -z "$SONARQUBE_NETWORK" ]; then
     echo -e "${RED}✗ SonarQube network not found${NC}"
-    echo "Please ensure SonarQube server is running"
+    echo "Please ensure SonarQube server is running:"
+    echo -e "${YELLOW}  docker compose up -d${NC}"
     exit 1
 fi
-echo -e "${GREEN}✓ Network is ready${NC}"
+
+echo -e "${GREEN}✓ Network detected:${NC} $SONARQUBE_NETWORK"
 
 # Step 6: Run scanner
 echo -e "${YELLOW}[Step 6/6]${NC} Starting code analysis..."

@@ -1,74 +1,56 @@
 services:
-  postgres:
-    image: postgres:${POSTGRES_VERSION:-16-alpine}
+  db:
+    image: ${POSTGRES_IMAGE:-postgres:12}
     container_name: ${POSTGRES_CONTAINER_NAME:-sonarqube-db}
-    platform: linux/amd64  # macOS compatibility (M1/M2/M3 native)
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-sonarqube}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sonarqube_password}
-      POSTGRES_DB: ${POSTGRES_DB:-sonarqube}
-      # PostgreSQL tuning for macOS
-      POSTGRES_INITDB_ARGS: "-c shared_buffers=256MB -c effective_cache_size=1GB -c maintenance_work_mem=64MB -c checkpoint_completion_target=0.9"
+      POSTGRES_USER: ${POSTGRES_USER:-sonar}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-sonar}
+      POSTGRES_DB: ${POSTGRES_DB:-sonar}
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - postgresql:/var/lib/postgresql
+      - postgresql_data:/var/lib/postgresql/data
     ports:
-      - "${POSTGRES_PORT_EXTERNAL:-5433}:${POSTGRES_PORT_INTERNAL:-5432}"
+      - "${POSTGRES_PORT_HOST:-5432}:5432"   # host:container
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sonarqube} -d ${POSTGRES_DB:-sonarqube}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-sonar} -d ${POSTGRES_DB:-sonar}"]
       interval: 10s
       timeout: 5s
       retries: 5
     networks:
-      - ${SONARQUBE_NETWORK_NAME:-sonarqube-network}
-    ulimits:
-      nofile:
-        soft: 65536
-        hard: 65536
+      - sonarqube-net
 
   sonarqube:
-    image: sonarqube:${SONARQUBE_VERSION:-10.6.0-community}
-    container_name: ${SONARQUBE_CONTAINER_NAME:-sonarqube-server}
-    platform: linux/amd64  # macOS compatibility
+    image: ${SONAR_IMAGE:-sonarqube:community}
+    container_name: ${SONAR_CONTAINER_NAME:-sonarqube}
     depends_on:
-      postgres:
+      db:
         condition: service_healthy
     environment:
-      SONAR_JDBC_URL: jdbc:postgresql://postgres:${POSTGRES_PORT_INTERNAL:-5432}/${POSTGRES_DB:-sonarqube}
-      SONAR_JDBC_USERNAME: ${POSTGRES_USER:-sonarqube}
-      SONAR_JDBC_PASSWORD: ${POSTGRES_PASSWORD:-sonarqube_password}
-      # Memory settings optimized for macOS Docker Desktop
-      SONAR_JAVA_OPTS: "-Xmx${SONAR_JAVA_XMX:-2048m} -Xms${SONAR_JAVA_XMS:-512m} -XX:+HeapDumpOnOutOfMemoryError"
-      SONAR_WEB_JAVAOPTS: "-Xmx${SONAR_WEB_XMX:-512m}"
-      SONAR_CE_JAVAOPTS: "-Xmx${SONAR_CE_XMX:-512m}"
-      SONAR_SEARCH_JAVAOPTS: "-Xms${SONAR_SEARCH_XMS:-512m} -Xmx${SONAR_SEARCH_XMX:-512m}"
-      # Fix for macOS Docker - disable Elasticsearch bootstrap checks
-      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: "true"
+      SONAR_JDBC_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:-sonar}
+      SONAR_JDBC_USERNAME: ${POSTGRES_USER:-sonar}
+      SONAR_JDBC_PASSWORD: ${POSTGRES_PASSWORD:-sonar}
     volumes:
       - sonarqube_data:/opt/sonarqube/data
-      - sonarqube_logs:/opt/sonarqube/logs
       - sonarqube_extensions:/opt/sonarqube/extensions
+      - sonarqube_logs:/opt/sonarqube/logs
     ports:
-      - "${SONARQUBE_PORT_EXTERNAL:-9000}:${SONARQUBE_PORT_INTERNAL:-9000}"
+      - "${SONARQUBE_PORT_HOST:-9000}:9000"
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:${SONARQUBE_PORT_INTERNAL:-9000}/api/system/health"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:9000/api/system/health"]
       interval: 30s
       timeout: 10s
       retries: 5
       start_period: 60s
     networks:
-      - ${SONARQUBE_NETWORK_NAME:-sonarqube-network}
-    ulimits:
-      nofile:
-        soft: 65536
-        hard: 65536
+      - sonarqube-net
 
 volumes:
-  postgres_data:
   sonarqube_data:
-  sonarqube_logs:
   sonarqube_extensions:
+  sonarqube_logs:
+  postgresql:
+  postgresql_data:
 
 networks:
-  sonarqube-network:
-    name: ${COMPOSE_PROJECT_NAME:-sonarqube}_${SONARQUBE_NETWORK_NAME:-sonarqube-network}
+  sonarqube-net:
     driver: bridge

@@ -86,7 +86,7 @@ docker compose up -d
 
 # Verify containers started
 sleep 3
-if ! docker ps | grep -q sonarqube-server; then
+if ! docker ps | grep -q sonarqube; then
     echo -e "${RED}✗ SonarQube container failed to start${NC}"
     echo "Checking logs..."
     docker compose logs sonarqube
@@ -108,7 +108,7 @@ echo "This may take 1-2 minutes on first run..."
 max_attempts=60
 attempt=0
 while [ $attempt -lt $max_attempts ]; do
-    if docker exec sonarqube-server wget -qO- http://localhost:9000/api/system/status 2>/dev/null | grep -q '"status":"UP"'; then
+    if docker exec sonarqube wget -qO- http://localhost:9000/api/system/status 2>/dev/null | grep -q '"status":"UP"'; then
         echo -e "${GREEN}✓ SonarQube is ready!${NC}"
         break
     fi
