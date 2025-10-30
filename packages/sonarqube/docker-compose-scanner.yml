@@ -1,0 +1,52 @@
+services:
+  sonarqube-scanner:
+    image: sonarsource/sonar-scanner-cli:latest
+    container_name: sonarqube-scanner
+    platform: linux/amd64  # macOS compatibility
+    working_dir: /usr/src
+    volumes:
+      # Mount mono repo root
+      - .:/usr/src
+      # Cache directory for faster subsequent scans
+      - sonarqube-scanner-cache:/opt/sonar-scanner/.sonar/cache
+    environment:
+      # SonarQube server connection (uses .env file)
+      SONAR_HOST_URL: ${SONAR_HOST_URL:-http://sonarqube-server:9000}
+
+      # Authentication Token (set in .env file)
+      SONAR_TOKEN: ${SONAR_TOKEN}
+
+      # Project identification (uses .env file)
+      SONAR_PROJECT_KEY: ${SONAR_PROJECT_KEY:-my-monorepo}
+      SONAR_PROJECT_NAME: ${SONAR_PROJECT_NAME:-NestJS + Expo + tRPC Monorepo}
+      SONAR_PROJECT_VERSION: ${SONAR_PROJECT_VERSION:-1.0.0}
+
+      # Source code configuration (uses .env file)
+      SONAR_SOURCES: ${SONAR_SOURCES:-.}
+
+      # Exclusions (uses .env file)
+      SONAR_EXCLUSIONS: ${SONAR_EXCLUSIONS:-**/node_modules/**,**/dist/**,**/build/**,**/.next/**,**/.expo/**,**/coverage/**,**/.git/**,**/.docker/**}
+
+      # TypeScript configuration
+      SONAR_TYPESCRIPT_TSLINT_CONFIGPATH: ./tsconfig.json
+
+      # Coverage reports (uses .env file)
+      SONAR_JAVASCRIPT_LCOV_REPORTPATHS: ${SONAR_JAVASCRIPT_LCOV_REPORTPATHS:-coverage/lcov.info}
+
+      # Performance
+      SONAR_WS_TIMEOUT: "300"
+
+      # Verbose logging (uses .env file)
+      SONAR_VERBOSE: ${SONAR_VERBOSE:-false}
+
+    networks:
+      - sonarqube-network
+
+volumes:
+  sonarqube-scanner-cache:
+    driver: local
+
+networks:
+  sonarqube-network:
+    external: true
+    name: sonarqube_sonarqube-network

@@ -1,0 +1,8 @@
+# Environment variables with secrets
+.env
+
+# Local SonarQube data (if running locally)
+.sonarqube/
+
+# Scanner cache
+.scannerwork/
