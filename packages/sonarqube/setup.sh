@@ -108,7 +108,7 @@ echo "This may take 1-2 minutes on first run..."
 max_attempts=60
 attempt=0
 while [ $attempt -lt $max_attempts ]; do
-    if docker exec sonarqube-server curl -s http://localhost:9000/api/system/status 2>/dev/null | grep -q '"status":"UP"'; then
+    if docker exec sonarqube-server wget -qO- http://localhost:9000/api/system/status 2>/dev/null | grep -q '"status":"UP"'; then
         echo -e "${GREEN}✓ SonarQube is ready!${NC}"
         break
     fi
