@@ -8,7 +8,7 @@ interface TrpcProviderProps extends PropsWithChildren {
   url: string;
 }
 
-export default function TrpcProvider({ children, url }: TrpcProviderProps) {
+export default function TrpcProvider({ children, url }: Readonly<TrpcProviderProps>) {
   const client = createTrpcClient(url);
 
   return (

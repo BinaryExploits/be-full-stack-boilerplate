@@ -4,7 +4,7 @@ import { Crud } from '../generated/prisma';
 
 @Injectable()
 export class CrudService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) {}
 
   async createCrud(content: string): Promise<Crud> {
     return this.prisma.crud.create({
