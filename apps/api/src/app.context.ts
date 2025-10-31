@@ -9,10 +9,10 @@ export interface AppContextType extends Record<string, unknown> {
 
 @Injectable()
 export class AppContext implements TRPCContext {
-  async create(opts: ContextOptions): Promise<AppContextType> {
-    return Promise.resolve({
+  create(opts: ContextOptions): AppContextType {
+    return {
       req: opts.req as IncomingMessage,
       res: opts.res as ServerResponse,
-    });
+    };
   }
 }
