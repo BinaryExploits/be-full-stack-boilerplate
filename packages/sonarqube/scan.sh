@@ -73,7 +73,7 @@ if ! docker ps | grep -q "${SONAR_CONTAINER_NAME:-sonarqube}"; then
     echo -e "${RED}✗ SonarQube server is not running${NC}"
     echo ""
     echo "Please start SonarQube server first:"
-    echo -e "${YELLOW}  ./setup.sh${NC}"
+    echo -e "${YELLOW}  ./start.sh${NC}"
     echo ""
     echo "Or if already set up:"
     echo -e "${YELLOW}  docker compose up -d${NC}"

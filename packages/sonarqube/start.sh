@@ -1,5 +1,5 @@
 #!/bin/bash
-# SonarQube Local Setup Script for macOS — uses .env configuration
+# SonarQube Local Start Script for macOS — uses .env configuration
 
 set -e
 
@@ -35,7 +35,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 echo "=========================================="
-echo "SonarQube macOS Setup Script"
+echo "SonarQube macOS Start Script"
 echo "=========================================="
 
 # Step 1: macOS check
@@ -129,7 +129,7 @@ fi
 # ----------------------------------------
 echo ""
 echo -e "${GREEN}=========================================="
-echo "✓ Setup Complete!"
+echo "✓ Start Complete!"
 echo -e "==========================================${NC}"
 echo ""
 echo -e "${BLUE}Access SonarQube:${NC}"
