@@ -197,7 +197,7 @@ export default function CrudPage() {
   // Mutations
   const createCrud = trpc.crud.createCrud.useMutation({
     onSuccess: () => {
-      utils.crud.findAll.invalidate();
+      void utils.crud.findAll.invalidate();
       setContent("");
     },
   });
@@ -208,7 +208,7 @@ export default function CrudPage() {
 
   const updateCrud = trpc.crud.updateCrud?.useMutation({
     onSuccess: () => {
-      utils.crud.findAll.invalidate();
+      void utils.crud.findAll.invalidate();
       setEditingId(null);
       setEditingContent("");
     },
@@ -225,7 +225,7 @@ export default function CrudPage() {
   };
 
   const handleRefresh = () => {
-    utils.crud.findAll.invalidate();
+    void utils.crud.findAll.invalidate();
   };
 
   const renderItem = ({ item }: { item: CrudItem }) => (
