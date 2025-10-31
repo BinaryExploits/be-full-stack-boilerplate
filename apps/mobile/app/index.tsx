@@ -277,6 +277,43 @@ export default function CrudPage() {
     </View>
   );
 
+  const renderListContent = () => {
+    if (crudList.isLoading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#60a5fa" />
+        </View>
+      );
+    }
+
+    if (crudList.data && crudList.data.cruds.length > 0) {
+      return (
+        <>
+          <View style={styles.listHeader}>
+            <Text style={styles.listHeaderText}>
+              {crudList.data.cruds.length}{" "}
+              {crudList.data.cruds.length === 1 ? "Item" : "Items"}
+            </Text>
+          </View>
+          <FlatList
+            data={crudList.data.cruds}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id.toString()}
+            scrollEnabled
+          />
+        </>
+      );
+    }
+
+    return (
+      <View style={styles.emptyText}>
+        <Text style={styles.emptyTextContent}>
+          No items yet. Add one to get started!
+        </Text>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.safeArea}>
@@ -327,34 +364,7 @@ export default function CrudPage() {
           </TouchableOpacity>
 
           {/* List Section */}
-          <View style={styles.listContainer}>
-            {crudList.isLoading ? (
-              <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#60a5fa" />
-              </View>
-            ) : crudList.data && crudList.data.cruds.length > 0 ? (
-              <>
-                <View style={styles.listHeader}>
-                  <Text style={styles.listHeaderText}>
-                    {crudList.data.cruds.length}{" "}
-                    {crudList.data.cruds.length === 1 ? "Item" : "Items"}
-                  </Text>
-                </View>
-                <FlatList
-                  data={crudList.data.cruds}
-                  renderItem={renderItem}
-                  keyExtractor={(item) => item.id.toString()}
-                  scrollEnabled
-                />
-              </>
-            ) : (
-              <View style={styles.emptyText}>
-                <Text style={styles.emptyTextContent}>
-                  No items yet. Add one to get started!
-                </Text>
-              </View>
-            )}
-          </View>
+          <View style={styles.listContainer}>{renderListContent()}</View>
         </View>
       </View>
     </View>
