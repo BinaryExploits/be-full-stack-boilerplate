@@ -18,6 +18,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@repo/utils-core": "workspace:*",
     "@repo/prisma-db": "workspace:*",
     "@andeanwide/nestjs-rollbar": "^1.0.0",
     "@nestjs/common": "^11.0.1",

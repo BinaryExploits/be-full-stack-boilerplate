@@ -1,8 +1,11 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
+import { NestJsLogger } from './utils/logger/NestJsLogger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: new NestJsLogger('Application'),
+  });
   app.enableCors({
     origin: process.env.CORS_ORIGINS?.split(',') || [],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
