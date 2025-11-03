@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Crud } from '../generated/prisma';
+import { Crud } from '@repo/prisma-db';
 
 @Injectable()
 export class CrudService {
