@@ -24,6 +24,8 @@ fi
 POSTGRES_CONTAINER_NAME=${POSTGRES_CONTAINER_NAME:-sonarqube-db}
 SONAR_CONTAINER_NAME=${SONAR_CONTAINER_NAME:-sonarqube}
 SCANNER_CONTAINER_NAME=${SCANNER_CONTAINER_NAME:-sonarqube-scanner}
+SONARQUBE_PORT_HOST=${SONARQUBE_PORT_HOST:-9000}
+POSTGRES_PORT_HOST=${POSTGRES_PORT_HOST:-5432}
 
 # Step 1: Stop main docker-compose stack
 echo -e "${YELLOW}[STEP 1] Stopping main containers...${RESET}"
@@ -54,3 +56,19 @@ else
 fi
 
 echo -e "\n${GREEN}All SonarQube containers stopped cleanly.${RESET}"
+
+# Step 5: Check for processes occupying SonarQube or Postgres ports
+echo -e "${YELLOW}[STEP 5] Checking for active processes on SonarQube/Postgres ports...${RESET}"
+
+for PORT in $SONARQUBE_PORT_HOST $POSTGRES_PORT_HOST; do
+    echo -e "${BLUE}Checking port $PORT...${RESET}"
+    PIDS=$(sudo lsof -ti :$PORT || true)
+    if [ -n "$PIDS" ]; then
+        echo -e "${RED}Port $PORT is still in use by process(es): $PIDS${RESET}"
+        echo -e "${YELLOW}Killing processes on port $PORT...${RESET}"
+        sudo kill -9 $PIDS || true
+        echo -e "${GREEN}Cleared port $PORT successfully.${RESET}"
+    else
+        echo -e "${GREEN}No processes found on port $PORT.${RESET}"
+    fi
+done
