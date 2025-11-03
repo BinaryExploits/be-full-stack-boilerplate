@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Crud } from '@repo/prisma-db';
 import { RollbarService } from '@andeanwide/nestjs-rollbar';
-import { Crud } from '../generated/prisma';
 
 @Injectable()
 export class CrudService {
