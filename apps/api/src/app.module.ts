@@ -6,6 +6,7 @@ import { CrudModule } from './crud/crud.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { AppContext } from './app.context';
 import { RollbarModule } from '@andeanwide/nestjs-rollbar';
+import { LoggerModule } from './utils/logger/logger.module';
 
 @Module({
   imports: [
@@ -13,13 +14,14 @@ import { RollbarModule } from '@andeanwide/nestjs-rollbar';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    RollbarModule.register({
+      accessToken: '0d7e809765d14a738057066134fa09bc',
+      environment: 'development',
+    }),
+    LoggerModule,
     TRPCModule.forRoot({
       autoSchemaFile: '../../packages/trpc/src/server',
       context: AppContext,
-    }),
-    RollbarModule.register({
-      accessToken: '36dca023f3d248f4b5a83944386c603d',
-      environment: 'development',
     }),
     CrudModule,
     PrismaModule,

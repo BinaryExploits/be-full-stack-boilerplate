@@ -3,9 +3,12 @@ import { AppModule } from './app.module';
 import { NestJsLogger } from './utils/logger/NestJsLogger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    logger: new NestJsLogger('Application'),
-  });
+  const app = await NestFactory.create(AppModule);
+
+  const logger = app.get(NestJsLogger);
+  logger.setContext('Bootstrap');
+  app.useLogger(logger);
+
   app.enableCors({
     origin: process.env.CORS_ORIGINS?.split(',') || [],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -13,11 +16,13 @@ async function bootstrap() {
     allowedHeaders: 'Content-Type, Accept, Authorization',
     maxAge: 3600,
   });
-  await app.listen(process.env.PORT ?? 4000);
+
+  const port = process.env.PORT ?? 4000;
+  await app.listen(port);
+  logger.log(`Application is running on: http://localhost:${port}`);
 }
 
-bootstrap().catch((err) => {
-  // Todo: Use Centralized Logger
-  console.error('❌ Failed to start server:', err);
+bootstrap().catch((err: Error) => {
+  console.error('Failed to start server:', err);
   process.exit(1);
 });

@@ -2,16 +2,18 @@ import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { Crud } from '@repo/prisma-db';
 import { RollbarService } from '@andeanwide/nestjs-rollbar';
+import { NestJsLogger } from '../utils/logger/NestJsLogger';
 
 @Injectable()
 export class CrudService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly rollbar: RollbarService,
+    private readonly logger: NestJsLogger,
   ) {}
 
   async createCrud(content: string): Promise<Crud> {
-    this.rollbar.log('Creating crud', { content });
+    this.logger.log(`Creating crud: ${content}`, 'CRUD');
     return this.prisma.crud.create({
       data: { content },
     });
