@@ -43,6 +43,14 @@ Once complete, open your browser at:
 **[http://localhost:9000](http://localhost:9000)**
 (or the port defined in your `.env` file)
 
+### Help:
+
+If you get the following message then run stop.sh and try again. 
+
+```bash 
+Error response from daemon: ports are not available: exposing port TCP 0.0.0.0:5433 -> 127.0.0.1:0: listen tcp 0.0.0.0:5433: bind: address already in use.
+```
+
 ---
 
 ### 3. Login and Create Project
