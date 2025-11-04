@@ -4,9 +4,7 @@ import { NestJsLogger } from '../utils/logger/NestJsLogger';
 
 @Injectable()
 export class LoggerMiddleware implements NestMiddleware {
-  constructor(private readonly logger: NestJsLogger) {
-    this.logger.setContext('HTTP');
-  }
+  constructor(private readonly logger: NestJsLogger) {}
 
   use(req: Request, res: Response, next: NextFunction) {
     const { method, url, headers } = req;
@@ -14,14 +12,14 @@ export class LoggerMiddleware implements NestMiddleware {
     const userAgent = headers?.['user-agent'] || 'Unknown';
 
     const message = `${method || 'UNKNOWN'} ${url || '/'} - Origin: ${origin} - User-Agent: ${userAgent}`;
-    this.logger.log(message);
+    this.logger.info(message);
 
     // Log ALL headers for debugging
     // this.logger.debug('All Headers:', JSON.stringify(headers, null, 2));
 
     res.on('finish', () => {
       const { statusCode } = res;
-      this.logger.log(`Response: ${statusCode || 'UNKNOWN'}`);
+      this.logger.info(`Response: ${statusCode || 'UNKNOWN'}`);
     });
 
     next();

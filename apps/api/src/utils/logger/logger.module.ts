@@ -1,30 +1,34 @@
-import { Module, Global } from '@nestjs/common';
-import { NestJsLogger } from './NestJsLogger';
-import { LogLevel } from '@repo/utils-core';
+import { Module, Global, ConsoleLogger } from '@nestjs/common';
 import { RollbarService } from '@andeanwide/nestjs-rollbar';
+import { NestJsLogger } from './NestJsLogger';
+import { LogLevel, Logger } from '@repo/utils-core';
 
-/**
- * Global logger module that provides the NestJsLogger throughout the application.
- * This module is marked as @Global(), so you don't need to import it in every module.
- * The logger can be injected anywhere using standard NestJS dependency injection.
- */
 @Global()
 @Module({
   providers: [
     {
       provide: NestJsLogger,
       useFactory: (rollbar: RollbarService) => {
-        const logLevelString = process.env.LOG_LEVEL?.toUpperCase() || 'INFO';
-        const logLevelMap: Record<string, LogLevel> = {
+        const levelMap: Record<string, LogLevel> = {
           ERROR: LogLevel.ERROR,
           WARN: LogLevel.WARN,
           INFO: LogLevel.INFO,
           DEBUG: LogLevel.DEBUG,
           TRACE: LogLevel.TRACE,
         };
+        const envLevel = (process.env.LOG_LEVEL || 'INFO').toUpperCase();
+        const logLevel = levelMap[envLevel] || LogLevel.INFO;
 
-        const logLevel = logLevelMap[logLevelString] || LogLevel.INFO;
-        return new NestJsLogger(rollbar, 'App', logLevel);
+        const consoleLogger = new ConsoleLogger('App');
+        const logger = new NestJsLogger(
+          logLevel,
+          'App',
+          consoleLogger,
+          rollbar,
+        );
+
+        Logger.setInstance(logger);
+        return logger;
       },
       inject: [RollbarService],
     },

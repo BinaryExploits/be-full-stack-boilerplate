@@ -1,14 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { NestJsLogger } from './utils/logger/NestJsLogger';
+import { Logger } from '@repo/utils-core';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  const logger = app.get(NestJsLogger);
-  logger.setContext('Bootstrap');
-  app.useLogger(logger);
-
   app.enableCors({
     origin: process.env.CORS_ORIGINS?.split(',') || [],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -19,7 +14,21 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? 4000;
   await app.listen(port);
-  logger.log(`Application is running on: http://localhost:${port}`);
+
+  Logger.withContext('Bootstrap').info(
+    'Application is running on: http://localhost:${port}',
+    {
+      context: 'Server',
+    },
+  );
+
+  Logger.info(`Application is running on: http://localhost:${port}`, {
+    context: 'Server',
+  });
+
+  console.log(`Application is running on: http://localhost:${port}`, {
+    context: 'Server',
+  });
 }
 
 bootstrap().catch((err: Error) => {

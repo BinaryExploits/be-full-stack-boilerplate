@@ -5,7 +5,7 @@ import { LogContext } from './ILogger';
 /**
  * Default logger implementation that works with pure TypeScript.
  * This logger is framework-agnostic and uses console methods for output.
- * It can be used in any environment that supports console (Node.js, browser, etc.)
+ * It can be used in any environment that supports a console (Node.js, browser, etc.)
  */
 export class DefaultLogger extends BaseLogger {
   constructor(initialLogLevel: LogLevel = LogLevel.INFO) {
