@@ -1,14 +1,22 @@
 import { LogLevel } from './LogLevel';
 
-export interface LogContext {
-  [key: string]: unknown;
-}
-
 export interface ILogger {
-  log(level: LogLevel, message: string, context?: LogContext): void;
-  info(message: string, context?: LogContext): void;
-  warn(message: string, context?: LogContext): void;
-  error(message: string, context?: LogContext): void;
-  debug(message: string, context?: LogContext): void;
-  trace(message: string, context?: LogContext): void;
+  log(logLevel: LogLevel, message: any): void;
+  log(logLevel: LogLevel, message: any, ...optionalParams: any[]): void;
+
+  info(message: any): void;
+  info(message: any, ...optionalParams: any[]): void;
+
+  warn(message: any): void;
+  warn(message: any, ...optionalParams: any[]): void;
+
+  debug(message: any): void;
+  debug(message: any, ...optionalParams: any[]): void;
+
+  trace(message: any): void;
+  trace(message: any, context: string, ...optionalParams: any[]): void;
+  trace(message: any, ...optionalParams: any[]): void;
+
+  error(message: any): void;
+  error(message: any, ...optionalParams: any[]): void;
 }

@@ -1,47 +1,73 @@
-import { BaseLogger } from './BaseLogger';
-import { LogLevel } from './LogLevel';
-import { LogContext } from './ILogger';
+import { LogLevel } from "./LogLevel";
+import { ILogger } from "./ILogger";
 
-/**
- * Default logger implementation that works with pure TypeScript.
- * This logger is framework-agnostic and uses console methods for output.
- * It can be used in any environment that supports a console (Node.js, browser, etc.)
- */
-export class DefaultLogger extends BaseLogger {
+export class DefaultLogger implements ILogger {
+  private readonly logLevel: LogLevel;
+
   constructor(initialLogLevel: LogLevel = LogLevel.INFO) {
-    super(initialLogLevel);
+    this.logLevel = initialLogLevel;
   }
 
-  /**
-   * Implementation of the abstract writeLog method.
-   * Uses console methods appropriate for each log level.
-   */
-  protected writeLog(
-    level: LogLevel,
-    message: string,
-    context?: LogContext,
-  ): void {
-    const formattedMessage = this.formatMessage(level, message);
-    const formattedContext = this.formatContext(context);
-    const fullMessage = formattedMessage + formattedContext;
+  log(logLevel: LogLevel, message: any): void;
+  log(logLevel: LogLevel, message: any, ...optionalParams: any[]): void;
+  log(logLevel: LogLevel, message: string, ...optionalParams: any[]): void {
+    this.writeLog(logLevel, message, ...optionalParams);
+  }
 
-    // Use console methods appropriate for each log level
-    switch (level) {
-      case LogLevel.ERROR:
-        console.error(fullMessage);
+  info(message: any): void;
+  info(message: any, ...optionalParams: any[]): void;
+  info(message: string, ...optionalParams: any[]): void {
+    this.writeLog(LogLevel.INFO, message, ...optionalParams);
+  }
+
+  warn(message: any): void;
+  warn(message: any, ...optionalParams: any[]): void;
+  warn(message: string, ...optionalParams: any[]): void {
+    this.writeLog(LogLevel.WARN, message, ...optionalParams);
+  }
+
+  debug(message: any): void;
+  debug(message: any, ...optionalParams: any[]): void;
+  debug(message: string, ...optionalParams: any[]): void {
+    this.writeLog(LogLevel.DEBUG, message, ...optionalParams);
+  }
+
+  trace(message: any): void;
+  trace(message: any, context: string, ...optionalParams: any[]): void;
+  trace(message: any, ...optionalParams: any[]): void;
+  trace(message: string, ...optionalParams: any[]): void {
+    this.writeLog(LogLevel.TRACE, message, ...optionalParams);
+  }
+
+  error(message: any): void;
+  error(message: any, ...optionalParams: any[]): void;
+  error(message: string, ...optionalParams: any[]): void {
+    this.writeLog(LogLevel.ERROR, message, ...optionalParams);
+  }
+
+  private writeLog(
+    logLevel: LogLevel,
+    message: any,
+    ...optionalParams: any[]
+  ): void {
+    switch (logLevel) {
+      case LogLevel.INFO:
+        console.log(message, ...optionalParams);
         break;
       case LogLevel.WARN:
-        console.warn(fullMessage);
-        break;
-      case LogLevel.INFO:
-        console.info(fullMessage);
+        console.warn(message, ...optionalParams);
         break;
       case LogLevel.DEBUG:
+        console.debug(message, ...optionalParams);
+        break;
       case LogLevel.TRACE:
-        console.debug(fullMessage);
+        console.trace(message, ...optionalParams);
+        break;
+      case LogLevel.ERROR:
+        console.error(message, ...optionalParams);
         break;
       default:
-        console.log(fullMessage);
+        console.log(message, ...optionalParams);
     }
   }
 }

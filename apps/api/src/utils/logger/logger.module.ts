@@ -16,7 +16,7 @@ import { LogLevel, Logger } from '@repo/utils-core';
           DEBUG: LogLevel.DEBUG,
           TRACE: LogLevel.TRACE,
         };
-        const envLevel = (process.env.LOG_LEVEL || 'INFO').toUpperCase();
+        const envLevel = (process.env.LOG_LEVEL || 'TRACE').toUpperCase();
         const logLevel = levelMap[envLevel] || LogLevel.INFO;
 
         const consoleLogger = new ConsoleLogger('App');

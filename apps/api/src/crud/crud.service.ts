@@ -8,28 +8,28 @@ export class CrudService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createCrud(content: string): Promise<Crud> {
-    Logger.info(`Creating crud: ${content}`);
+    Logger.instance.info(`Creating crud: ${content}`);
     return this.prisma.crud.create({
       data: { content },
     });
   }
 
   async findAll(): Promise<Crud[]> {
-    Logger.info('Finding all cruds');
+    Logger.instance.info('Finding all cruds');
     return this.prisma.crud.findMany({
       orderBy: { createdAt: 'desc' },
     });
   }
 
   async findOne(id: number): Promise<Crud | null> {
-    Logger.info('Finding crud by id', { id });
+    Logger.instance.info('Finding crud by id', { id });
     return this.prisma.crud.findUnique({
       where: { id },
     });
   }
 
   async update(id: number, updatedContent: string): Promise<Crud> {
-    Logger.info('Updating crud', { id, updatedContent });
+    Logger.instance.info('Updating crud', { id, updatedContent });
     return this.prisma.crud.update({
       where: { id },
       data: { content: updatedContent },
@@ -37,7 +37,7 @@ export class CrudService {
   }
 
   async delete(id: number): Promise<Crud> {
-    Logger.info('Deleting crud', { id });
+    Logger.instance.info('Deleting crud', { id });
     return this.prisma.crud.delete({
       where: { id },
     });
