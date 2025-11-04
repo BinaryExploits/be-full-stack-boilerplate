@@ -1,0 +1,7 @@
+{
+  "name": "@repo/prisma-db",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./generated/prisma/index.js",
+  "types": "./generated/prisma/index.d.ts"
+}

@@ -1,0 +1,53 @@
+services:
+  sonarqube-scanner:
+    image: sonarsource/sonar-scanner-cli:latest
+    container_name: ${SCANNER_CONTAINER_NAME:-sonarqube-scanner}
+    working_dir: /usr/src
+    volumes:
+      # Mount monorepo root (2 levels up from this directory)
+      - ../..:/usr/src
+      # Mount sonar-project.properties from sonarqube package
+      - ./sonar-project.properties:/usr/src/packages/sonarqube/sonar-project.properties:ro
+      # Cache directory for faster subsequent scans
+      - sonarqube-scanner-cache:/opt/sonar-scanner/.sonar/cache
+    command: >
+      -Dsonar.projectBaseDir=/usr/src
+      -Dproject.settings=/usr/src/packages/sonarqube/sonar-project.properties
+    environment:
+      # SonarQube server connection
+      SONAR_HOST_URL: ${SONAR_HOST_URL:-http://sonarqube-server:9000}
+      SONAR_TOKEN: ${SONAR_TOKEN}
+
+      # Project identification
+      SONAR_PROJECT_KEY: ${SONAR_PROJECT_KEY:-my-project}
+      SONAR_PROJECT_NAME: ${SONAR_PROJECT_NAME:-my-project}
+      SONAR_PROJECT_VERSION: ${SONAR_PROJECT_VERSION:-1.0.0}
+
+      # Source configuration
+      SONAR_SOURCES: ${SONAR_SOURCES:-.}
+      SONAR_EXCLUSIONS: ${SONAR_EXCLUSIONS:-**/node_modules/**,**/dist/**,**/build/**,**/.next/**,**/.expo/**,**/coverage/**,**/.git/**,**/.docker/**,**/.venv/**,**/venv/**,**/__pycache__/**,**/*.min.js,**/vendor/**,**/tmp/**,**/temp/**,**/.cache/**}
+
+      # File suffixes
+      SONAR_JAVASCRIPT_FILE_SUFFIXES: ${SONAR_JAVASCRIPT_FILE_SUFFIXES:-.js,.jsx,.mjs,.cjs}
+      SONAR_TYPESCRIPT_FILE_SUFFIXES: ${SONAR_TYPESCRIPT_FILE_SUFFIXES:-.ts,.tsx,.cts,.mts}
+
+      # Coverage and test configuration
+      SONAR_JAVASCRIPT_LCOV_REPORTPATHS: ${SONAR_JAVASCRIPT_LCOV_REPORTPATHS:-coverage/lcov.info}
+      SONAR_COVERAGE_EXCLUSIONS: ${SONAR_COVERAGE_EXCLUSIONS:-**/*.test.ts,**/*.test.tsx,**/*.spec.ts,**/*.spec.tsx,**/tests/**,**/__tests__/**,**/test/**}
+      SONAR_CPD_EXCLUSIONS: ${SONAR_CPD_EXCLUSIONS:-**/tests/**,**/*.test.ts,**/*.spec.ts,**/node_modules/**,**/dist/**,**/build/**}
+
+      # Misc
+      SONAR_SOURCE_ENCODING: ${SONAR_SOURCE_ENCODING:-UTF-8}
+      SONAR_WS_TIMEOUT: ${SONAR_WS_TIMEOUT:-300}
+      SONAR_VERBOSE: ${SONAR_VERBOSE:-false}
+
+    networks:
+      - sonarqube_sonarqube-net
+
+volumes:
+  sonarqube-scanner-cache:
+    driver: local
+
+networks:
+  sonarqube_sonarqube-net:
+    external: true
