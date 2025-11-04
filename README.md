@@ -7,6 +7,8 @@ A **modern full-stack TypeScript monorepo** using:
 * **Expo** (Mobile)
 * **tRPC** (End-to-end type-safe API calls)
 * **Prisma + PostgreSQL** (Database)
+* **SonarQube**
+* **Rollbar**
 * **Turborepo** (Build orchestration)
 
 This repository is structured for scalability, developer experience, and seamless cross-platform sharing of logic and types.
@@ -33,7 +35,7 @@ Make sure the following are installed **before** setup:
 
 ```bash
 git clone https://github.com/BinaryExploits/be-full-stack-boilerplate.git
-cd full-stack
+cd be-full-stack-boilerplate
 ```
 
 ---
@@ -59,6 +61,7 @@ apps/api/.env
 apps/web/.env
 apps/app/.env
 packages/prisma-db/.env
+packages/sonarqube/.env
 ```
 
 Each `.env` file should contain the necessary variables (e.g. database URLs, API base URLs, etc.).
@@ -107,23 +110,27 @@ This command runs all apps (API, Web, and Mobile) concurrently using Turborepo.
 
 ---
 
-## 🧠 Project Structure
+## 🧠 Project Structure (Simplified)
 
 ```
 .
+├── ...
 ├── apps/
 │   ├── api/         # NestJS API
 │   ├── web/         # Next.js Web App
 │   └── app/         # Expo Mobile App
 │
 ├── packages/
-│   ├── prisma-db/   # Prisma schema + migrations
-│   ├── trpc/        # Shared tRPC router + types
-│   ├── eslint-config/        # Shared tRPC router + types
-│   └── typescript-config/          # Shared UI components
+│   ├── prisma-db/             # Prisma schema + migrations
+│   ├── trpc/                  # Shared tRPC router + types
+│   ├── eslint-config/         # Linter Config
+│   ├── sonarqube/
+│   ├── ...
+│   └── typescript-config/     # TS Config
 │
 ├── turbo.json       # Turborepo configuration
-└── pnpm-workspace.yaml
+└── pnpm-workspace.yaml  # Workspace Structure
+└── ...
 ```
 
 ---
