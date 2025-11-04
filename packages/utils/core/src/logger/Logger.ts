@@ -1,4 +1,5 @@
 import { ILogger } from './ILogger';
+import { DefaultLogger } from "./DefaultLogger";
 
 export class Logger {
   private static _instance: ILogger;
@@ -9,7 +10,7 @@ export class Logger {
 
   static get instance(): ILogger {
     if (!Logger._instance) {
-      throw new Error('Logger instance not set. Call Logger.setInstance() at startup.');
+      Logger.setInstance(new DefaultLogger());
     }
 
     return Logger._instance;

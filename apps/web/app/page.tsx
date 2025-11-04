@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import { trpc } from "@repo/trpc/client";
+import { Logger } from "@repo/utils-core";
 
 export default function Home() {
+  Logger.instance.info("Home", { message: "Home page" });
   return <CrudTestUI />;
 }
 
