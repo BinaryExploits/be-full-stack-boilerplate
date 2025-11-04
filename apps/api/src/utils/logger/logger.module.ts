@@ -1,7 +1,7 @@
 import { Module, Global, ConsoleLogger } from '@nestjs/common';
 import { RollbarService } from '@andeanwide/nestjs-rollbar';
 import { NestJsLogger } from './NestJsLogger';
-import { LogLevel, Logger } from '@repo/utils-core';
+import { LogLevel, Logger, parseLogLevel } from '@repo/utils-core';
 
 @Global()
 @Module({
@@ -16,9 +16,7 @@ import { LogLevel, Logger } from '@repo/utils-core';
           DEBUG: LogLevel.DEBUG,
           TRACE: LogLevel.TRACE,
         };
-        const envLevel = (process.env.LOG_LEVEL || 'TRACE').toUpperCase();
-        const logLevel = levelMap[envLevel] || LogLevel.INFO;
-
+        const logLevel = parseLogLevel(process.env.LOG_LEVEL!);
         const consoleLogger = new ConsoleLogger('App');
         const logger = new NestJsLogger(
           logLevel,

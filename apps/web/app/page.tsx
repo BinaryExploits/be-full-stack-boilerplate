@@ -4,9 +4,6 @@ import { useState } from "react";
 import { trpc } from "@repo/trpc/client";
 
 export default function Home() {
-  console.log("Home", { context: "client" });
-  console.log("Home");
-  console.log("Home 1", "Home 2", "Home 3");
   return <CrudTestUI />;
 }
 

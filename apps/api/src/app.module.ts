@@ -15,7 +15,7 @@ import { LoggerModule } from './utils/logger/logger.module';
       envFilePath: '.env',
     }),
     RollbarModule.register({
-      accessToken: '0d7e809765d14a738057066134fa09bc',
+      accessToken: process.env.ROLLBAR_ACCESS_TOKEN!,
       environment: 'development',
     }),
     LoggerModule,

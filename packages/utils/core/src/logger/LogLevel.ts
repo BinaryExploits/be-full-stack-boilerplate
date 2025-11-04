@@ -1,7 +1,3 @@
-/**
- * Log levels in order of severity (highest to lowest).
- * When a log level is set, only messages at that level or higher will be logged.
- */
 export enum LogLevel {
   ERROR = 0,
   WARN = 1,
@@ -10,9 +6,6 @@ export enum LogLevel {
   TRACE = 4,
 }
 
-/**
- * Helper to convert string to LogLevel
- */
 export function parseLogLevel(level: string): LogLevel {
   const upperLevel = level.toUpperCase();
   switch (upperLevel) {
@@ -32,9 +25,6 @@ export function parseLogLevel(level: string): LogLevel {
   }
 }
 
-/**
- * Helper to get log level name
- */
 export function getLogLevelName(level: LogLevel): string {
   switch (level) {
     case LogLevel.ERROR:
