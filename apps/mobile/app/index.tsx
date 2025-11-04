@@ -1,4 +1,3 @@
-// app/index.tsx
 import { useState } from "react";
 import {
   View,
