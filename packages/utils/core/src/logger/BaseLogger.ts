@@ -3,12 +3,22 @@ import { LogLevel } from "./LogLevel";
 
 export abstract class BaseLogger implements ILogger {
   public readonly logLevel: LogLevel;
+  protected tempContext: string = "";
 
   protected constructor(logLevel: LogLevel) {
     this.logLevel = logLevel;
   }
 
-  shouldLog(level: LogLevel): boolean {
+  withContext(context: string): ILogger {
+    this.tempContext = context;
+    return this;
+  }
+
+  clearTempContext(): void {
+    this.tempContext = "";
+  }
+
+  protected shouldLog(level: LogLevel): boolean {
     return level <= this.logLevel;
   }
 

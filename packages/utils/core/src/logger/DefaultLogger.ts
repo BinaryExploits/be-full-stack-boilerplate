@@ -42,6 +42,22 @@ export class DefaultLogger extends BaseLogger {
     this.writeLog(LogLevel.ERROR, message, ...optionalParams);
   }
 
+  private formatLog(
+    logLevel: LogLevel,
+    message: any,
+    ...optionalParams: unknown[]
+  ): unknown[] {
+    const timestamp = new Date().toISOString();
+    const level = LogLevel[logLevel];
+
+    return [
+      `[${timestamp}] [${level}]`,
+      ...(this.tempContext.trim() !== "" ? [`[${this.tempContext}]`] : []),
+      message,
+      ...optionalParams,
+    ];
+  }
+
   private writeLog(
     logLevel: LogLevel,
     message: any,
@@ -49,24 +65,28 @@ export class DefaultLogger extends BaseLogger {
   ): void {
     if (!this.shouldLog(logLevel)) return;
 
+    const formattedLog = this.formatLog(logLevel, message, ...optionalParams);
+
     switch (logLevel) {
       case LogLevel.INFO:
-        console.log(message, ...optionalParams);
+        console.log(...formattedLog);
         break;
       case LogLevel.WARN:
-        console.warn(message, ...optionalParams);
+        console.warn(...formattedLog);
         break;
       case LogLevel.DEBUG:
-        console.debug(message, ...optionalParams);
+        console.debug(...formattedLog);
         break;
       case LogLevel.TRACE:
-        console.trace(message, ...optionalParams);
+        console.trace(...formattedLog);
         break;
       case LogLevel.ERROR:
-        console.error(message, ...optionalParams);
+        console.error(...formattedLog);
         break;
       default:
         break;
     }
+
+    this.clearTempContext();
   }
 }

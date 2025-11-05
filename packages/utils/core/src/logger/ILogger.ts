@@ -3,7 +3,7 @@ import { LogLevel } from "./LogLevel";
 export interface ILogger {
   readonly logLevel: LogLevel;
 
-  shouldLog(level: LogLevel): boolean;
+  withContext(context: string): ILogger;
 
   log(logLevel: LogLevel, message: any): void;
   log(logLevel: LogLevel, message: any, ...optionalParams: any[]): void;
