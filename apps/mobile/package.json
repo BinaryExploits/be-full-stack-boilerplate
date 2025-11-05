@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "expo start",
+    "start": "[ -e .env ] && set -a && . ./.env; expo start --port ${PORT}",
     "dev": "expo start",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
