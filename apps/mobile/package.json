@@ -5,7 +5,7 @@
   "private": true,
   "scripts": {
     "start": "[ -e .env ] && set -a && . ./.env; expo start --port ${PORT}",
-    "dev": "expo start",
+    "dev": "[ -e .env ] && set -a && . ./.env; expo start --port ${PORT}",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
