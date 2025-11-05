@@ -1,5 +1,6 @@
-import { ILogger } from './ILogger';
-import { DefaultLogger } from "./DefaultLogger";
+import { ILogger } from "./ILogger";
+import { NoopLogger } from "./NoopLogger";
+import { LogLevel } from "./LogLevel";
 
 export class Logger {
   private static _instance: ILogger;
@@ -10,7 +11,7 @@ export class Logger {
 
   static get instance(): ILogger {
     if (!Logger._instance) {
-      Logger.setInstance(new DefaultLogger());
+      Logger.setInstance(new NoopLogger(LogLevel.INFO));
     }
 
     return Logger._instance;

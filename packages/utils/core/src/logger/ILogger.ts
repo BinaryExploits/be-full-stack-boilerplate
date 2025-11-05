@@ -1,6 +1,10 @@
-import { LogLevel } from './LogLevel';
+import { LogLevel } from "./LogLevel";
 
 export interface ILogger {
+  readonly logLevel: LogLevel;
+
+  shouldLog(level: LogLevel): boolean;
+
   log(logLevel: LogLevel, message: any): void;
   log(logLevel: LogLevel, message: any, ...optionalParams: any[]): void;
 

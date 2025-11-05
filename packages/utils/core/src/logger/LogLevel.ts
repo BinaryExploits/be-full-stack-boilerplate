@@ -9,16 +9,16 @@ export enum LogLevel {
 export function parseLogLevel(level: string): LogLevel {
   const upperLevel = level.toUpperCase();
   switch (upperLevel) {
-    case 'ERROR':
+    case "ERROR":
       return LogLevel.ERROR;
-    case 'WARN':
-    case 'WARNING':
+    case "WARN":
+    case "WARNING":
       return LogLevel.WARN;
-    case 'INFO':
+    case "INFO":
       return LogLevel.INFO;
-    case 'DEBUG':
+    case "DEBUG":
       return LogLevel.DEBUG;
-    case 'TRACE':
+    case "TRACE":
       return LogLevel.TRACE;
     default:
       return LogLevel.INFO;
@@ -28,16 +28,16 @@ export function parseLogLevel(level: string): LogLevel {
 export function getLogLevelName(level: LogLevel): string {
   switch (level) {
     case LogLevel.ERROR:
-      return 'ERROR';
+      return "ERROR";
     case LogLevel.WARN:
-      return 'WARN';
+      return "WARN";
     case LogLevel.INFO:
-      return 'INFO';
+      return "INFO";
     case LogLevel.DEBUG:
-      return 'DEBUG';
+      return "DEBUG";
     case LogLevel.TRACE:
-      return 'TRACE';
+      return "TRACE";
     default:
-      return 'UNKNOWN';
+      return "UNKNOWN";
   }
 }

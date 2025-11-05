@@ -361,7 +361,11 @@ importers:
 
   packages/typescript-config: {}
 
-  packages/utils/core: {}
+  packages/utils/core:
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
 
 packages:
 

@@ -1,15 +1,25 @@
 import { ConsoleLogger } from '@nestjs/common';
 import { RollbarService } from '@andeanwide/nestjs-rollbar';
-import { ILogger, LogLevel } from '@repo/utils-core';
+import { LogLevel } from '@repo/utils-core';
+import { BaseLogger } from '@repo/utils-core/dist/logger/BaseLogger';
 
-export class NestJsLogger implements ILogger {
+export class NestJsLogger extends BaseLogger {
+  private readonly context: string;
+  private readonly consoleLogger: ConsoleLogger;
+  private readonly rollbar?: RollbarService;
+
   constructor(
-    private readonly currentLogLevel: LogLevel,
-    private readonly context: string,
-    private readonly consoleLogger: ConsoleLogger,
-    private readonly rollbar?: RollbarService,
+    logLevel: LogLevel,
+    context: string,
+    consoleLogger: ConsoleLogger,
+    rollbar?: RollbarService,
   ) {
-    this.consoleLogger.setContext(context);
+    super(logLevel);
+    this.context = context;
+    this.consoleLogger = consoleLogger;
+    this.rollbar = rollbar;
+
+    this.consoleLogger.setContext(this.context);
     this.info(`NestJsLogger initialized (Rollbar: ${!!rollbar})`);
   }
 
@@ -50,10 +60,6 @@ export class NestJsLogger implements ILogger {
     this.writeLog(LogLevel.ERROR, message, ...optionalParams);
   }
 
-  private shouldLog(level: LogLevel): boolean {
-    return level <= this.currentLogLevel;
-  }
-
   writeLog(level: LogLevel, message: any, ...optionalParams: unknown[]): void {
     if (!this.shouldLog(level)) return;
 
@@ -67,6 +73,9 @@ export class NestJsLogger implements ILogger {
     ...optionalParams: unknown[]
   ): void {
     switch (level) {
+      case LogLevel.INFO:
+        this.consoleLogger.log(message, ...optionalParams);
+        break;
       case LogLevel.ERROR:
         this.consoleLogger.error(message, ...optionalParams);
         break;
@@ -80,7 +89,7 @@ export class NestJsLogger implements ILogger {
         this.consoleLogger.verbose(message, ...optionalParams);
         break;
       default:
-        this.consoleLogger.log(message, ...optionalParams);
+        break;
     }
   }
 
@@ -89,14 +98,14 @@ export class NestJsLogger implements ILogger {
 
     try {
       switch (level) {
+        case LogLevel.INFO:
+          this.rollbar.info(message);
+          break;
         case LogLevel.ERROR:
           this.rollbar.error(message);
           break;
         case LogLevel.WARN:
           this.rollbar.warn(message);
-          break;
-        case LogLevel.INFO:
-          this.rollbar.info(message);
           break;
         case LogLevel.DEBUG:
           this.rollbar.log(message);
