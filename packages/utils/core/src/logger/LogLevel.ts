@@ -1,9 +1,10 @@
 export enum LogLevel {
-  ERROR = 0,
-  WARN = 1,
-  INFO = 2,
-  DEBUG = 3,
-  TRACE = 4,
+  UNDEFINED = 0,
+  ERROR = 1,
+  WARN = 2,
+  INFO = 3,
+  DEBUG = 4,
+  TRACE = 5,
 }
 
 export function parseLogLevel(level: string): LogLevel {
@@ -12,7 +13,6 @@ export function parseLogLevel(level: string): LogLevel {
     case "ERROR":
       return LogLevel.ERROR;
     case "WARN":
-    case "WARNING":
       return LogLevel.WARN;
     case "INFO":
       return LogLevel.INFO;
@@ -21,7 +21,7 @@ export function parseLogLevel(level: string): LogLevel {
     case "TRACE":
       return LogLevel.TRACE;
     default:
-      return LogLevel.INFO;
+      return LogLevel.UNDEFINED;
   }
 }
 
@@ -38,6 +38,6 @@ export function getLogLevelName(level: LogLevel): string {
     case LogLevel.TRACE:
       return "TRACE";
     default:
-      return "UNKNOWN";
+      return "UNDEFINED";
   }
 }

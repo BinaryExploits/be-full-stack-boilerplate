@@ -31,7 +31,6 @@ export class DefaultLogger extends BaseLogger {
   }
 
   trace(message: any): void;
-  trace(message: any, context: string, ...optionalParams: any[]): void;
   trace(message: any, ...optionalParams: any[]): void;
   trace(message: string, ...optionalParams: unknown[]): void {
     this.writeLog(LogLevel.TRACE, message, ...optionalParams);

@@ -18,7 +18,6 @@ export interface ILogger {
   debug(message: any, ...optionalParams: any[]): void;
 
   trace(message: any): void;
-  trace(message: any, context: string, ...optionalParams: any[]): void;
   trace(message: any, ...optionalParams: any[]): void;
 
   error(message: any): void;

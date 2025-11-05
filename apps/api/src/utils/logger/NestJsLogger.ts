@@ -48,7 +48,6 @@ export class NestJsLogger extends BaseLogger {
   }
 
   trace(message: any): void;
-  trace(message: any, context: string, ...optionalParams: any[]): void;
   trace(message: any, ...optionalParams: any[]): void;
   trace(message: string, ...optionalParams: unknown[]): void {
     this.writeLog(LogLevel.TRACE, message, ...optionalParams);
@@ -60,7 +59,11 @@ export class NestJsLogger extends BaseLogger {
     this.writeLog(LogLevel.ERROR, message, ...optionalParams);
   }
 
-  writeLog(level: LogLevel, message: any, ...optionalParams: unknown[]): void {
+  private writeLog(
+    level: LogLevel,
+    message: any,
+    ...optionalParams: unknown[]
+  ): void {
     if (!this.shouldLog(level)) return;
 
     this.routeToConsole(level, message, ...optionalParams);
