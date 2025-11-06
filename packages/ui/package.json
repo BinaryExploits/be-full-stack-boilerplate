@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "exports": {
-    "./LoggerProvider": "./src/providers/LoggerProvider.tsx"
+    "./logger-provider": "./src/providers/logger-provider.tsx"
   },
   "peerDependencies": {
     "react": "^19.1.0"

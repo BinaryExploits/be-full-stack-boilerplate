@@ -1,20 +1,27 @@
 import { ConsoleLogger } from '@nestjs/common';
 import { RollbarService } from '@andeanwide/nestjs-rollbar';
-import { BaseLogger, LogLevel, StringExtensions } from '@repo/utils-core';
+import {
+  BaseLogger,
+  FlagExtensions,
+  LogLevel,
+  StringExtensions,
+} from '@repo/utils-core';
 
 class NestJsLogger extends BaseLogger {
+  private readonly rollbarLogLevel: LogLevel;
   private readonly context: string;
   private readonly consoleLogger: ConsoleLogger;
   private readonly rollbar?: RollbarService;
 
   constructor(
     logLevel: LogLevel,
+    rollbarLogLevel: LogLevel,
     context: string,
     consoleLogger: ConsoleLogger,
     rollbar?: RollbarService,
   ) {
     super(logLevel);
-
+    this.rollbarLogLevel = rollbarLogLevel;
     this.context = context;
     this.consoleLogger = consoleLogger;
     this.rollbar = rollbar;
@@ -24,32 +31,38 @@ class NestJsLogger extends BaseLogger {
 
   info(message: any): void;
   info(message: any, ...optionalParams: any[]): void;
-  info(message: string, ...optionalParams: unknown[]): void {
-    this.writeLog(LogLevel.INFO, message, ...optionalParams);
+  info(message: any, ...optionalParams: unknown[]): void {
+    this.writeLog(LogLevel.Info, message, ...optionalParams);
   }
 
   warn(message: any): void;
   warn(message: any, ...optionalParams: any[]): void;
-  warn(message: string, ...optionalParams: unknown[]): void {
-    this.writeLog(LogLevel.WARN, message, ...optionalParams);
+  warn(message: any, ...optionalParams: unknown[]): void {
+    this.writeLog(LogLevel.Warn, message, ...optionalParams);
   }
 
   debug(message: any): void;
   debug(message: any, ...optionalParams: any[]): void;
-  debug(message: string, ...optionalParams: unknown[]): void {
-    this.writeLog(LogLevel.DEBUG, message, ...optionalParams);
+  debug(message: any, ...optionalParams: unknown[]): void {
+    this.writeLog(LogLevel.Debug, message, ...optionalParams);
   }
 
   trace(message: any): void;
   trace(message: any, ...optionalParams: any[]): void;
-  trace(message: string, ...optionalParams: unknown[]): void {
-    this.writeLog(LogLevel.TRACE, message, ...optionalParams);
+  trace(message: any, ...optionalParams: unknown[]): void {
+    this.writeLog(LogLevel.Trace, message, ...optionalParams);
   }
 
   error(message: any): void;
-  error(message: any, stack: string, ...optionalParams: any[]): void;
-  error(message: string, stack?: string, ...optionalParams: unknown[]): void {
-    this.writeError(message, stack, ...optionalParams);
+  error(message: any, stack?: string, ...optionalParams: any[]): void;
+  error(message: any, stack?: string, ...optionalParams: unknown[]): void {
+    this.writeError(LogLevel.Error, message, stack, ...optionalParams);
+  }
+
+  critical(message: any): void;
+  critical(message: any, ...optionalParams: any[]): void;
+  critical(message: any, ...optionalParams: unknown[]): void {
+    this.writeError(LogLevel.Critical, message, undefined, ...optionalParams);
   }
 
   private writeLog(
@@ -57,21 +70,31 @@ class NestJsLogger extends BaseLogger {
     message: any,
     ...optionalParams: unknown[]
   ): void {
-    if (!this.shouldLog(level)) return;
-
     this.routeToConsole(level, message, ...optionalParams);
     this.sendToRollbar(level, message, ...optionalParams);
     this.clearTempContext();
   }
 
   private writeError(
+    logLevel: LogLevel,
     message: any,
     stack?: string,
     ...optionalParams: unknown[]
   ): void {
-    if (!this.shouldLog(LogLevel.ERROR)) return;
+    this.writeErrorToConsole(logLevel, message, stack, ...optionalParams);
+    this.sendToRollbar(logLevel, message, stack, ...optionalParams);
+    this.clearTempContext();
+  }
 
-    const context = StringExtensions.IsNullOrEmpty(this.tempContext)
+  private writeErrorToConsole(
+    logLevel: LogLevel,
+    message: any,
+    stack?: string,
+    ...optionalParams: unknown[]
+  ) {
+    if (!this.shouldLog(logLevel)) return;
+
+    const context: string = StringExtensions.IsNullOrEmpty(this.tempContext)
       ? this.context
       : this.tempContext;
 
@@ -80,9 +103,6 @@ class NestJsLogger extends BaseLogger {
     } else {
       this.consoleLogger.error(message, ...optionalParams, stack, context);
     }
-
-    this.sendToRollbar(LogLevel.ERROR, message, stack, ...optionalParams);
-    this.clearTempContext();
   }
 
   private routeToConsole(
@@ -90,6 +110,8 @@ class NestJsLogger extends BaseLogger {
     message: any,
     ...optionalParams: unknown[]
   ): void {
+    if (!this.shouldLog(level)) return;
+
     const params: unknown[] = [
       ...optionalParams,
       ...(StringExtensions.IsNullOrEmpty(this.tempContext)
@@ -98,16 +120,16 @@ class NestJsLogger extends BaseLogger {
     ];
 
     switch (level) {
-      case LogLevel.INFO:
+      case LogLevel.Info:
         this.consoleLogger.log(message, ...params);
         break;
-      case LogLevel.WARN:
+      case LogLevel.Warn:
         this.consoleLogger.warn(message, ...params);
         break;
-      case LogLevel.DEBUG:
+      case LogLevel.Debug:
         this.consoleLogger.debug(message, ...params);
         break;
-      case LogLevel.TRACE:
+      case LogLevel.Trace:
         this.consoleLogger.verbose(message, ...params);
         break;
       default:
@@ -115,12 +137,16 @@ class NestJsLogger extends BaseLogger {
     }
   }
 
+  private shouldLogToRollbar(logLevel: LogLevel) {
+    return FlagExtensions.has(this.rollbarLogLevel, logLevel);
+  }
+
   private sendToRollbar(
     level: LogLevel,
     message: any,
     ...optionalParams: unknown[]
   ): void {
-    if (!this.rollbar) return;
+    if (!this.rollbar || !this.shouldLogToRollbar(level)) return;
 
     try {
       const data: string = JSON.stringify([
@@ -132,22 +158,26 @@ class NestJsLogger extends BaseLogger {
       ]);
 
       switch (level) {
-        case LogLevel.INFO:
+        case LogLevel.Info:
           this.rollbar.info(data);
           break;
-        case LogLevel.ERROR:
+        case LogLevel.Error:
           this.rollbar.error(data);
           break;
-        case LogLevel.WARN:
+        case LogLevel.Warn:
           this.rollbar.warn(data);
           break;
-        case LogLevel.DEBUG:
-        case LogLevel.TRACE:
+        case LogLevel.Debug:
+        case LogLevel.Trace:
           this.rollbar.log(data);
+          break;
+        case LogLevel.Critical:
+          this.rollbar.critical(data);
           break;
       }
     } catch (err) {
-      this.consoleLogger.error('Rollbar failed: ' + (err as Error).message);
+      const error = err as Error;
+      this.withContext('Rollbar').error(error.message, error.stack);
     }
   }
 }

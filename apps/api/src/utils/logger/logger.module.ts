@@ -1,7 +1,7 @@
-import { Module, Global, ConsoleLogger } from '@nestjs/common';
+import { ConsoleLogger, Global, Module } from '@nestjs/common';
 import { RollbarService } from '@andeanwide/nestjs-rollbar';
 import NestJsLogger from './logger-nestjs';
-import { LogLevel, Logger, parseLogLevel } from '@repo/utils-core';
+import { FlagExtensions, Logger, LogLevel } from '@repo/utils-core';
 
 @Global()
 @Module({
@@ -9,17 +9,20 @@ import { LogLevel, Logger, parseLogLevel } from '@repo/utils-core';
     {
       provide: NestJsLogger,
       useFactory: (rollbar: RollbarService) => {
-        const levelMap: Record<string, LogLevel> = {
-          ERROR: LogLevel.ERROR,
-          WARN: LogLevel.WARN,
-          INFO: LogLevel.INFO,
-          DEBUG: LogLevel.DEBUG,
-          TRACE: LogLevel.TRACE,
-        };
-        const logLevel = parseLogLevel(process.env.LOG_LEVEL!);
+        const consoleLogLevel: LogLevel = FlagExtensions.fromStringList(
+          process.env.LOG_LEVELS,
+          LogLevel,
+        );
+
+        const rollbarLogLevel = FlagExtensions.fromStringList(
+          process.env.ROLLBAR_LOG_LEVELS,
+          LogLevel,
+        );
+
         const consoleLogger = new ConsoleLogger('App');
         const logger = new NestJsLogger(
-          logLevel,
+          consoleLogLevel,
+          rollbarLogLevel,
           'App',
           consoleLogger,
           rollbar,

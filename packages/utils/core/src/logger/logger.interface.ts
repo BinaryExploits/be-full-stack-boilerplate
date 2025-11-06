@@ -19,4 +19,7 @@ export interface ILogger {
 
   error(message: any): void;
   error(message: any, stack?: string, ...optionalParams: any[]): void;
+
+  critical(message: any): void;
+  critical(message: any, ...optionalParams: any[]): void;
 }

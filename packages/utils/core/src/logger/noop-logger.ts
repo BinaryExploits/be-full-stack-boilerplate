@@ -32,4 +32,8 @@ export class NoopLogger extends BaseLogger {
   error(_: any): void;
   error(_: any, ...__: any[]): void;
   error(_: any, ...__: any[]): void {}
+
+  critical(_: any): void;
+  critical(_: any, ...__: any[]): void;
+  critical(_: unknown, ...__: unknown[]): void {}
 }

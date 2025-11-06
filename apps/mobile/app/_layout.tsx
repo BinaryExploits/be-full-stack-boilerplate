@@ -7,10 +7,10 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { Platform } from "react-native";
 import "react-native-reanimated";
-
 import { useColorScheme } from "@/hooks/use-color-scheme";
-import TrpcProvider from "@repo/trpc/TrpcProvider";
-import { LoggerProvider } from "@repo/ui/LoggerProvider";
+import TrpcProvider from "@repo/trpc/trpc-provider";
+import { LoggerProvider } from "@repo/ui/logger-provider";
+import { FlagExtensions, LogLevel } from "@repo/utils-core";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -24,7 +24,12 @@ export default function RootLayout() {
             : process.env.EXPO_PUBLIC_TRPC_URL!
         }
       >
-        <LoggerProvider>
+        <LoggerProvider
+          logLevel={FlagExtensions.fromStringList(
+            process.env.EXPO_PUBLIC_LOG_LEVELS,
+            LogLevel,
+          )}
+        >
           <Stack
             screenOptions={{
               headerShown: false,

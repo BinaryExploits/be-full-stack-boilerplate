@@ -3,38 +3,48 @@ import { BaseLogger } from "./base-logger";
 import { StringExtensions } from "../extensions";
 
 export class DefaultLogger extends BaseLogger {
-  public constructor(logLevel: LogLevel) {
+  static create(logLevel: LogLevel): DefaultLogger {
+    return new DefaultLogger(logLevel);
+  }
+
+  protected constructor(logLevel: LogLevel) {
     super(logLevel);
   }
 
   info(message: any): void;
   info(message: any, ...optionalParams: any[]): void;
-  info(message: string, ...optionalParams: unknown[]): void {
-    this.writeLog(LogLevel.INFO, message, ...optionalParams);
+  info(message: any, ...optionalParams: unknown[]): void {
+    this.writeLog(LogLevel.Info, message, ...optionalParams);
   }
 
   warn(message: any): void;
   warn(message: any, ...optionalParams: any[]): void;
-  warn(message: string, ...optionalParams: unknown[]): void {
-    this.writeLog(LogLevel.WARN, message, ...optionalParams);
+  warn(message: any, ...optionalParams: unknown[]): void {
+    this.writeLog(LogLevel.Warn, message, ...optionalParams);
   }
 
   debug(message: any): void;
   debug(message: any, ...optionalParams: any[]): void;
-  debug(message: string, ...optionalParams: unknown[]): void {
-    this.writeLog(LogLevel.DEBUG, message, ...optionalParams);
+  debug(message: any, ...optionalParams: unknown[]): void {
+    this.writeLog(LogLevel.Debug, message, ...optionalParams);
   }
 
   trace(message: any): void;
   trace(message: any, ...optionalParams: any[]): void;
-  trace(message: string, ...optionalParams: unknown[]): void {
-    this.writeLog(LogLevel.TRACE, message, ...optionalParams);
+  trace(message: any, ...optionalParams: unknown[]): void {
+    this.writeLog(LogLevel.Trace, message, ...optionalParams);
   }
 
   error(message: any): void;
   error(message: any, ...optionalParams: any[]): void;
-  error(message: string, ...optionalParams: unknown[]): void {
-    this.writeLog(LogLevel.ERROR, message, ...optionalParams);
+  error(message: any, ...optionalParams: unknown[]): void {
+    this.writeLog(LogLevel.Error, message, ...optionalParams);
+  }
+
+  critical(message: any): void;
+  critical(message: any, ...optionalParams: any[]): void;
+  critical(message: any, ...optionalParams: unknown[]): void {
+    this.writeLog(LogLevel.Critical, message, ...optionalParams);
   }
 
   private formatLog(
@@ -52,7 +62,7 @@ export class DefaultLogger extends BaseLogger {
       hour12: true,
     });
 
-    const level = LogLevel[logLevel];
+    const level: string = LogLevel[logLevel];
 
     return [
       `[${timestamp}] [${level}]`,
@@ -71,22 +81,27 @@ export class DefaultLogger extends BaseLogger {
   ): void {
     if (!this.shouldLog(logLevel)) return;
 
-    const formattedLog = this.formatLog(logLevel, message, ...optionalParams);
+    const formattedLog: unknown[] = this.formatLog(
+      logLevel,
+      message,
+      ...optionalParams,
+    );
 
     switch (logLevel) {
-      case LogLevel.INFO:
+      case LogLevel.Info:
         console.log(...formattedLog);
         break;
-      case LogLevel.WARN:
+      case LogLevel.Warn:
         console.warn(...formattedLog);
         break;
-      case LogLevel.DEBUG:
+      case LogLevel.Debug:
         console.debug(...formattedLog);
         break;
-      case LogLevel.TRACE:
+      case LogLevel.Trace:
         console.trace(...formattedLog);
         break;
-      case LogLevel.ERROR:
+      case LogLevel.Error:
+      case LogLevel.Critical:
         console.error(...formattedLog);
         break;
       default:
