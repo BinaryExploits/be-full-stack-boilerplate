@@ -378,6 +378,10 @@ importers:
       react:
         specifier: ^19.1.0
         version: 19.1.0
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
 
   packages/utils/core:
     devDependencies:

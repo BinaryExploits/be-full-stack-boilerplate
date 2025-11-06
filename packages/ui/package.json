@@ -5,10 +5,17 @@
   "exports": {
     "./logger-provider": "./src/providers/logger-provider.tsx"
   },
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix"
+  },
   "peerDependencies": {
     "react": "^19.1.0"
   },
   "dependencies": {
     "@repo/utils-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*"
   }
 }
