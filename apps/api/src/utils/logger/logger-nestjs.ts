@@ -1,6 +1,6 @@
 import { ConsoleLogger } from '@nestjs/common';
 import { RollbarService } from '@andeanwide/nestjs-rollbar';
-import { BaseLogger, LogLevel } from '@repo/utils-core';
+import { BaseLogger, LogLevel, StringExtensions } from '@repo/utils-core';
 
 class NestJsLogger extends BaseLogger {
   private readonly context: string;
@@ -71,13 +71,14 @@ class NestJsLogger extends BaseLogger {
   ): void {
     if (!this.shouldLog(LogLevel.ERROR)) return;
 
-    const context =
-      this.tempContext.trim().length === 0 ? this.context : this.tempContext;
+    const context = StringExtensions.IsNullOrEmpty(this.tempContext)
+      ? this.context
+      : this.tempContext;
 
-    if (stack && stack.trim().length > 0) {
-      this.consoleLogger.error(message, ...optionalParams, stack, context);
-    } else {
+    if (StringExtensions.IsNullOrEmpty(stack)) {
       this.consoleLogger.error(message, context);
+    } else {
+      this.consoleLogger.error(message, ...optionalParams, stack, context);
     }
 
     this.sendToRollbar(LogLevel.ERROR, message, stack, ...optionalParams);
@@ -91,7 +92,7 @@ class NestJsLogger extends BaseLogger {
   ): void {
     const params: unknown[] = [
       ...optionalParams,
-      ...(this.tempContext.trim().length === 0
+      ...(StringExtensions.IsNullOrEmpty(this.tempContext)
         ? [this.context]
         : [this.tempContext]),
     ];
@@ -123,7 +124,7 @@ class NestJsLogger extends BaseLogger {
 
     try {
       const data: string = JSON.stringify([
-        ...(this.tempContext.trim().length === 0
+        ...(StringExtensions.IsNullOrEmpty(this.tempContext)
           ? [`[${this.context}]`]
           : [`[${this.tempContext}]`]),
         message,

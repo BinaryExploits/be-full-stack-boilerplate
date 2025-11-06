@@ -1,5 +1,6 @@
 import { LogLevel } from "./log-level";
 import { BaseLogger } from "./base-logger";
+import { StringExtensions } from "../extensions";
 
 export class DefaultLogger extends BaseLogger {
   public constructor(logLevel: LogLevel) {
@@ -55,7 +56,7 @@ export class DefaultLogger extends BaseLogger {
 
     return [
       `[${timestamp}] [${level}]`,
-      ...(this.tempContext.trim().length === 0
+      ...(StringExtensions.IsNullOrEmpty(this.tempContext)
         ? []
         : [`[${this.tempContext}]`]),
       message,
