@@ -30,6 +30,7 @@
     "clean": "rimraf node_modules .turbo && pnpm recursive exec rimraf dist .next web-build"
   },
   "devDependencies": {
+    "@dotenvx/dotenvx": "^1.51.1",
     "@tanstack/react-query": "5.76.1",
     "@trpc/client": "11.1.2",
     "@trpc/react-query": "11.1.2",
