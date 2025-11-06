@@ -4,9 +4,9 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "[ -e .env ] && set -a && . ./.env; next dev --turbopack",
+    "dev": "dotenvx run -- next dev --turbopack",
     "build": "next build",
-    "start": "[ -e .env ] && set -a && . ./.env; next start",
+    "start": "dotenvx run -- next start",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "check-types": "tsc --noEmit"

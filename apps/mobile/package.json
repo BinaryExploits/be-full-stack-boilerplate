@@ -4,12 +4,12 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "[ -e .env ] && set -a && . ./.env; expo start --port ${PORT}",
-    "dev": "[ -e .env ] && set -a && . ./.env; expo start --port ${PORT}",
+    "start": "dotenvx run -- cross-env-shell \"expo start --port $PORT\"",
+    "dev": "dotenvx run -- cross-env-shell \"expo start --port $PORT\"",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web",
+    "web": "dotenvx run -- cross-env-shell \"expo start --web --port $PORT\"",
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix"
   },
