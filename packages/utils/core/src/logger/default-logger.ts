@@ -41,7 +41,16 @@ export class DefaultLogger extends BaseLogger {
     message: any,
     ...optionalParams: unknown[]
   ): unknown[] {
-    const timestamp = new Date().toISOString();
+    const timestamp: string = new Date().toLocaleString("en-US", {
+      month: "2-digit",
+      day: "2-digit",
+      year: "numeric",
+      hour: "numeric",
+      minute: "2-digit",
+      second: "2-digit",
+      hour12: true,
+    });
+
     const level = LogLevel[logLevel];
 
     return [
