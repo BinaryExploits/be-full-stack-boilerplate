@@ -11,7 +11,7 @@ export class Logger {
 
   static get instance(): ILogger {
     if (!Logger._instance) {
-      Logger.setInstance(new NoopLogger(LogLevel.Info));
+      Logger.setInstance(NoopLogger.create(LogLevel.None));
     }
 
     return Logger._instance;

@@ -4,6 +4,10 @@ import { BaseLogger } from "./base-logger";
 import { LogLevel } from "./log-level";
 
 export class NoopLogger extends BaseLogger {
+  static create(logLevel: LogLevel): NoopLogger {
+    return new NoopLogger(logLevel);
+  }
+
   public constructor(logLevel: LogLevel) {
     super(logLevel);
   }

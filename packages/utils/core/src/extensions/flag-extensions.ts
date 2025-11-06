@@ -1,6 +1,6 @@
 export class FlagExtensions {
   /**
-   * Check if a flag is set
+   * Check if value has the flag set
    */
   static has(value: number, flag: number): boolean {
     return (value & flag) === flag;
@@ -29,12 +29,12 @@ export class FlagExtensions {
     enumObj: T,
   ): T[keyof T] {
     if (!input?.trim()) return 0 as T[keyof T];
-    const flagVal = enumObj[input.trim() as keyof T];
+    const flagVal: T[keyof T] = enumObj[input.trim() as keyof T];
     return (typeof flagVal === "number" ? flagVal : 0) as T[keyof T];
   }
 
   /**
-   * Parse a numeric flag (like 4) into its string name.
+   * Parse a numeric flag into its string name.
    * Returns an empty string if not found.
    */
   static parseFlag<T extends Record<string, string | number>>(
@@ -58,7 +58,7 @@ export class FlagExtensions {
   ): string[] {
     const result: string[] = [];
     for (const [key, val] of Object.entries(enumObj)) {
-      if (typeof val === "number" && val !== 0 && (value & val) === val) {
+      if (typeof val === "number" && val !== 0 && this.has(value, val)) {
         result.push(key);
       }
     }

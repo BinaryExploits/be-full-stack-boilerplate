@@ -63,7 +63,6 @@ export class DefaultLogger extends BaseLogger {
     });
 
     const level: string = LogLevel[logLevel];
-
     return [
       `[${timestamp}] [${level}]`,
       ...(StringExtensions.IsNullOrEmpty(this.tempContext)

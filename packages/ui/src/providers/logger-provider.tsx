@@ -9,8 +9,7 @@ import React from "react";
 
 export function LoggerProvider({ logLevel, children,
 }: Readonly<{ logLevel: LogLevel, children: React.ReactNode }>) {
-  //TODO: create a factory to logger instances
   Logger.setInstance(DefaultLogger.create(logLevel));
-  Logger.instance.info(`LoggerProvider rendered, Logger ${DefaultLogger.name}`);
+  Logger.instance.info(`${LoggerProvider.name} rendered, with ${DefaultLogger.name}`);
   return <>{children}</>;
 }

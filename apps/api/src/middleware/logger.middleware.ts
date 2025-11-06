@@ -15,7 +15,7 @@ export class LoggerMiddleware implements NestMiddleware {
     Logger.instance.info(message);
 
     // Log ALL headers for debugging
-    // this.logger.debug('All Headers:', JSON.stringify(headers, null, 2));
+    // Logger.instance.debug('All Headers:', JSON.stringify(headers, null, 2));
 
     res.on('finish', () => {
       const { statusCode } = res;

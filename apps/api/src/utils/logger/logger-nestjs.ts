@@ -70,7 +70,7 @@ class NestJsLogger extends BaseLogger {
     message: any,
     ...optionalParams: unknown[]
   ): void {
-    this.routeToConsole(level, message, ...optionalParams);
+    this.writeToConsole(level, message, ...optionalParams);
     this.sendToRollbar(level, message, ...optionalParams);
     this.clearTempContext();
   }
@@ -86,26 +86,7 @@ class NestJsLogger extends BaseLogger {
     this.clearTempContext();
   }
 
-  private writeErrorToConsole(
-    logLevel: LogLevel,
-    message: any,
-    stack?: string,
-    ...optionalParams: unknown[]
-  ) {
-    if (!this.shouldLog(logLevel)) return;
-
-    const context: string = StringExtensions.IsNullOrEmpty(this.tempContext)
-      ? this.context
-      : this.tempContext;
-
-    if (StringExtensions.IsNullOrEmpty(stack)) {
-      this.consoleLogger.error(message, context);
-    } else {
-      this.consoleLogger.error(message, ...optionalParams, stack, context);
-    }
-  }
-
-  private routeToConsole(
+  private writeToConsole(
     level: LogLevel,
     message: any,
     ...optionalParams: unknown[]
@@ -137,7 +118,26 @@ class NestJsLogger extends BaseLogger {
     }
   }
 
-  private shouldLogToRollbar(logLevel: LogLevel) {
+  private writeErrorToConsole(
+    logLevel: LogLevel,
+    message: any,
+    stack?: string,
+    ...optionalParams: unknown[]
+  ) {
+    if (!this.shouldLog(logLevel)) return;
+
+    const context: string = StringExtensions.IsNullOrEmpty(this.tempContext)
+      ? this.context
+      : this.tempContext;
+
+    if (StringExtensions.IsNullOrEmpty(stack)) {
+      this.consoleLogger.error(message, context);
+    } else {
+      this.consoleLogger.error(message, ...optionalParams, stack, context);
+    }
+  }
+
+  private shouldSendToRollbar(logLevel: LogLevel) {
     return FlagExtensions.has(this.rollbarLogLevel, logLevel);
   }
 
@@ -146,7 +146,7 @@ class NestJsLogger extends BaseLogger {
     message: any,
     ...optionalParams: unknown[]
   ): void {
-    if (!this.rollbar || !this.shouldLogToRollbar(level)) return;
+    if (!this.rollbar || !this.shouldSendToRollbar(level)) return;
 
     try {
       const data: string = JSON.stringify([
