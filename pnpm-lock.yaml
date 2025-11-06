@@ -162,6 +162,9 @@ importers:
       '@repo/trpc':
         specifier: workspace:*
         version: link:../../packages/trpc
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@repo/utils-core':
         specifier: workspace:*
         version: link:../../packages/utils/core
@@ -250,6 +253,9 @@ importers:
       '@repo/trpc':
         specifier: workspace:*
         version: link:../../packages/trpc
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@repo/utils-core':
         specifier: workspace:*
         version: link:../../packages/utils/core
@@ -360,6 +366,15 @@ importers:
         version: 3.25.5
 
   packages/typescript-config: {}
+
+  packages/ui:
+    dependencies:
+      '@repo/utils-core':
+        specifier: workspace:*
+        version: link:../utils/core
+      react:
+        specifier: ^19.1.0
+        version: 19.1.0
 
   packages/utils/core:
     devDependencies:

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import TrpcProvider from "@repo/trpc/TrpcProvider";
 import { DefaultLogger, Logger, LogLevel } from "@repo/utils-core";
-import { LoggerProvider } from "./providers/LoggerProvider";
+import { LoggerProvider } from "@repo/ui/LoggerProvider";
 
 export const metadata: Metadata = {
   title: "BE: Tech Stack",
@@ -14,9 +14,8 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  Logger.setInstance(new DefaultLogger(LogLevel.INFO));
-  Logger.instance.info("RootLayout");
-
+  Logger.setInstance(new DefaultLogger(LogLevel.INFO)); // for server-side rendering
+  Logger.instance.info("RootLayout rendered");
   return (
     <html lang="en">
       <body>

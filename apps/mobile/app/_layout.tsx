@@ -10,7 +10,7 @@ import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import TrpcProvider from "@repo/trpc/TrpcProvider";
-import { LoggerProvider } from "./providers/LoggerProvider";
+import { LoggerProvider } from "@repo/ui/LoggerProvider";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
