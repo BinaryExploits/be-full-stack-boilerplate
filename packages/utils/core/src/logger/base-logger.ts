@@ -1,5 +1,5 @@
-import { ILogger } from "./ILogger";
-import { LogLevel } from "./LogLevel";
+import { ILogger } from "./logger.interface";
+import { LogLevel } from "./log-level";
 
 export abstract class BaseLogger implements ILogger {
   public readonly logLevel: LogLevel;

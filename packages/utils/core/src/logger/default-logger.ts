@@ -1,5 +1,5 @@
-import { LogLevel } from "./LogLevel";
-import { BaseLogger } from "./BaseLogger";
+import { LogLevel } from "./log-level";
+import { BaseLogger } from "./base-logger";
 
 export class DefaultLogger extends BaseLogger {
   public constructor(logLevel: LogLevel) {

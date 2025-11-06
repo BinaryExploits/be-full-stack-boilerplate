@@ -1,6 +1,6 @@
-import { ILogger } from "./ILogger";
-import { NoopLogger } from "./NoopLogger";
-import { LogLevel } from "./LogLevel";
+import { ILogger } from "./logger.interface";
+import { NoopLogger } from "./noop-logger";
+import { LogLevel } from "./log-level";
 
 export class Logger {
   private static _instance: ILogger;

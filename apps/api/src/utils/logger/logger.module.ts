@@ -1,6 +1,6 @@
 import { Module, Global, ConsoleLogger } from '@nestjs/common';
 import { RollbarService } from '@andeanwide/nestjs-rollbar';
-import { NestJsLogger } from './NestJsLogger';
+import NestJsLogger from './logger-nestjs';
 import { LogLevel, Logger, parseLogLevel } from '@repo/utils-core';
 
 @Global()

@@ -1,4 +1,4 @@
-import { LogLevel } from "./LogLevel";
+import { LogLevel } from "./log-level";
 
 export interface ILogger {
   readonly logLevel: LogLevel;

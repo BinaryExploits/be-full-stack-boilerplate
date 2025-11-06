@@ -1,9 +1,8 @@
 import { ConsoleLogger } from '@nestjs/common';
 import { RollbarService } from '@andeanwide/nestjs-rollbar';
-import { LogLevel } from '@repo/utils-core';
-import { BaseLogger } from '@repo/utils-core/dist/logger/BaseLogger';
+import { LogLevel, BaseLogger } from '@repo/utils-core';
 
-export class NestJsLogger extends BaseLogger {
+class NestJsLogger extends BaseLogger {
   private readonly context: string;
   private readonly consoleLogger: ConsoleLogger;
   private readonly rollbar?: RollbarService;
@@ -25,6 +24,7 @@ export class NestJsLogger extends BaseLogger {
     this.info(`NestJsLogger initialized (Rollbar: ${!!rollbar})`, 'Param 2', {
       content: 'content',
     });
+
     this.withContext(NestJsLogger.name).info(
       `NestJsLogger initialized (Rollbar: ${!!rollbar})`,
     );
@@ -157,3 +157,5 @@ export class NestJsLogger extends BaseLogger {
     }
   }
 }
+
+export default NestJsLogger;

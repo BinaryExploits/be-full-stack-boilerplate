@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import { BaseLogger } from "./BaseLogger";
-import { LogLevel } from "./LogLevel";
+import { BaseLogger } from "./base-logger";
+import { LogLevel } from "./log-level";
 
 export class NoopLogger extends BaseLogger {
   public constructor(logLevel: LogLevel) {

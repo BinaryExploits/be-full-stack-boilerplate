@@ -1,4 +1,5 @@
-export type { ILogger } from "./ILogger";
-export { Logger } from "./Logger";
-export { LogLevel, parseLogLevel, getLogLevelName } from "./LogLevel";
-export { DefaultLogger } from "./DefaultLogger";
+export type { ILogger } from "./logger.interface";
+export { Logger } from "./static-logger";
+export { LogLevel, parseLogLevel, getLogLevelName } from "./log-level";
+export { DefaultLogger } from "./default-logger";
+export { BaseLogger } from "./base-logger";
