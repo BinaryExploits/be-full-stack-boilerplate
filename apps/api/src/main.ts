@@ -14,9 +14,25 @@ async function bootstrap() {
 
   const port = process.env.PORT ?? 4000;
   await app.listen(port);
+
+  Logger.instance.info(`Server is running on port ${port}`);
+  Logger.instance.withContext('My Context').error('MY ERROR');
+  Logger.instance.error('MY ERROR');
+
+  // throw new Error('ERROR NO CAUSE');
+
+  // throw new SyntaxError('ERROR WITH CAUSE', {
+  //   cause: "I'm a cause",
+  // });
 }
 
 bootstrap().catch((err: Error) => {
-  Logger.instance.error('Failed to start server:', err);
+  Logger.instance
+    .withContext(err.name)
+    .error(
+      err.message,
+      err.stack,
+      ...(err.cause ? ['Cause: ', err.cause] : []),
+    );
   process.exit(1);
 });

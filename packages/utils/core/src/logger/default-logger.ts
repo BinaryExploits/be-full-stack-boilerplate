@@ -6,12 +6,6 @@ export class DefaultLogger extends BaseLogger {
     super(logLevel);
   }
 
-  log(logLevel: LogLevel, message: any): void;
-  log(logLevel: LogLevel, message: any, ...optionalParams: any[]): void;
-  log(logLevel: LogLevel, message: string, ...optionalParams: unknown[]): void {
-    this.writeLog(logLevel, message, ...optionalParams);
-  }
-
   info(message: any): void;
   info(message: any, ...optionalParams: any[]): void;
   info(message: string, ...optionalParams: unknown[]): void {
@@ -52,7 +46,9 @@ export class DefaultLogger extends BaseLogger {
 
     return [
       `[${timestamp}] [${level}]`,
-      ...(this.tempContext.trim() !== "" ? [`[${this.tempContext}]`] : []),
+      ...(this.tempContext.trim().length === 0
+        ? []
+        : [`[${this.tempContext}]`]),
       message,
       ...optionalParams,
     ];

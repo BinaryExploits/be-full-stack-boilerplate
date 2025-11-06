@@ -22,13 +22,6 @@ export abstract class BaseLogger implements ILogger {
     return level <= this.logLevel;
   }
 
-  abstract log(logLevel: LogLevel, message: any): void;
-  abstract log(
-    logLevel: LogLevel,
-    message: any,
-    ...optionalParams: any[]
-  ): void;
-
   abstract info(message: any): void;
   abstract info(message: any, ...optionalParams: any[]): void;
 
@@ -42,5 +35,5 @@ export abstract class BaseLogger implements ILogger {
   abstract trace(message: any, ...optionalParams: any[]): void;
 
   abstract error(message: any): void;
-  abstract error(message: any, ...optionalParams: any[]): void;
+  abstract error(message: any, stack?: string, ...optionalParams: any[]): void;
 }

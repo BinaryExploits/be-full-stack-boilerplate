@@ -5,9 +5,6 @@ export interface ILogger {
 
   withContext(context: string): ILogger;
 
-  log(logLevel: LogLevel, message: any): void;
-  log(logLevel: LogLevel, message: any, ...optionalParams: any[]): void;
-
   info(message: any): void;
   info(message: any, ...optionalParams: any[]): void;
 
@@ -21,5 +18,5 @@ export interface ILogger {
   trace(message: any, ...optionalParams: any[]): void;
 
   error(message: any): void;
-  error(message: any, ...optionalParams: any[]): void;
+  error(message: any, stack?: string, ...optionalParams: any[]): void;
 }

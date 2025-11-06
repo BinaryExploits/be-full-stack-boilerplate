@@ -1,6 +1,6 @@
 import { ConsoleLogger } from '@nestjs/common';
 import { RollbarService } from '@andeanwide/nestjs-rollbar';
-import { LogLevel, BaseLogger } from '@repo/utils-core';
+import { BaseLogger, LogLevel } from '@repo/utils-core';
 
 class NestJsLogger extends BaseLogger {
   private readonly context: string;
@@ -14,37 +14,12 @@ class NestJsLogger extends BaseLogger {
     rollbar?: RollbarService,
   ) {
     super(logLevel);
+
     this.context = context;
     this.consoleLogger = consoleLogger;
     this.rollbar = rollbar;
 
     this.consoleLogger.setContext(this.context);
-    this.info(`NestJsLogger initialized (Rollbar: ${!!rollbar})`);
-    this.info(`NestJsLogger initialized (Rollbar: ${!!rollbar})`, 'Param 2');
-    this.info(`NestJsLogger initialized (Rollbar: ${!!rollbar})`, 'Param 2', {
-      content: 'content',
-    });
-
-    this.withContext(NestJsLogger.name).info(
-      `NestJsLogger initialized (Rollbar: ${!!rollbar})`,
-    );
-    this.withContext(NestJsLogger.name).info(
-      `NestJsLogger initialized (Rollbar: ${!!rollbar})`,
-      'Param 2',
-    );
-    this.withContext(NestJsLogger.name).info(
-      `NestJsLogger initialized (Rollbar: ${!!rollbar})`,
-      'Param 2',
-      {
-        content: 'content',
-      },
-    );
-  }
-
-  log(logLevel: LogLevel, message: any): void;
-  log(logLevel: LogLevel, message: any, ...optionalParams: any[]): void;
-  log(logLevel: LogLevel, message: any, ...optionalParams: unknown[]): void {
-    this.writeLog(logLevel, message, ...optionalParams);
   }
 
   info(message: any): void;
@@ -72,9 +47,9 @@ class NestJsLogger extends BaseLogger {
   }
 
   error(message: any): void;
-  error(message: any, ...optionalParams: any[]): void;
-  error(message: string, ...optionalParams: unknown[]): void {
-    this.writeLog(LogLevel.ERROR, message, ...optionalParams);
+  error(message: any, stack: string, ...optionalParams: any[]): void;
+  error(message: string, stack?: string, ...optionalParams: unknown[]): void {
+    this.writeError(message, stack, ...optionalParams);
   }
 
   private writeLog(
@@ -86,6 +61,27 @@ class NestJsLogger extends BaseLogger {
 
     this.routeToConsole(level, message, ...optionalParams);
     this.sendToRollbar(level, message, ...optionalParams);
+    this.clearTempContext();
+  }
+
+  private writeError(
+    message: any,
+    stack?: string,
+    ...optionalParams: unknown[]
+  ): void {
+    if (!this.shouldLog(LogLevel.ERROR)) return;
+
+    const context =
+      this.tempContext.trim().length === 0 ? this.context : this.tempContext;
+
+    if (stack && stack.trim().length > 0) {
+      this.consoleLogger.error(message, ...optionalParams, stack, context);
+    } else {
+      this.consoleLogger.error(message, context);
+    }
+
+    this.sendToRollbar(LogLevel.ERROR, message, stack, ...optionalParams);
+    this.clearTempContext();
   }
 
   private routeToConsole(
@@ -95,15 +91,14 @@ class NestJsLogger extends BaseLogger {
   ): void {
     const params: unknown[] = [
       ...optionalParams,
-      ...(this.tempContext.trim() !== '' ? [this.tempContext] : [this.context]),
+      ...(this.tempContext.trim().length === 0
+        ? [this.context]
+        : [this.tempContext]),
     ];
 
     switch (level) {
       case LogLevel.INFO:
         this.consoleLogger.log(message, ...params);
-        break;
-      case LogLevel.ERROR:
-        this.consoleLogger.error(message, ...params);
         break;
       case LogLevel.WARN:
         this.consoleLogger.warn(message, ...params);
@@ -128,9 +123,9 @@ class NestJsLogger extends BaseLogger {
 
     try {
       const data: string = JSON.stringify([
-        ...(this.tempContext.trim() !== ''
-          ? [`[${this.tempContext}]`]
-          : [`[${this.context}]`]),
+        ...(this.tempContext.trim().length === 0
+          ? [`[${this.context}]`]
+          : [`[${this.tempContext}]`]),
         message,
         ...optionalParams,
       ]);
@@ -149,8 +144,6 @@ class NestJsLogger extends BaseLogger {
         case LogLevel.TRACE:
           this.rollbar.log(data);
           break;
-        //   this.rollbar.critical(data); // capture exceptions in our exception handler and send to Rollbar
-        //   break;
       }
     } catch (err) {
       this.consoleLogger.error('Rollbar failed: ' + (err as Error).message);

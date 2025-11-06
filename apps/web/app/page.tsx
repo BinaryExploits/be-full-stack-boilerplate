@@ -11,6 +11,9 @@ export default function Home() {
   Logger.instance
     .withContext("Context")
     .info("Home", { message: "Home page" }, "Param 2");
+  const error = new Error("Error OP");
+  Logger.instance.error(error.message, error.stack, "Error OP PARAM 2");
+
   return <CrudTestUI />;
 }
 
