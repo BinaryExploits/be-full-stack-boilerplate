@@ -2,10 +2,9 @@
 
 import { useState } from "react";
 import { trpc } from "@repo/trpc/client";
-import { DefaultLogger, Logger, LogLevel } from "@repo/utils-core";
+import { Logger } from "@repo/utils-core";
 
 export default function Home() {
-  Logger.setInstance(new DefaultLogger(LogLevel.INFO));
   Logger.instance.info("Home");
   Logger.instance.info("Home", { message: "Home page" });
   Logger.instance

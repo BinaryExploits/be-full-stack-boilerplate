@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import TrpcProvider from "@repo/trpc/TrpcProvider";
+import { DefaultLogger, Logger, LogLevel } from "@repo/utils-core";
+import { LoggerProvider } from "./providers/LoggerProvider";
 
 export const metadata: Metadata = {
   title: "BE: Tech Stack",
@@ -12,11 +14,14 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  Logger.setInstance(new DefaultLogger(LogLevel.INFO));
+  Logger.instance.info("RootLayout");
+
   return (
     <html lang="en">
       <body>
         <TrpcProvider url={process.env.NEXT_PUBLIC_TRPC_URL!}>
-          {children}
+          <LoggerProvider>{children}</LoggerProvider>
         </TrpcProvider>
       </body>
     </html>

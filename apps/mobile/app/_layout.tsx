@@ -10,6 +10,7 @@ import "react-native-reanimated";
 
 import { useColorScheme } from "@/hooks/use-color-scheme";
 import TrpcProvider from "@repo/trpc/TrpcProvider";
+import { LoggerProvider } from "./providers/LoggerProvider";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -23,26 +24,28 @@ export default function RootLayout() {
             : process.env.EXPO_PUBLIC_TRPC_URL!
         }
       >
-        <Stack
-          screenOptions={{
-            headerShown: false,
-          }}
-        >
-          <Stack.Screen
-            name="index"
-            options={{
-              title: "CRUD",
+        <LoggerProvider>
+          <Stack
+            screenOptions={{
+              headerShown: false,
             }}
-          />
-          <Stack.Screen
-            name="modal"
-            options={{
-              presentation: "modal",
-              title: "Modal",
-            }}
-          />
-        </Stack>
-        <StatusBar style="auto" />
+          >
+            <Stack.Screen
+              name="index"
+              options={{
+                title: "CRUD",
+              }}
+            />
+            <Stack.Screen
+              name="modal"
+              options={{
+                presentation: "modal",
+                title: "Modal",
+              }}
+            />
+          </Stack>
+          <StatusBar style="auto" />
+        </LoggerProvider>
       </TrpcProvider>
     </ThemeProvider>
   );

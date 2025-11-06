@@ -180,7 +180,13 @@ interface CrudItem {
 }
 
 export default function CrudPage() {
-  Logger.instance.info("CrudPage", { message: "Crud page" });
+  Logger.instance.info("Home");
+  Logger.instance.info("Home", { message: "Home page" });
+  Logger.instance
+    .withContext("Context")
+    .info("Home", { message: "Home page" }, "Param 2");
+  const error = new Error("Error OP");
+  Logger.instance.error(error.message, error.stack, "Error OP PARAM 2");
 
   const utils = trpc.useUtils();
   const [content, setContent] = useState("");
