@@ -82,7 +82,12 @@ class NestJsLogger extends BaseLogger {
     ...optionalParams: unknown[]
   ): void {
     this.writeErrorToConsole(logLevel, message, stack, ...optionalParams);
-    this.sendToRollbar(logLevel, message, stack, ...optionalParams);
+    this.sendToRollbar(
+      logLevel,
+      message,
+      ...(stack ? [stack] : []),
+      ...optionalParams,
+    );
     this.clearTempContext();
   }
 
