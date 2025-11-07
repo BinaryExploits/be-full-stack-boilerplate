@@ -21,7 +21,7 @@ echo "Comparing against branch: $BASE_BRANCH"
 echo ""
 
 # Get list of changed files (excluding deleted files)
-CHANGED_FILES=$(git diff --name-only --diff-filter=d "$BASE_BRANCH"...HEAD)
+CHANGED_FILES=$(git diff --name-only --diff-filter=d $BASE_BRANCH...HEAD)
 
 if [ -z "$CHANGED_FILES" ]; then
   echo "No files changed compared to $BASE_BRANCH"
@@ -59,8 +59,9 @@ LINT_EXIT_CODE=0
 # Function to lint files in a workspace
 lint_workspace() {
   local workspace_dir=$1
-  local files=$2
-  local label=$3
+  local workspace_name=$2
+  local files=$3
+  local label=$4
 
   if [ -n "$files" ]; then
     echo "=== Linting $label files ==="
@@ -75,7 +76,7 @@ lint_workspace() {
     echo "Files: $RELATIVE_FILES"
     echo ""
 
-    if npx eslint "$RELATIVE_FILES" --max-warnings 0; then
+    if npx eslint $RELATIVE_FILES --max-warnings 0; then
       echo "✅ $label files passed linting"
     else
       echo "❌ $label files failed linting"
