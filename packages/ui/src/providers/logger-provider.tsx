@@ -7,9 +7,11 @@ export function LoggerProvider({
   logLevel,
   children,
 }: Readonly<{ logLevel: LogLevel; children: React.ReactNode }>) {
-  Logger.setInstance(DefaultLogger.create(logLevel));
-  Logger.instance.info(
-    `${LoggerProvider.name} rendered, with ${DefaultLogger.name}`,
-  );
+  if (!(Logger.instance instanceof DefaultLogger)) {
+    Logger.setInstance(DefaultLogger.create(logLevel));
+    Logger.instance.info(
+      `${LoggerProvider.name} initialized with ${DefaultLogger.name}`,
+    );
+  }
   return <>{children}</>;
 }
