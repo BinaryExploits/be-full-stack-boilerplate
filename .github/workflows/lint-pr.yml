@@ -1,0 +1,298 @@
+name: Lint PR Changes
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  issue_comment:
+    types: [created]
+
+jobs:
+  lint:
+    # Run on PR events or when the comment is "/linter" on a PR
+    if: |
+      github.event_name == 'pull_request' ||
+      (github.event_name == 'issue_comment' &&
+       github.event.issue.pull_request &&
+       contains(github.event.comment.body, '/linter'))
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
+
+    steps:
+      - name: Get PR details
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let prNumber, prRef;
+
+            if (context.eventName === 'pull_request') {
+              prNumber = context.payload.pull_request.number;
+              prRef = context.payload.pull_request.head.ref;
+            } else if (context.eventName === 'issue_comment') {
+              prNumber = context.payload.issue.number;
+              const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: prNumber
+              });
+              prRef = pr.head.ref;
+            }
+
+            core.setOutput('number', prNumber);
+            core.setOutput('ref', prRef);
+
+            return { prNumber, prRef };
+
+      - name: React to comment (if triggered by comment)
+        if: github.event_name == 'issue_comment'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.reactions.createForIssueComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              comment_id: context.payload.comment.id,
+              content: 'rocket'
+            });
+
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ steps.pr.outputs.ref }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9.0.0
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Get changed files
+        id: changed-files
+        run: |
+          # Fetch the base branch
+          git fetch origin ${{ github.base_ref || 'main' }}:${{ github.base_ref || 'main' }}
+
+          # Get list of changed files (excluding deleted files)
+          CHANGED_FILES=$(git diff --name-only --diff-filter=d origin/${{ github.base_ref || 'main' }}...HEAD)
+
+          # Filter to only lintable files (ts, tsx, js, jsx, mjs, cjs)
+          LINTABLE_FILES=$(echo "$CHANGED_FILES" | grep -E '\.(ts|tsx|js|jsx|mjs|cjs)$' || true)
+
+          # Remove empty lines, node_modules, and commonly ignored files
+          LINTABLE_FILES=$(echo "$LINTABLE_FILES" | grep -v 'node_modules' | grep -v '^$' | grep -v 'eslint.config' | grep -v '.eslintrc' || true)
+
+          if [ -z "$LINTABLE_FILES" ]; then
+            echo "No lintable files changed"
+            echo "has_files=false" >> $GITHUB_OUTPUT
+          else
+            echo "Changed lintable files:"
+            echo "$LINTABLE_FILES"
+            echo "has_files=true" >> $GITHUB_OUTPUT
+            # Save files to a temporary file for later use
+            echo "$LINTABLE_FILES" > /tmp/changed_files.txt
+          fi
+
+      - name: Run ESLint on changed files
+        if: steps.changed-files.outputs.has_files == 'true'
+        id: eslint
+        run: |
+          set +e  # Don't exit on error, we want to capture the output
+
+          # Read changed files
+          CHANGED_FILES=$(cat /tmp/changed_files.txt)
+
+          # Group files by workspace
+          API_FILES=$(echo "$CHANGED_FILES" | grep '^apps/api/' || true)
+          WEB_FILES=$(echo "$CHANGED_FILES" | grep '^apps/web/' || true)
+          MOBILE_FILES=$(echo "$CHANGED_FILES" | grep '^apps/mobile/' || true)
+          UTILS_FILES=$(echo "$CHANGED_FILES" | grep '^packages/utils/core/' || true)
+          UI_FILES=$(echo "$CHANGED_FILES" | grep '^packages/ui/' || true)
+
+          LINT_EXIT_CODE=0
+          LINT_OUTPUT=""
+
+          # Lint API files
+          if [ -n "$API_FILES" ]; then
+            echo "::group::Linting API files"
+            cd apps/api
+            for file in $API_FILES; do
+              RELATIVE_FILE=$(echo "$file" | sed 's|^apps/api/||')
+              RELATIVE_API_FILES="$RELATIVE_API_FILES $RELATIVE_FILE"
+            done
+            echo "Files: $RELATIVE_API_FILES"
+            API_OUTPUT=$(npx eslint $RELATIVE_API_FILES --max-warnings 0 2>&1) || API_EXIT=$?
+            if [ -n "$API_EXIT" ] && [ $API_EXIT -ne 0 ]; then
+              LINT_EXIT_CODE=1
+              LINT_OUTPUT="${LINT_OUTPUT}\n### API Linting Issues\n\`\`\`\n${API_OUTPUT}\n\`\`\`\n"
+              echo "$API_OUTPUT"
+            fi
+            cd ../..
+            echo "::end-group::"
+          fi
+
+          # Lint Web files
+          if [ -n "$WEB_FILES" ]; then
+            echo "::group::Linting Web files"
+            cd apps/web
+            for file in $WEB_FILES; do
+              RELATIVE_FILE=$(echo "$file" | sed 's|^apps/web/||')
+              RELATIVE_WEB_FILES="$RELATIVE_WEB_FILES $RELATIVE_FILE"
+            done
+            echo "Files: $RELATIVE_WEB_FILES"
+            WEB_OUTPUT=$(npx eslint $RELATIVE_WEB_FILES --max-warnings 0 2>&1) || WEB_EXIT=$?
+            if [ -n "$WEB_EXIT" ] && [ $WEB_EXIT -ne 0 ]; then
+              LINT_EXIT_CODE=1
+              LINT_OUTPUT="${LINT_OUTPUT}\n### Web Linting Issues\n\`\`\`\n${WEB_OUTPUT}\n\`\`\`\n"
+              echo "$WEB_OUTPUT"
+            fi
+            cd ../..
+            echo "::end-group::"
+          fi
+
+          # Lint Mobile files
+          if [ -n "$MOBILE_FILES" ]; then
+            echo "::group::Linting Mobile files"
+            cd apps/mobile
+            for file in $MOBILE_FILES; do
+              RELATIVE_FILE=$(echo "$file" | sed 's|^apps/mobile/||')
+              RELATIVE_MOBILE_FILES="$RELATIVE_MOBILE_FILES $RELATIVE_FILE"
+            done
+            echo "Files: $RELATIVE_MOBILE_FILES"
+            MOBILE_OUTPUT=$(npx eslint $RELATIVE_MOBILE_FILES --max-warnings 0 2>&1) || MOBILE_EXIT=$?
+            if [ -n "$MOBILE_EXIT" ] && [ $MOBILE_EXIT -ne 0 ]; then
+              LINT_EXIT_CODE=1
+              LINT_OUTPUT="${LINT_OUTPUT}\n### Mobile Linting Issues\n\`\`\`\n${MOBILE_OUTPUT}\n\`\`\`\n"
+              echo "$MOBILE_OUTPUT"
+            fi
+            cd ../..
+            echo "::end-group::"
+          fi
+
+          # Lint Utils files
+          if [ -n "$UTILS_FILES" ]; then
+            echo "::group::Linting Utils files"
+            cd packages/utils/core
+            for file in $UTILS_FILES; do
+              RELATIVE_FILE=$(echo "$file" | sed 's|^packages/utils/core/||')
+              RELATIVE_UTILS_FILES="$RELATIVE_UTILS_FILES $RELATIVE_FILE"
+            done
+            echo "Files: $RELATIVE_UTILS_FILES"
+            UTILS_OUTPUT=$(npx eslint $RELATIVE_UTILS_FILES --max-warnings 0 2>&1) || UTILS_EXIT=$?
+            if [ -n "$UTILS_EXIT" ] && [ $UTILS_EXIT -ne 0 ]; then
+              LINT_EXIT_CODE=1
+              LINT_OUTPUT="${LINT_OUTPUT}\n### Utils Linting Issues\n\`\`\`\n${UTILS_OUTPUT}\n\`\`\`\n"
+              echo "$UTILS_OUTPUT"
+            fi
+            cd ../../..
+            echo "::end-group::"
+          fi
+
+          # Lint UI files
+          if [ -n "$UI_FILES" ]; then
+            echo "::group::Linting UI files"
+            cd packages/ui
+            for file in $UI_FILES; do
+              RELATIVE_FILE=$(echo "$file" | sed 's|^packages/ui/||')
+              RELATIVE_UI_FILES="$RELATIVE_UI_FILES $RELATIVE_FILE"
+            done
+            echo "Files: $RELATIVE_UI_FILES"
+            UI_OUTPUT=$(npx eslint $RELATIVE_UI_FILES --max-warnings 0 2>&1) || UI_EXIT=$?
+            if [ -n "$UI_EXIT" ] && [ $UI_EXIT -ne 0 ]; then
+              LINT_EXIT_CODE=1
+              LINT_OUTPUT="${LINT_OUTPUT}\n### UI Linting Issues\n\`\`\`\n${UI_OUTPUT}\n\`\`\`\n"
+              echo "$UI_OUTPUT"
+            fi
+            cd ../..
+            echo "::end-group::"
+          fi
+
+          # Save output for comment
+          if [ $LINT_EXIT_CODE -ne 0 ]; then
+            echo "lint_failed=true" >> $GITHUB_OUTPUT
+            echo -e "$LINT_OUTPUT" > /tmp/lint_output.txt
+          else
+            echo "lint_failed=false" >> $GITHUB_OUTPUT
+          fi
+
+          exit $LINT_EXIT_CODE
+
+      - name: Comment on PR (Success)
+        if: |
+          always() &&
+          steps.changed-files.outputs.has_files == 'true' &&
+          steps.eslint.outputs.lint_failed != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.pr.outputs.number }},
+              body: '✅ All changed files passed linting checks!'
+            });
+
+      - name: Comment on PR (Failure)
+        if: |
+          always() &&
+          steps.changed-files.outputs.has_files == 'true' &&
+          steps.eslint.outputs.lint_failed == 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const lintOutput = fs.readFileSync('/tmp/lint_output.txt', 'utf8');
+
+            const body = `❌ Linting issues found in changed files:\n\n${lintOutput}\n\nPlease fix these issues before merging.`;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.pr.outputs.number }},
+              body: body
+            });
+
+      - name: Comment on PR (No files)
+        if: |
+          always() &&
+          steps.changed-files.outputs.has_files == 'false'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: ${{ steps.pr.outputs.number }},
+              body: 'ℹ️ No lintable files were changed in this PR.'
+            });
+
+      - name: Fail if linting failed
+        if: steps.eslint.outputs.lint_failed == 'true'
+        run: exit 1
