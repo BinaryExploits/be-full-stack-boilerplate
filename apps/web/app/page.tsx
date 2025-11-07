@@ -24,7 +24,7 @@ function CrudTestUI() {
   // Mutations
   const createCrud = trpc.crud.createCrud.useMutation({
     onSuccess: () => {
-      utils.crud.findAll.invalidate();
+      void utils.crud.findAll.invalidate();
       setContent("");
     },
   });
@@ -35,7 +35,7 @@ function CrudTestUI() {
 
   const updateCrud = trpc.crud.updateCrud?.useMutation({
     onSuccess: () => {
-      utils.crud.findAll.invalidate();
+      void utils.crud.findAll.invalidate();
       setEditingId(null);
       setEditingContent("");
     },

@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { trpc } from "@repo/trpc/client";
-import { Logger } from "@repo/utils-core";
 
 const styles = StyleSheet.create({
   container: {
