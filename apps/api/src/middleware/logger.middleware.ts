@@ -14,9 +14,6 @@ export class LoggerMiddleware implements NestMiddleware {
     const message = `${method || 'UNKNOWN'} ${url || '/'} - Origin: ${origin} - User-Agent: ${userAgent}`;
     Logger.instance.withContext('API Middleware').info(message);
 
-    // Log ALL headers for debugging
-    // Logger.instance.debug('All Headers:', JSON.stringify(headers, null, 2));
-
     res.on('finish', () => {
       const { statusCode } = res;
       Logger.instance
