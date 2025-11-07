@@ -165,6 +165,9 @@ importers:
       '@repo/trpc':
         specifier: workspace:*
         version: link:../../packages/trpc
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@repo/utils-core':
         specifier: workspace:*
         version: link:../../packages/utils/core
@@ -253,6 +256,9 @@ importers:
       '@repo/trpc':
         specifier: workspace:*
         version: link:../../packages/trpc
+      '@repo/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
       '@repo/utils-core':
         specifier: workspace:*
         version: link:../../packages/utils/core
@@ -364,7 +370,24 @@ importers:
 
   packages/typescript-config: {}
 
-  packages/utils/core: {}
+  packages/ui:
+    dependencies:
+      '@repo/utils-core':
+        specifier: workspace:*
+        version: link:../utils/core
+      react:
+        specifier: ^19.1.0
+        version: 19.1.0
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+
+  packages/utils/core:
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../../eslint-config
 
 packages:
 

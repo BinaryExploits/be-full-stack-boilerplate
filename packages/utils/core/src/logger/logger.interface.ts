@@ -1,8 +1,9 @@
-import { LogLevel } from './LogLevel';
+import { LogLevel } from "./log-level";
 
 export interface ILogger {
-  log(logLevel: LogLevel, message: any): void;
-  log(logLevel: LogLevel, message: any, ...optionalParams: any[]): void;
+  readonly logLevel: LogLevel;
+
+  withContext(context: string): ILogger;
 
   info(message: any): void;
   info(message: any, ...optionalParams: any[]): void;
@@ -14,9 +15,11 @@ export interface ILogger {
   debug(message: any, ...optionalParams: any[]): void;
 
   trace(message: any): void;
-  trace(message: any, context: string, ...optionalParams: any[]): void;
   trace(message: any, ...optionalParams: any[]): void;
 
   error(message: any): void;
-  error(message: any, ...optionalParams: any[]): void;
+  error(message: any, stack?: string, ...optionalParams: any[]): void;
+
+  critical(message: any): void;
+  critical(message: any, ...optionalParams: any[]): void;
 }

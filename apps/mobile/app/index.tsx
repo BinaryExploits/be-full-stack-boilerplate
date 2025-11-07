@@ -9,7 +9,6 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { trpc } from "@repo/trpc/client";
-import { Logger } from "@repo/utils-core";
 
 const styles = StyleSheet.create({
   container: {
@@ -180,8 +179,6 @@ interface CrudItem {
 }
 
 export default function CrudPage() {
-  Logger.instance.info("CrudPage", { message: "Crud page" });
-
   const utils = trpc.useUtils();
   const [content, setContent] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);

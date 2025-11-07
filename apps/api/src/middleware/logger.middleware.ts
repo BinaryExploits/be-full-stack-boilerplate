@@ -12,14 +12,13 @@ export class LoggerMiddleware implements NestMiddleware {
     const userAgent = headers?.['user-agent'] || 'Unknown';
 
     const message = `${method || 'UNKNOWN'} ${url || '/'} - Origin: ${origin} - User-Agent: ${userAgent}`;
-    Logger.instance.info(message);
-
-    // Log ALL headers for debugging
-    // this.logger.debug('All Headers:', JSON.stringify(headers, null, 2));
+    Logger.instance.withContext('API Middleware').info(message);
 
     res.on('finish', () => {
       const { statusCode } = res;
-      Logger.instance.info(`Response: ${statusCode || 'UNKNOWN'}`);
+      Logger.instance
+        .withContext('API Middleware')
+        .info(`Response: ${statusCode || 'UNKNOWN'}`);
     });
 
     next();

@@ -2,10 +2,8 @@
 
 import { useState } from "react";
 import { trpc } from "@repo/trpc/client";
-import { Logger } from "@repo/utils-core";
 
 export default function Home() {
-  Logger.instance.info("Home", { message: "Home page" });
   return <CrudTestUI />;
 }
 
@@ -26,7 +24,7 @@ function CrudTestUI() {
   // Mutations
   const createCrud = trpc.crud.createCrud.useMutation({
     onSuccess: () => {
-      utils.crud.findAll.invalidate();
+      void utils.crud.findAll.invalidate();
       setContent("");
     },
   });
@@ -37,7 +35,7 @@ function CrudTestUI() {
 
   const updateCrud = trpc.crud.updateCrud?.useMutation({
     onSuccess: () => {
-      utils.crud.findAll.invalidate();
+      void utils.crud.findAll.invalidate();
       setEditingId(null);
       setEditingContent("");
     },

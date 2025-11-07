@@ -16,7 +16,13 @@ import { LoggerModule } from './utils/logger/logger.module';
     }),
     RollbarModule.register({
       accessToken: process.env.ROLLBAR_ACCESS_TOKEN!,
-      environment: 'development',
+      // @ts-expect-error (rollbar config allow any string)
+      environment:
+        (process.env.NODE_ENV as
+          | 'development'
+          | 'production'
+          | 'staging'
+          | 'testing') || 'development',
     }),
     LoggerModule,
     TRPCModule.forRoot({
