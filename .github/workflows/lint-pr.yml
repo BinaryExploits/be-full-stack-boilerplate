@@ -129,109 +129,70 @@ jobs:
           # Read changed files
           CHANGED_FILES=$(cat /tmp/changed_files.txt)
 
-          # Group files by workspace
-          API_FILES=$(echo "$CHANGED_FILES" | grep '^apps/api/' || true)
-          WEB_FILES=$(echo "$CHANGED_FILES" | grep '^apps/web/' || true)
-          MOBILE_FILES=$(echo "$CHANGED_FILES" | grep '^apps/mobile/' || true)
-          UTILS_FILES=$(echo "$CHANGED_FILES" | grep '^packages/utils/core/' || true)
-          UI_FILES=$(echo "$CHANGED_FILES" | grep '^packages/ui/' || true)
+          # Dynamically discover workspaces using pnpm
+          echo "Discovering workspaces..."
+          WORKSPACES=$(pnpm list -r --depth -1 --parseable 2>/dev/null | grep -v "^$(pwd)$" || true)
+
+          if [ -z "$WORKSPACES" ]; then
+            echo "No workspaces found"
+            exit 0
+          fi
+
+          echo "Found workspaces:"
+          echo "$WORKSPACES"
 
           LINT_EXIT_CODE=0
           LINT_OUTPUT=""
+          FAILED_WORKSPACES=""
+          REPO_ROOT=$(pwd)
 
-          # Lint API files
-          if [ -n "$API_FILES" ]; then
-            echo "::group::Linting API files"
-            cd apps/api
-            for file in $API_FILES; do
-              RELATIVE_FILE=$(echo "$file" | sed 's|^apps/api/||')
-              RELATIVE_API_FILES="$RELATIVE_API_FILES $RELATIVE_FILE"
-            done
-            echo "Files: $RELATIVE_API_FILES"
-            API_OUTPUT=$(npx eslint $RELATIVE_API_FILES --max-warnings 0 2>&1) || API_EXIT=$?
-            if [ -n "$API_EXIT" ] && [ $API_EXIT -ne 0 ]; then
-              LINT_EXIT_CODE=1
-              LINT_OUTPUT="${LINT_OUTPUT}\n### API Linting Issues\n\`\`\`\n${API_OUTPUT}\n\`\`\`\n"
-              echo "$API_OUTPUT"
-            fi
-            cd ../..
-            echo "::end-group::"
-          fi
+          # Process each workspace - continue even if one fails
+          while IFS= read -r workspace_path; do
+            workspace_name=$(basename "$workspace_path")
 
-          # Lint Web files
-          if [ -n "$WEB_FILES" ]; then
-            echo "::group::Linting Web files"
-            cd apps/web
-            for file in $WEB_FILES; do
-              RELATIVE_FILE=$(echo "$file" | sed 's|^apps/web/||')
-              RELATIVE_WEB_FILES="$RELATIVE_WEB_FILES $RELATIVE_FILE"
-            done
-            echo "Files: $RELATIVE_WEB_FILES"
-            WEB_OUTPUT=$(npx eslint $RELATIVE_WEB_FILES --max-warnings 0 2>&1) || WEB_EXIT=$?
-            if [ -n "$WEB_EXIT" ] && [ $WEB_EXIT -ne 0 ]; then
-              LINT_EXIT_CODE=1
-              LINT_OUTPUT="${LINT_OUTPUT}\n### Web Linting Issues\n\`\`\`\n${WEB_OUTPUT}\n\`\`\`\n"
-              echo "$WEB_OUTPUT"
-            fi
-            cd ../..
-            echo "::end-group::"
-          fi
+            # Get relative path from repo root
+            workspace_relative_path=$(python3 -c "import os.path; print(os.path.relpath('$workspace_path', '$REPO_ROOT'))")
 
-          # Lint Mobile files
-          if [ -n "$MOBILE_FILES" ]; then
-            echo "::group::Linting Mobile files"
-            cd apps/mobile
-            for file in $MOBILE_FILES; do
-              RELATIVE_FILE=$(echo "$file" | sed 's|^apps/mobile/||')
-              RELATIVE_MOBILE_FILES="$RELATIVE_MOBILE_FILES $RELATIVE_FILE"
-            done
-            echo "Files: $RELATIVE_MOBILE_FILES"
-            MOBILE_OUTPUT=$(npx eslint $RELATIVE_MOBILE_FILES --max-warnings 0 2>&1) || MOBILE_EXIT=$?
-            if [ -n "$MOBILE_EXIT" ] && [ $MOBILE_EXIT -ne 0 ]; then
-              LINT_EXIT_CODE=1
-              LINT_OUTPUT="${LINT_OUTPUT}\n### Mobile Linting Issues\n\`\`\`\n${MOBILE_OUTPUT}\n\`\`\`\n"
-              echo "$MOBILE_OUTPUT"
-            fi
-            cd ../..
-            echo "::end-group::"
-          fi
+            # Find files in this workspace
+            workspace_files=$(echo "$CHANGED_FILES" | grep "^$workspace_relative_path/" || true)
 
-          # Lint Utils files
-          if [ -n "$UTILS_FILES" ]; then
-            echo "::group::Linting Utils files"
-            cd packages/utils/core
-            for file in $UTILS_FILES; do
-              RELATIVE_FILE=$(echo "$file" | sed 's|^packages/utils/core/||')
-              RELATIVE_UTILS_FILES="$RELATIVE_UTILS_FILES $RELATIVE_FILE"
-            done
-            echo "Files: $RELATIVE_UTILS_FILES"
-            UTILS_OUTPUT=$(npx eslint $RELATIVE_UTILS_FILES --max-warnings 0 2>&1) || UTILS_EXIT=$?
-            if [ -n "$UTILS_EXIT" ] && [ $UTILS_EXIT -ne 0 ]; then
-              LINT_EXIT_CODE=1
-              LINT_OUTPUT="${LINT_OUTPUT}\n### Utils Linting Issues\n\`\`\`\n${UTILS_OUTPUT}\n\`\`\`\n"
-              echo "$UTILS_OUTPUT"
-            fi
-            cd ../../..
-            echo "::end-group::"
-          fi
+            if [ -n "$workspace_files" ]; then
+              echo "::group::Linting $workspace_name ($workspace_relative_path)"
+              cd "$workspace_path"
 
-          # Lint UI files
-          if [ -n "$UI_FILES" ]; then
-            echo "::group::Linting UI files"
-            cd packages/ui
-            for file in $UI_FILES; do
-              RELATIVE_FILE=$(echo "$file" | sed 's|^packages/ui/||')
-              RELATIVE_UI_FILES="$RELATIVE_UI_FILES $RELATIVE_FILE"
-            done
-            echo "Files: $RELATIVE_UI_FILES"
-            UI_OUTPUT=$(npx eslint $RELATIVE_UI_FILES --max-warnings 0 2>&1) || UI_EXIT=$?
-            if [ -n "$UI_EXIT" ] && [ $UI_EXIT -ne 0 ]; then
-              LINT_EXIT_CODE=1
-              LINT_OUTPUT="${LINT_OUTPUT}\n### UI Linting Issues\n\`\`\`\n${UI_OUTPUT}\n\`\`\`\n"
-              echo "$UI_OUTPUT"
+              RELATIVE_FILES=""
+              for file in $workspace_files; do
+                RELATIVE_FILE=$(echo "$file" | sed "s|^$workspace_relative_path/||")
+                RELATIVE_FILES="$RELATIVE_FILES $RELATIVE_FILE"
+              done
+
+              echo "Files: $RELATIVE_FILES"
+
+              # Run eslint and capture output - don't stop on error
+              WORKSPACE_EXIT=0
+              WORKSPACE_OUTPUT=$(npx eslint $RELATIVE_FILES --max-warnings 0 2>&1) || WORKSPACE_EXIT=$?
+
+              if [ $WORKSPACE_EXIT -ne 0 ]; then
+                LINT_EXIT_CODE=1
+                LINT_OUTPUT="${LINT_OUTPUT}\n### ${workspace_name} ($workspace_relative_path) Linting Issues\n\`\`\`\n${WORKSPACE_OUTPUT}\n\`\`\`\n"
+                FAILED_WORKSPACES="${FAILED_WORKSPACES}- ${workspace_name} ($workspace_relative_path)\n"
+                echo "$WORKSPACE_OUTPUT"
+                echo "::warning::${workspace_name} linting failed, but continuing to check other workspaces..."
+              else
+                echo "✅ ${workspace_name} files passed linting"
+              fi
+
+              cd "$REPO_ROOT"
+              echo "::endgroup::"
             fi
-            cd ../..
-            echo "::end-group::"
+          done <<< "$WORKSPACES"
+
+          # Log summary of failed workspaces if any
+          if [ $LINT_EXIT_CODE -ne 0 ]; then
+            echo "::error::Linting failed in the following workspaces:"
+            echo -e "$FAILED_WORKSPACES" | while read line; do
+              [ -n "$line" ] && echo "::error::  $line"
+            done
           fi
 
           # Save output for comment

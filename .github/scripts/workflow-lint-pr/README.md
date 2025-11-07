@@ -16,8 +16,10 @@ The simplest way to test the linting logic locally:
 
 This script:
 - Simulates the exact logic from the GitHub Action
+- **Dynamically discovers all workspaces** from your pnpm-workspace.yaml configuration
 - Detects changed files compared to the base branch
-- Groups files by workspace
+- Groups files by workspace automatically
+- **Checks ALL workspaces and reports ALL errors** (doesn't stop at the first failure)
 - Runs ESLint on each workspace with only the changed files
 - Shows you exactly what would happen in CI
 
@@ -84,29 +86,22 @@ git diff --name-only --diff-filter=d origin/main...HEAD
 git diff --name-only --diff-filter=d origin/main...HEAD | grep -E '\.(ts|tsx|js|jsx|mjs|cjs)$'
 ```
 
-### Test Linting in Each Workspace
+### Test Linting in Workspaces
 
 ```bash
-# API
+# Discover all workspaces
+pnpm list -r --depth -1 --parseable
+
+# Test a specific workspace (example: api)
 cd apps/api
 npx eslint src/
 
-# Web
-cd apps/web
-npx eslint src/
-
-# Mobile
-cd apps/mobile
-npx eslint .
-
-# Utils
-cd packages/utils/core
-npx eslint src/
-
-# UI
+# Test another workspace (example: ui)
 cd packages/ui
 npx eslint src/
 ```
+
+**Note:** The workflow dynamically discovers all workspaces from `pnpm-workspace.yaml`, so you don't need to manually maintain a list. Any new workspace you add will automatically be included in linting.
 
 ## Recommended Testing Flow
 
@@ -116,9 +111,24 @@ npx eslint src/
 4. **Commit your changes**
 5. **Push and create a PR** the workflow will run automatically
 
+## Key Features
+
+### Dynamic Workspace Discovery
+The linting workflow automatically discovers all workspaces defined in your `pnpm-workspace.yaml`. This means:
+- **No hardcoded workspace paths** - add new workspaces without updating the workflow
+- **Automatic detection** - works with any monorepo structure
+- **Future-proof** - scales as your project grows
+
+### Comprehensive Error Reporting
+The workflow checks **all** workspaces with changed files and reports **all** errors:
+- **Doesn't stop at first failure** - continues checking remaining workspaces
+- **Complete error summary** - see all issues across all workspaces in one run
+- **Organized output** - errors grouped by workspace for easy identification
+
 ## Debugging Tips
 
 - Check that your branch has commits compared to main: `git log main..HEAD`
+- List all workspaces: `pnpm list -r --depth -1`
 - Verify ESLint configs are valid: `npx eslint --print-config apps/api/src/main.ts`
 - Test with verbose output: Add `--debug` to eslint commands
 - Check node_modules are installed: `pnpm install`

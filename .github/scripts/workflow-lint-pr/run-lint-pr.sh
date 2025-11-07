@@ -47,58 +47,85 @@ echo "Lintable files:"
 echo "$LINTABLE_FILES"
 echo ""
 
-# Group files by workspace
-API_FILES=$(echo "$LINTABLE_FILES" | grep '^apps/api/' || true)
-WEB_FILES=$(echo "$LINTABLE_FILES" | grep '^apps/web/' || true)
-MOBILE_FILES=$(echo "$LINTABLE_FILES" | grep '^apps/mobile/' || true)
-UTILS_FILES=$(echo "$LINTABLE_FILES" | grep '^packages/utils/core/' || true)
-UI_FILES=$(echo "$LINTABLE_FILES" | grep '^packages/ui/' || true)
+# Dynamically discover workspaces using pnpm
+echo "=== Discovering workspaces ==="
+WORKSPACES=$(pnpm list -r --depth -1 --parseable 2>/dev/null | grep -v "^$REPO_ROOT$" || true)
+
+if [ -z "$WORKSPACES" ]; then
+  echo "No workspaces found"
+  exit 0
+fi
+
+echo "Found workspaces:"
+echo "$WORKSPACES"
+echo ""
 
 LINT_EXIT_CODE=0
+FAILED_WORKSPACES=""
+ALL_LINT_OUTPUT=""
 
 # Function to lint files in a workspace
 lint_workspace() {
-  local workspace_dir=$1
-  local workspace_name=$2
-  local files=$3
-  local label=$4
+  local workspace_path=$1
+  # shellcheck disable=SC2155 # Local assignment and command substitution combined for readability
+  local workspace_name=$(basename "$workspace_path")
 
-  if [ -n "$files" ]; then
-    echo "=== Linting $label files ==="
-    cd "$REPO_ROOT/$workspace_dir"
+  # Get relative path from repo root
+  # shellcheck disable=SC2155 # Local assignment and command substitution combined for readability
+  local workspace_relative_path=$(realpath --relative-to="$REPO_ROOT" "$workspace_path" 2>/dev/null || python3 -c "import os.path; print(os.path.relpath('$workspace_path', '$REPO_ROOT'))")
+
+  # Find files in this workspace
+  # shellcheck disable=SC2155 # Local assignment and command substitution combined for readability
+  local workspace_files=$(echo "$LINTABLE_FILES" | grep "^$workspace_relative_path/" || true)
+
+  if [ -n "$workspace_files" ]; then
+    echo "=== Linting $workspace_name ($workspace_relative_path) ==="
+    cd "$workspace_path"
 
     RELATIVE_FILES=""
-    for file in $files; do
-      RELATIVE_FILE=$(echo "$file" | sed "s|^$workspace_dir/||")
+    for file in $workspace_files; do
+      # shellcheck disable=SC2001 # sed is more portable than parameter expansion for path manipulation
+      RELATIVE_FILE=$(echo "$file" | sed "s|^$workspace_relative_path/||")
       RELATIVE_FILES="$RELATIVE_FILES $RELATIVE_FILE"
     done
 
     echo "Files: $RELATIVE_FILES"
     echo ""
 
-    if npx eslint $RELATIVE_FILES --max-warnings 0; then
-      echo "✅ $label files passed linting"
+    # Capture output and exit code, but don't stop on failure
+    set +e
+    # shellcheck disable=SC2086 # Word splitting is intentional here to pass multiple files to eslint
+    WORKSPACE_OUTPUT=$(npx eslint $RELATIVE_FILES --max-warnings 0 2>&1)
+    WORKSPACE_EXIT_CODE=$?
+    set -e
+
+    if [ $WORKSPACE_EXIT_CODE -eq 0 ]; then
+      echo "✅ $workspace_name files passed linting"
     else
-      echo "❌ $label files failed linting"
+      echo "❌ $workspace_name files failed linting"
+      echo "$WORKSPACE_OUTPUT"
       LINT_EXIT_CODE=1
+      FAILED_WORKSPACES="$FAILED_WORKSPACES\n  - $workspace_name ($workspace_relative_path)"
+      ALL_LINT_OUTPUT="$ALL_LINT_OUTPUT\n\n### $workspace_name ($workspace_relative_path)\n$WORKSPACE_OUTPUT"
     fi
 
-    cd "$REPO_ROOT" > /dev/null
+    cd "$REPO_ROOT"
     echo ""
   fi
 }
 
-# Lint each workspace
-lint_workspace "apps/api" "api" "$API_FILES" "API"
-lint_workspace "apps/web" "web" "$WEB_FILES" "Web"
-lint_workspace "apps/mobile" "mobile" "$MOBILE_FILES" "Mobile"
-lint_workspace "packages/utils/core" "utils-core" "$UTILS_FILES" "Utils"
-lint_workspace "packages/ui" "ui" "$UI_FILES" "UI"
+# Lint each workspace dynamically - continue even if one fails
+for workspace_path in $WORKSPACES; do
+  lint_workspace "$workspace_path" || true
+done
 
 if [ $LINT_EXIT_CODE -eq 0 ]; then
   echo "=== ✅ All checks passed! ==="
 else
-  echo "=== ❌ Linting failed ==="
+  echo "=== ❌ Linting failed in the following workspaces: ==="
+  echo -e "$FAILED_WORKSPACES"
+  echo ""
+  echo "Review the output above for details on each workspace's issues."
 fi
 
 exit $LINT_EXIT_CODE
