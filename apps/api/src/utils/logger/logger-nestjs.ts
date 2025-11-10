@@ -136,7 +136,7 @@ class NestJsLogger extends BaseLogger {
       : this.tempContext;
 
     if (StringExtensions.IsNullOrEmpty(stack)) {
-      this.consoleLogger.error(message, context);
+      this.consoleLogger.error(message, ...optionalParams, context);
     } else {
       this.consoleLogger.error(message, ...optionalParams, stack, context);
     }

@@ -1,6 +1,7 @@
 import { LogLevel } from "./log-level";
 import { BaseLogger } from "./base-logger";
 import { StringExtensions } from "../extensions";
+import { DateExtensions } from "../extensions/date.extensions";
 
 export class DefaultLogger extends BaseLogger {
   static create(logLevel: LogLevel): DefaultLogger {
@@ -52,15 +53,7 @@ export class DefaultLogger extends BaseLogger {
     message: any,
     ...optionalParams: unknown[]
   ): unknown[] {
-    const timestamp: string = new Date().toLocaleString("en-US", {
-      month: "2-digit",
-      day: "2-digit",
-      year: "numeric",
-      hour: "numeric",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true,
-    });
+    const timestamp: string = DateExtensions.FormatAsTimestamp(new Date());
 
     const level: string = LogLevel[logLevel];
     return [
