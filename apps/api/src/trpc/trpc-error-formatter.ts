@@ -58,7 +58,7 @@ const httpStatusToTRPCErrorMap: Partial<
 
 const DEFAULT_TRPC_ERROR: TRPC_ERROR_CODE_KEY = 'INTERNAL_SERVER_ERROR';
 
-const mapHttpStatusToTRPCError = (status: HttpStatus): TRPC_ERROR_CODE_KEY =>
+const getTRPCErrorFromHttpStatus = (status: HttpStatus): TRPC_ERROR_CODE_KEY =>
   httpStatusToTRPCErrorMap[status] ?? DEFAULT_TRPC_ERROR;
 
 function buildFormattedError<T extends FormattedError['originalError']>(
@@ -78,7 +78,7 @@ function handleHttpError(cause: HttpException): FormattedError {
   const status: number = cause.getStatus();
   const response: string | object = cause.getResponse();
 
-  return buildFormattedError(cause, mapHttpStatusToTRPCError(status), {
+  return buildFormattedError(cause, getTRPCErrorFromHttpStatus(status), {
     httpStatus: status,
     httpStatusText: HttpStatus[status],
     response,
@@ -107,7 +107,7 @@ function handlePrismaError(
       clientVersion: cause.clientVersion,
     });
   } else if (cause instanceof PrismaClientValidationError) {
-    trpcCode = 'BAD_REQUEST';
+    trpcCode = getTRPCErrorFromHttpStatus(HttpStatus.BAD_REQUEST);
   } else if (
     cause instanceof PrismaClientUnknownRequestError ||
     cause instanceof PrismaClientRustPanicError ||
@@ -165,7 +165,7 @@ export function trpcErrorFormatter(opts: {
 }): TRPCErrorShapeType {
   const { error, type, path, shape, input } = opts;
   const formattedError: FormattedError = formatErrorForTRPC(error);
-  const logArguements = {
+  const logArguments = {
     errorType: formattedError.errorType,
     trpcCode: formattedError.trpcCode,
     procedureType: type,
@@ -177,7 +177,7 @@ export function trpcErrorFormatter(opts: {
 
   Logger.instance
     .withContext('TRPC Route')
-    .critical(error.message, logArguements);
+    .critical(error.message, logArguments);
 
   const baseData: TRPCErrorShapeType['data'] = {
     trpcCode: formattedError.trpcCode,
