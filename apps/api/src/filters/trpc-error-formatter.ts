@@ -10,23 +10,30 @@ import {
   PrismaClientValidationError,
 } from '@prisma/client/runtime/library';
 
-/**
- * tRPC error shape structure
- */
-export type TRPCErrorShapeType = TRPCErrorShape<{
-  code: string; // 'FORBIDDEN'
+type TRPCErrorShapeType = TRPCErrorShape<{
+  trpcCode: string; // 'FORBIDDEN'
   httpStatus?: number; // 403
   path?: string; // router.procedure
-  stack?: string;
-  timestamp: string; //  11/10/2025, 1:07:11 PM
+  timestamp: string; // 11/10/2025, 1:07:11 PM
   type: 'query' | 'mutation' | 'subscription' | 'unknown';
   errorType: string; // HttpException | TRPCError | Error
-  [key: string]: unknown;
+  stack?: string;
 }>;
 
-/**
- * Maps NestJS HttpStatus codes to tRPC error codes
- */
+type FormattedError = {
+  errorType: string;
+  originalError:
+    | Error
+    | TRPCError
+    | PrismaClientKnownRequestError
+    | PrismaClientUnknownRequestError
+    | PrismaClientValidationError
+    | PrismaClientRustPanicError
+    | PrismaClientInitializationError;
+  trpcCode: TRPC_ERROR_CODE_KEY;
+  metadata: Record<string, unknown>;
+};
+
 const httpStatusToTRPCErrorMap: Partial<
   Record<HttpStatus, TRPC_ERROR_CODE_KEY>
 > = {
@@ -51,27 +58,8 @@ const httpStatusToTRPCErrorMap: Partial<
 
 const DEFAULT_TRPC_ERROR: TRPC_ERROR_CODE_KEY = 'INTERNAL_SERVER_ERROR';
 
-export const mapHttpStatusToTRPCError = (
-  status: HttpStatus,
-): TRPC_ERROR_CODE_KEY =>
+const mapHttpStatusToTRPCError = (status: HttpStatus): TRPC_ERROR_CODE_KEY =>
   httpStatusToTRPCErrorMap[status] ?? DEFAULT_TRPC_ERROR;
-
-/**
- * Determines the original error type and extracts relevant information
- */
-type FormattedError = {
-  errorType: string;
-  originalError:
-    | Error
-    | TRPCError
-    | PrismaClientKnownRequestError
-    | PrismaClientUnknownRequestError
-    | PrismaClientValidationError
-    | PrismaClientRustPanicError
-    | PrismaClientInitializationError;
-  trpcCode: TRPC_ERROR_CODE_KEY;
-  metadata: Record<string, unknown>;
-};
 
 function buildFormattedError<T extends FormattedError['originalError']>(
   cause: T,
@@ -193,7 +181,7 @@ export function trpcErrorFormatter(opts: {
     .critical('Error in TRPC Procedure', logContext);
 
   const baseData: TRPCErrorShapeType['data'] = {
-    code: formattedError.trpcCode,
+    trpcCode: formattedError.trpcCode,
     httpStatus: shape.data.httpStatus,
     path: path ?? shape.data.path,
     stack: shape.data.stack,
