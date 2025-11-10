@@ -165,7 +165,7 @@ export function trpcErrorFormatter(opts: {
 }): TRPCErrorShapeType {
   const { error, type, path, shape, input } = opts;
   const formattedError: FormattedError = formatErrorForTRPC(error);
-  const logContext = {
+  const logArguements = {
     errorType: formattedError.errorType,
     trpcCode: formattedError.trpcCode,
     procedureType: type,
@@ -175,7 +175,9 @@ export function trpcErrorFormatter(opts: {
     stack: error.stack,
   };
 
-  Logger.instance.withContext('TRPC Route').critical(error.message, logContext);
+  Logger.instance
+    .withContext('TRPC Route')
+    .critical(error.message, logArguements);
 
   const baseData: TRPCErrorShapeType['data'] = {
     trpcCode: formattedError.trpcCode,

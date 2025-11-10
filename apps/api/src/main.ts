@@ -7,7 +7,7 @@ run().catch((err: Error) => {
   console.error(err);
   Logger.instance
     .withContext('Main.Run')
-    .error(
+    .critical(
       'Failed to start Platform API',
       err.stack,
       ...(err.cause ? ['Cause: ', err.cause] : []),
@@ -32,7 +32,7 @@ async function run() {
     const error = err as Error;
     Logger.instance
       .withContext('App')
-      .error(
+      .critical(
         'Application Crashed',
         error.stack,
         ...(error.cause ? ['Cause: ', error.cause] : []),
