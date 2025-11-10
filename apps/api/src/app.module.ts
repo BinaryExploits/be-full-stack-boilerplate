@@ -7,7 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AppContext } from './app.context';
 import { RollbarModule } from '@andeanwide/nestjs-rollbar';
 import { LoggerModule } from './utils/logger/logger.module';
-import { trpcErrorFormatter } from './filters/trpc-error-formatter';
+import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
 
 @Module({
   imports: [
