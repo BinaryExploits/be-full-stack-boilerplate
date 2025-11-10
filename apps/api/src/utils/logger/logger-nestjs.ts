@@ -149,35 +149,36 @@ class NestJsLogger extends BaseLogger {
   private sendToRollbar(
     level: LogLevel,
     message: any,
-    ...optionalParams: unknown[]
+    ...optionalParams: any[]
   ): void {
     if (!this.rollbar || !this.shouldSendToRollbar(level)) return;
 
     try {
-      const data: string = JSON.stringify([
-        ...(StringExtensions.IsNullOrEmpty(this.tempContext)
-          ? [`[${this.context}]`]
-          : [`[${this.tempContext}]`]),
-        message,
-        ...optionalParams,
-      ]);
+      const context: string = StringExtensions.IsNullOrEmpty(this.tempContext)
+        ? `[${this.context}]`
+        : `[${this.tempContext}]`;
+
+      const messageString: string =
+        typeof message === 'string'
+          ? `${context} ${message}`
+          : `${context} ${JSON.stringify(message)}`;
 
       switch (level) {
         case LogLevel.Info:
-          this.rollbar.info(data);
+          this.rollbar.info(messageString, optionalParams);
           break;
         case LogLevel.Error:
-          this.rollbar.error(data);
+          this.rollbar.error(messageString, optionalParams);
           break;
         case LogLevel.Warn:
-          this.rollbar.warn(data);
+          this.rollbar.warn(messageString, optionalParams);
           break;
         case LogLevel.Debug:
         case LogLevel.Trace:
-          this.rollbar.log(data);
+          this.rollbar.log(messageString, optionalParams);
           break;
         case LogLevel.Critical:
-          this.rollbar.critical(data);
+          this.rollbar.critical(messageString, optionalParams);
           break;
       }
     } catch (err) {
