@@ -1,6 +1,6 @@
-import { Logger } from '@repo/utils-core';
+import { Logger, DateExtensions } from '@repo/utils-core';
 import { TRPCError } from '@trpc/server';
-import { TRPC_ERROR_CODE_KEY } from '@trpc/server/rpc';
+import { TRPC_ERROR_CODE_KEY, TRPCErrorShape } from '@trpc/server/rpc';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import {
   PrismaClientKnownRequestError,
@@ -9,30 +9,27 @@ import {
   PrismaClientInitializationError,
   PrismaClientValidationError,
 } from '@prisma/client/runtime/library';
-import { DateExtensions } from '@repo/utils-core/dist/extensions/date.extensions';
 
 /**
  * tRPC error shape structure
  */
-interface TRPCErrorShape {
-  message: string; // Forbidden
-  code: TRPC_ERROR_CODE_KEY; // -32003
-  data: {
-    code: string; // 'FORBIDDEN'
-    httpStatus?: number; // 403
-    path?: string; // router.procedure
-    stack?: string;
-    timestamp: string; //  11/10/2025, 1:07:11 PM
-    type: 'query' | 'mutation' | 'subscription' | 'unknown';
-    errorType: string; // HttpException | TRPCError | Error
-    [key: string]: unknown;
-  };
-}
+export type TRPCErrorShapeType = TRPCErrorShape<{
+  code: string; // 'FORBIDDEN'
+  httpStatus?: number; // 403
+  path?: string; // router.procedure
+  stack?: string;
+  timestamp: string; //  11/10/2025, 1:07:11 PM
+  type: 'query' | 'mutation' | 'subscription' | 'unknown';
+  errorType: string; // HttpException | TRPCError | Error
+  [key: string]: unknown;
+}>;
 
 /**
  * Maps NestJS HttpStatus codes to tRPC error codes
  */
-const statusMap: Record<number, TRPC_ERROR_CODE_KEY> = {
+const httpStatusToTRPCErrorMap: Partial<
+  Record<HttpStatus, TRPC_ERROR_CODE_KEY>
+> = {
   [HttpStatus.BAD_REQUEST]: 'BAD_REQUEST',
   [HttpStatus.UNAUTHORIZED]: 'UNAUTHORIZED',
   [HttpStatus.FORBIDDEN]: 'FORBIDDEN',
@@ -52,16 +49,17 @@ const statusMap: Record<number, TRPC_ERROR_CODE_KEY> = {
   [HttpStatus.INTERNAL_SERVER_ERROR]: 'INTERNAL_SERVER_ERROR',
 };
 
-const trpcInternalErrorKey: TRPC_ERROR_CODE_KEY = 'INTERNAL_SERVER_ERROR';
+const DEFAULT_TRPC_ERROR: TRPC_ERROR_CODE_KEY = 'INTERNAL_SERVER_ERROR';
 
-const mapHttpStatusToTRPCCode = (status: HttpStatus): TRPC_ERROR_CODE_KEY => {
-  return statusMap[status] ?? trpcInternalErrorKey;
-};
+export const mapHttpStatusToTRPCError = (
+  status: HttpStatus,
+): TRPC_ERROR_CODE_KEY =>
+  httpStatusToTRPCErrorMap[status] ?? DEFAULT_TRPC_ERROR;
 
 /**
  * Determines the original error type and extracts relevant information
  */
-function analyzeError(error: TRPCError): {
+type FormattedError = {
   errorType: string;
   originalError:
     | Error
@@ -73,148 +71,142 @@ function analyzeError(error: TRPCError): {
     | PrismaClientInitializationError;
   trpcCode: TRPC_ERROR_CODE_KEY;
   metadata: Record<string, unknown>;
-} {
-  const cause: Error | undefined = error.cause;
+};
 
-  if (cause instanceof HttpException) {
-    const status: number = cause.getStatus();
-    const response: string | object = cause.getResponse();
-
-    return {
-      errorType: cause.constructor.name,
-      originalError: cause,
-      trpcCode: mapHttpStatusToTRPCCode(status),
-      metadata: {
-        httpStatus: status,
-        httpStatusText: HttpStatus[status],
-        response: response,
-        originalMessage: cause.message,
-      },
-    };
-  }
-
-  if (cause instanceof PrismaClientKnownRequestError) {
-    return {
-      errorType: cause.constructor.name,
-      originalError: cause,
-      trpcCode: trpcInternalErrorKey,
-      metadata: {
-        prismaCode: cause.code,
-        prismaMessage: cause.message,
-        meta: cause.meta,
-        clientVersion: cause.clientVersion,
-      },
-    };
-  }
-
-  if (cause instanceof PrismaClientUnknownRequestError) {
-    return {
-      errorType: cause.constructor.name,
-      originalError: cause,
-      trpcCode: trpcInternalErrorKey,
-      metadata: {
-        prismaMessage: cause.message,
-        clientVersion: cause.clientVersion,
-      },
-    };
-  }
-
-  if (cause instanceof PrismaClientValidationError) {
-    return {
-      errorType: cause.constructor.name,
-      originalError: cause,
-      trpcCode: 'BAD_REQUEST',
-      metadata: {
-        prismaMessage: cause.message,
-      },
-    };
-  }
-
-  if (
-    cause instanceof PrismaClientRustPanicError ||
-    cause instanceof PrismaClientInitializationError
-  ) {
-    return {
-      errorType: cause.constructor.name,
-      originalError: cause,
-      trpcCode: trpcInternalErrorKey,
-      metadata: {
-        prismaMessage: cause.message,
-        clientVersion: cause.clientVersion,
-      },
-    };
-  }
-
-  if (cause instanceof Error) {
-    return {
-      errorType: cause.constructor.name,
-      originalError: cause,
-      trpcCode: error.code,
-      metadata: {
-        originalMessage: cause.message,
-        name: cause.name,
-      },
-    };
-  }
-
+function buildFormattedError<T extends FormattedError['originalError']>(
+  cause: T,
+  trpcCode: TRPC_ERROR_CODE_KEY,
+  metadata: Record<string, unknown> = {},
+): FormattedError {
   return {
-    errorType: TRPCError.name,
-    originalError: error,
-    trpcCode: error.code,
-    metadata: {},
+    errorType: cause.constructor.name,
+    originalError: cause,
+    trpcCode,
+    metadata,
   };
 }
 
-/**
- * Comprehensive tRPC error formatter that handles:
- * - TRPCErrors
- * - NestJS HttpExceptions (with proper code mapping)
- * - Prisma errors
- * - Standard JavaScript errors
- * - Unknown errors
- */
+function handleHttpError(cause: HttpException): FormattedError {
+  const status: number = cause.getStatus();
+  const response: string | object = cause.getResponse();
+
+  return buildFormattedError(cause, mapHttpStatusToTRPCError(status), {
+    httpStatus: status,
+    httpStatusText: HttpStatus[status],
+    response,
+    originalMessage: cause.message,
+  });
+}
+
+function handlePrismaError(
+  cause:
+    | PrismaClientKnownRequestError
+    | PrismaClientUnknownRequestError
+    | PrismaClientValidationError
+    | PrismaClientRustPanicError
+    | PrismaClientInitializationError,
+): FormattedError {
+  const metadata: Record<string, unknown> = {
+    prismaMessage: cause.message,
+  };
+
+  let trpcCode: TRPC_ERROR_CODE_KEY = DEFAULT_TRPC_ERROR;
+
+  if (cause instanceof PrismaClientKnownRequestError) {
+    Object.assign(metadata, {
+      prismaCode: cause.code,
+      meta: cause.meta,
+      clientVersion: cause.clientVersion,
+    });
+  } else if (cause instanceof PrismaClientValidationError) {
+    trpcCode = 'BAD_REQUEST';
+  } else if (
+    cause instanceof PrismaClientUnknownRequestError ||
+    cause instanceof PrismaClientRustPanicError ||
+    cause instanceof PrismaClientInitializationError
+  ) {
+    Object.assign(metadata, {
+      clientVersion: cause.clientVersion,
+    });
+  }
+
+  return buildFormattedError(cause, trpcCode, metadata);
+}
+
+function handleGenericError(
+  cause: Error,
+  trpcCode: TRPC_ERROR_CODE_KEY,
+): FormattedError {
+  return buildFormattedError(cause, trpcCode, {
+    originalMessage: cause.message,
+    name: cause.name,
+  });
+}
+
+function formatErrorForTRPC(error: TRPCError): FormattedError {
+  const cause: Error | undefined = error.cause;
+
+  if (!cause) {
+    return handleGenericError(error, error.code);
+  }
+
+  if (cause instanceof HttpException) {
+    return handleHttpError(cause);
+  }
+
+  if (
+    cause instanceof PrismaClientKnownRequestError ||
+    cause instanceof PrismaClientUnknownRequestError ||
+    cause instanceof PrismaClientValidationError ||
+    cause instanceof PrismaClientRustPanicError ||
+    cause instanceof PrismaClientInitializationError
+  ) {
+    return handlePrismaError(cause);
+  }
+
+  return handleGenericError(cause, error.code);
+}
+
 export function trpcErrorFormatter(opts: {
   error: TRPCError;
   type: 'query' | 'mutation' | 'subscription' | 'unknown';
   path: string | undefined;
   input: unknown;
   ctx: unknown;
-  shape: TRPCErrorShape;
-}): TRPCErrorShape {
+  shape: TRPCErrorShapeType;
+}): TRPCErrorShapeType {
   const { error, type, path, shape, input } = opts;
-
-  const analysis = analyzeError(error);
-
+  const formattedError: FormattedError = formatErrorForTRPC(error);
   const logContext = {
     message: error.message,
-    errorType: analysis.errorType,
-    trpcCode: analysis.trpcCode,
+    errorType: formattedError.errorType,
+    trpcCode: formattedError.trpcCode,
     procedureType: type,
     procedurePath: path,
-    stack: error.stack,
-    ...analysis.metadata,
+    ...formattedError.metadata,
     input: process.env.NODE_ENV === 'development' ? input : '[REDACTED]',
+    stack: error.stack,
   };
 
   Logger.instance
     .withContext('TRPC Route')
     .critical('Error in TRPC Procedure', logContext);
 
-  const baseData: TRPCErrorShape['data'] = {
-    code: analysis.trpcCode,
+  const baseData: TRPCErrorShapeType['data'] = {
+    code: formattedError.trpcCode,
     httpStatus: shape.data.httpStatus,
     path: path ?? shape.data.path,
     stack: shape.data.stack,
     timestamp: DateExtensions.FormatAsTimestamp(new Date()),
     type,
-    errorType: analysis.errorType,
+    errorType: formattedError.errorType,
   };
 
   if (
-    analysis.metadata.httpStatus &&
-    typeof analysis.metadata.httpStatus === 'number'
+    formattedError.metadata.httpStatus &&
+    typeof formattedError.metadata.httpStatus === 'number'
   ) {
-    baseData.httpStatus = analysis.metadata.httpStatus;
+    baseData.httpStatus = formattedError.metadata.httpStatus;
   }
 
   return {
