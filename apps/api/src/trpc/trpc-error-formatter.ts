@@ -101,8 +101,8 @@ function buildFormattedError<T extends FormattedError['originalError']>(
     data: {
       code: trpcCodeKey,
       httpStatus: shape.data.httpStatus,
-      path: path ?? shape.data.path,
-      stack: shape.data.stack ?? error.stack,
+      path: path,
+      stack: error.stack,
     },
   };
 
