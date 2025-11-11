@@ -1,4 +1,4 @@
-import { Logger, DateExtensions } from '@repo/utils-core';
+import { Logger } from '@repo/utils-core';
 import { TRPCError } from '@trpc/server';
 import {
   TRPC_ERROR_CODE_KEY,
@@ -13,19 +13,16 @@ import {
   PrismaClientInitializationError,
   PrismaClientValidationError,
 } from '@prisma/client/runtime/library';
-import { AppContextType } from '../app.context';
 
 type TRPCErrorShapeType = TRPCErrorShape<{
-  trpcCodeKey: TRPC_ERROR_CODE_KEY; // 'FORBIDDEN'
-  errorType: string; // HttpException | TRPCError | Error
-  timestamp: string; // 11/10/2025, 1:07:11 PM
-  type: 'query' | 'mutation' | 'subscription' | 'unknown';
-  httpStatus?: number; // 403
+  code: TRPC_ERROR_CODE_KEY; // NOT_FOUND
+  httpStatus: number; // 404
   path?: string; // router.procedure
+  stack?: string; // at line(93, 3)
 }>;
 
-type ShapedError = {
-  shape: TRPCErrorShapeType;
+type FormattedError = {
+  errorShape: TRPCErrorShapeType;
   originalError:
     | Error
     | TRPCError
@@ -35,15 +32,12 @@ type ShapedError = {
     | PrismaClientRustPanicError
     | PrismaClientInitializationError;
   metadata: Record<string, unknown>;
-  stack?: string;
 };
 
 type TRPCErrorOptions = {
   error: TRPCError;
-  type: 'query' | 'mutation' | 'subscription' | 'unknown';
   path: string | undefined;
   input: unknown;
-  ctx: AppContextType;
   shape: TRPCErrorShapeType;
 };
 
@@ -74,30 +68,27 @@ const DEFAULT_TRPC_ERROR: TRPC_ERROR_CODE_KEY = 'INTERNAL_SERVER_ERROR';
 const getTRPCErrorFromHttpStatus = (status: HttpStatus): TRPC_ERROR_CODE_KEY =>
   httpStatusToTRPCErrorMap[status] ?? DEFAULT_TRPC_ERROR;
 
-function buildShapedError<T extends ShapedError['originalError']>(
+function buildFormattedError<T extends FormattedError['originalError']>(
   cause: T,
   trpcCodeKey: TRPC_ERROR_CODE_KEY,
   opts: TRPCErrorOptions,
   metadata: Record<string, unknown> = {},
-): ShapedError {
-  const { error, type, path, shape } = opts;
+): FormattedError {
+  const { error, path, shape } = opts;
   const errorShape: TRPCErrorShapeType = {
     code: TRPC_ERROR_CODES_BY_KEY[trpcCodeKey],
     message: shape.message,
     data: {
-      trpcCodeKey: trpcCodeKey,
+      code: trpcCodeKey,
       httpStatus: shape.data.httpStatus,
       path: path ?? shape.data.path,
-      timestamp: DateExtensions.FormatAsTimestamp(new Date()),
-      type: type,
-      errorType: cause.constructor.name,
+      stack: shape.data.stack ?? error.stack,
     },
   };
 
   return {
-    shape: errorShape,
+    errorShape: errorShape,
     originalError: cause,
-    stack: error.stack,
     metadata,
   };
 }
@@ -105,11 +96,11 @@ function buildShapedError<T extends ShapedError['originalError']>(
 function handleHttpError(
   cause: HttpException,
   opts: TRPCErrorOptions,
-): ShapedError {
+): FormattedError {
   const status: number = cause.getStatus();
   const response: string | object = cause.getResponse();
 
-  const shapedError: ShapedError = buildShapedError(
+  const formattedError: FormattedError = buildFormattedError(
     cause,
     getTRPCErrorFromHttpStatus(status),
     opts,
@@ -121,8 +112,8 @@ function handleHttpError(
     },
   );
 
-  shapedError.shape.data.httpStatus = status;
-  return shapedError;
+  formattedError.errorShape.data.httpStatus = status;
+  return formattedError;
 }
 
 function handlePrismaError(
@@ -133,7 +124,7 @@ function handlePrismaError(
     | PrismaClientRustPanicError
     | PrismaClientInitializationError,
   opts: TRPCErrorOptions,
-): ShapedError {
+): FormattedError {
   const metadata: Record<string, unknown> = {
     prismaMessage: cause.message,
   };
@@ -157,21 +148,21 @@ function handlePrismaError(
     });
   }
 
-  return buildShapedError(cause, trpcCode, opts, metadata);
+  return buildFormattedError(cause, trpcCode, opts, metadata);
 }
 
 function handleGenericTRPCError(
   cause: Error,
   trpcCodeKey: TRPC_ERROR_CODE_KEY,
   opts: TRPCErrorOptions,
-): ShapedError {
-  return buildShapedError(cause, trpcCodeKey, opts, {
+): FormattedError {
+  return buildFormattedError(cause, trpcCodeKey, opts, {
     name: cause.name,
     originalMessage: cause.message,
   });
 }
 
-function shapeErrorForTRPC(opts: TRPCErrorOptions): ShapedError {
+function getFormattedTRPCError(opts: TRPCErrorOptions): FormattedError {
   const { error } = opts;
   const cause: Error | undefined = error.cause;
 
@@ -197,16 +188,16 @@ function shapeErrorForTRPC(opts: TRPCErrorOptions): ShapedError {
 }
 
 export function trpcErrorFormatter(opts: TRPCErrorOptions): TRPCErrorShapeType {
+  const formattedError: FormattedError = getFormattedTRPCError(opts);
   const { input } = opts;
-  const shapedError: ShapedError = shapeErrorForTRPC(opts);
   const logArguments = {
     input: process.env.NODE_ENV === 'development' ? input : '[REDACTED]',
-    ...shapedError,
+    ...formattedError,
   };
 
   Logger.instance
     .withContext('TRPC Route')
-    .critical(shapedError.shape.message, logArguments);
+    .critical(formattedError.errorShape.message, logArguments);
 
-  return shapedError.shape;
+  return formattedError.errorShape;
 }
