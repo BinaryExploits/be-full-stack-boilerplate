@@ -2,6 +2,7 @@
   "name": "mobile",
   "main": "expo-router/entry",
   "version": "0.0.1",
+  "type": "module",
   "private": true,
   "scripts": {
     "start": "dotenvx run -- expo start",
