@@ -7,8 +7,8 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { router } from "expo-router";
+import { Logger } from "@repo/utils-core";
 import { authClient } from "./auth-client";
-import { useAuthLogic } from "@repo/ui/hooks";
 
 const styles = StyleSheet.create({
   container: {
@@ -150,12 +150,30 @@ const styles = StyleSheet.create({
 });
 
 export default function AuthDemo() {
-  const auth = useAuthLogic({
-    authClient,
-    callbackURL: "http://localhost:8081/auth-demo",
-  });
+  const { data: session, isPending } = authClient.useSession();
 
-  if (auth.isPending) {
+  const signInWithGoogle = async () => {
+    try {
+      const data = await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "http://localhost:8081/auth-demo",
+      });
+      Logger.instance.info("Sign in With Google", data);
+    } catch (error) {
+      Logger.instance.error(error);
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      await authClient.signOut();
+      Logger.instance.info("Signed out successfully");
+    } catch (error) {
+      Logger.instance.error(error);
+    }
+  };
+
+  if (isPending) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#111827" />
@@ -177,11 +195,11 @@ export default function AuthDemo() {
           <View style={styles.header}>
             <Text style={styles.title}>Better Auth Demo</Text>
             <Text style={styles.subtitle}>
-              {auth.session ? "Welcome back!" : "Sign in to continue"}
+              {session ? "Welcome back!" : "Sign in to continue"}
             </Text>
           </View>
 
-          {auth.session ? (
+          {session ? (
             <>
               <View style={styles.statusBadge}>
                 <Text style={styles.statusText}>✓ You are signed in</Text>
@@ -190,10 +208,10 @@ export default function AuthDemo() {
               <View style={styles.profileContainer}>
                 <Text style={styles.profileTitle}>User Information</Text>
 
-                {auth.session.user.image && (
+                {session.user.image && (
                   <View style={styles.imageContainer}>
                     <Image
-                      source={{ uri: auth.session.user.image }}
+                      source={{ uri: session.user.image }}
                       style={styles.profileImage}
                       resizeMode="cover"
                     />
@@ -203,25 +221,25 @@ export default function AuthDemo() {
                 <View style={styles.field}>
                   <Text style={styles.label}>Name</Text>
                   <Text style={styles.value}>
-                    {auth.session.user.name || "N/A"}
+                    {session.user.name || "N/A"}
                   </Text>
                 </View>
 
                 <View style={styles.field}>
                   <Text style={styles.label}>Email</Text>
-                  <Text style={styles.value}>{auth.session.user.email}</Text>
+                  <Text style={styles.value}>{session.user.email}</Text>
                 </View>
 
                 <View style={styles.field}>
                   <Text style={styles.label}>User ID</Text>
-                  <Text style={styles.value}>{auth.session.user.id}</Text>
+                  <Text style={styles.value}>{session.user.id}</Text>
                 </View>
               </View>
 
               <TouchableOpacity
                 style={styles.signOutButton}
                 onPress={() => {
-                  auth.signOut().catch(() => {});
+                  signOut().catch(() => {});
                 }}
               >
                 <Text style={styles.signOutButtonText}>Sign Out</Text>
@@ -231,7 +249,7 @@ export default function AuthDemo() {
             <TouchableOpacity
               style={styles.signInButton}
               onPress={() => {
-                auth.signInWithGoogle().catch(() => {});
+                signInWithGoogle().catch(() => {});
               }}
             >
               <Text style={styles.signInButtonText}>Sign in with Google</Text>

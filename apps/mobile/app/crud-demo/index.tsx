@@ -7,9 +7,14 @@ import {
   StyleSheet,
   ActivityIndicator,
 } from "react-native";
+import { useState } from "react";
 import { router } from "expo-router";
 import { trpc } from "@repo/trpc/client";
-import { useCrudLogic, CrudItem } from "@repo/ui/hooks";
+
+interface CrudItem {
+  id: number;
+  content: string;
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -181,6 +186,9 @@ const styles = StyleSheet.create({
 
 export default function CrudPage() {
   const utils = trpc.useUtils();
+  const [content, setContent] = useState("");
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingContent, setEditingContent] = useState("");
 
   // Queries
   const crudList = trpc.crud.findAll.useQuery(
@@ -195,7 +203,7 @@ export default function CrudPage() {
   const createCrud = trpc.crud.createCrud.useMutation({
     onSuccess: () => {
       void utils.crud.findAll.invalidate();
-      logic.setContent("");
+      setContent("");
     },
   });
 
@@ -206,40 +214,50 @@ export default function CrudPage() {
   const updateCrud = trpc.crud.updateCrud?.useMutation({
     onSuccess: () => {
       void utils.crud.findAll.invalidate();
-      logic.cancelEditing();
+      setEditingId(null);
+      setEditingContent("");
     },
   });
 
-  // Use shared logic
-  const logic = useCrudLogic({
-    trpcUtils: utils,
-    crudList,
-    createMutation: createCrud,
-    updateMutation: updateCrud,
-    deleteMutation: deleteCrud,
-  });
+  const handleCreate = () => {
+    if (!content.trim()) return;
+    createCrud.mutate({ content });
+  };
+
+  const handleUpdate = (id: number) => {
+    if (!editingContent.trim()) return;
+    updateCrud?.mutate({ id, data: { content: editingContent } });
+  };
+
+  const handleDelete = (id: number) => {
+    deleteCrud.mutate({ id });
+  };
+
+  const handleRefresh = () => {
+    void utils.crud.findAll.invalidate();
+  };
 
   const renderItem = ({ item }: { item: CrudItem }) => (
     <View style={styles.listItem}>
-      {logic.editingId === item.id ? (
+      {editingId === item.id ? (
         <>
           <TextInput
             style={styles.editInput}
-            value={logic.editingContent}
-            onChangeText={logic.setEditingContent}
+            value={editingContent}
+            onChangeText={setEditingContent}
             autoFocus
             placeholder="Edit item..."
             placeholderTextColor="#64748b"
           />
           <TouchableOpacity
-            onPress={() => logic.handleUpdate(item.id)}
-            disabled={!logic.editingContent.trim()}
+            onPress={() => handleUpdate(item.id)}
+            disabled={!editingContent.trim()}
             style={styles.deleteButton}
           >
             <Text style={{ color: "#10b981", fontSize: 20 }}>✓</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => logic.cancelEditing()}
+            onPress={() => setEditingId(null)}
             style={styles.deleteButton}
           >
             <Text style={{ color: "#ef4444", fontSize: 20 }}>✕</Text>
@@ -248,14 +266,17 @@ export default function CrudPage() {
       ) : (
         <>
           <TouchableOpacity
-            onPress={() => logic.startEditing(item.id, item.content)}
+            onPress={() => {
+              setEditingId(item.id);
+              setEditingContent(item.content);
+            }}
             style={{ flex: 1 }}
           >
             <Text style={styles.listItemText}>{item.content}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => logic.handleDelete(item.id)}
-            disabled={logic.isDeleting}
+            onPress={() => handleDelete(item.id)}
+            disabled={deleteCrud.isPending}
             style={styles.deleteButton}
           >
             <Text style={styles.deleteButtonText}>🗑</Text>
@@ -266,7 +287,7 @@ export default function CrudPage() {
   );
 
   const renderListContent = () => {
-    if (logic.isLoading) {
+    if (crudList.isLoading) {
       return (
         <View style={styles.loadingContainer}>
           <ActivityIndicator size="large" color="#60a5fa" />
@@ -274,16 +295,17 @@ export default function CrudPage() {
       );
     }
 
-    if (logic.items.length > 0) {
+    if (crudList.data && crudList.data.cruds.length > 0) {
       return (
         <>
           <View style={styles.listHeader}>
             <Text style={styles.listHeaderText}>
-              {logic.items.length} {logic.items.length === 1 ? "Item" : "Items"}
+              {crudList.data.cruds.length}{" "}
+              {crudList.data.cruds.length === 1 ? "Item" : "Items"}
             </Text>
           </View>
           <FlatList
-            data={logic.items}
+            data={crudList.data.cruds}
             renderItem={renderItem}
             keyExtractor={(item) => item.id.toString()}
             scrollEnabled
@@ -329,21 +351,21 @@ export default function CrudPage() {
               style={styles.input}
               placeholder="Add text here"
               placeholderTextColor="#64748b"
-              value={logic.content}
-              onChangeText={logic.setContent}
-              editable={!logic.isCreating}
+              value={content}
+              onChangeText={setContent}
+              editable={!createCrud.isPending}
             />
             <TouchableOpacity
               style={[
                 styles.button,
-                (!logic.content.trim() || logic.isCreating) &&
+                (!content.trim() || createCrud.isPending) &&
                   styles.buttonDisabled,
               ]}
-              onPress={logic.handleCreate}
-              disabled={!logic.content.trim() || logic.isCreating}
+              onPress={handleCreate}
+              disabled={!content.trim() || createCrud.isPending}
             >
               <Text style={styles.buttonText}>
-                {logic.isCreating ? "Adding..." : "Add"}
+                {createCrud.isPending ? "Adding..." : "Add"}
               </Text>
             </TouchableOpacity>
           </View>
@@ -351,11 +373,11 @@ export default function CrudPage() {
           {/* Refresh Button */}
           <TouchableOpacity
             style={styles.refreshButton}
-            onPress={logic.handleRefresh}
-            disabled={logic.isRefetching}
+            onPress={handleRefresh}
+            disabled={crudList.isRefetching}
           >
             <Text style={styles.refreshButtonText}>
-              {logic.isRefetching ? "Refreshing..." : "Refresh"}
+              {crudList.isRefetching ? "Refreshing..." : "Refresh"}
             </Text>
           </TouchableOpacity>
 

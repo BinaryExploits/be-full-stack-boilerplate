@@ -4,8 +4,7 @@
   "private": true,
   "type": "module",
   "exports": {
-    "./logger-provider": "./src/providers/logger-provider.tsx",
-    "./hooks": "./src/hooks/index.ts"
+    "./logger-provider": "./src/providers/logger-provider.tsx"
   },
   "scripts": {
     "lint": "eslint . --max-warnings 0",

@@ -1,11 +1,19 @@
 "use client";
 
+import { useState } from "react";
 import { trpc } from "@repo/trpc/client";
-import { useCrudLogic, CrudItem } from "@repo/ui/hooks";
 import Link from "next/link";
+
+interface CrudItem {
+  id: number;
+  content: string;
+}
 
 export default function CrudDemo() {
   const utils = trpc.useUtils();
+  const [content, setContent] = useState("");
+  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingContent, setEditingContent] = useState("");
 
   // Queries
   const crudList = trpc.crud.findAll.useQuery(
@@ -19,7 +27,7 @@ export default function CrudDemo() {
   const createCrud = trpc.crud.createCrud.useMutation({
     onSuccess: () => {
       void utils.crud.findAll.invalidate();
-      logic.setContent("");
+      setContent("");
     },
   });
 
@@ -30,21 +38,31 @@ export default function CrudDemo() {
   const updateCrud = trpc.crud.updateCrud?.useMutation({
     onSuccess: () => {
       void utils.crud.findAll.invalidate();
-      logic.cancelEditing();
+      setEditingId(null);
+      setEditingContent("");
     },
   });
 
-  // Use shared logic
-  const logic = useCrudLogic({
-    trpcUtils: utils,
-    crudList,
-    createMutation: createCrud,
-    updateMutation: updateCrud,
-    deleteMutation: deleteCrud,
-  });
+  const handleCreate = () => {
+    if (!content.trim()) return;
+    createCrud.mutate({ content });
+  };
+
+  const handleUpdate = (id: number) => {
+    if (!editingContent.trim()) return;
+    updateCrud?.mutate({ id, data: { content: editingContent } });
+  };
+
+  const handleDelete = (id: number) => {
+    deleteCrud.mutate({ id });
+  };
+
+  const handleRefresh = () => {
+    void utils.crud.findAll.invalidate();
+  };
 
   const renderListContent = () => {
-    if (logic.isLoading) {
+    if (crudList.isLoading) {
       return (
         <div className="p-8 text-center">
           <p className="text-slate-400">Loading items...</p>
@@ -52,30 +70,31 @@ export default function CrudDemo() {
       );
     }
 
-    if (logic.items.length > 0) {
+    if (crudList.data && crudList.data.cruds.length > 0) {
       return (
         <div>
           <div className="px-6 py-4 bg-slate-600 border-b border-slate-500">
             <p className="text-sm font-semibold text-slate-300 uppercase tracking-wide">
-              {logic.items.length} {logic.items.length === 1 ? "Item" : "Items"}
+              {crudList.data.cruds.length}{" "}
+              {crudList.data.cruds.length === 1 ? "Item" : "Items"}
             </p>
           </div>
           <ul className="divide-y divide-slate-600">
-            {logic.items.map((item: CrudItem) => (
+            {crudList.data.cruds.map((item: CrudItem) => (
               <li
                 key={item.id}
                 className="px-6 py-4 flex justify-between items-center hover:bg-slate-600 transition-colors"
               >
-                {logic.editingId === item.id ? (
+                {editingId === item.id ? (
                   <input
                     type="text"
-                    value={logic.editingContent}
-                    onChange={(e) => logic.setEditingContent(e.target.value)}
+                    value={editingContent}
+                    onChange={(e) => setEditingContent(e.target.value)}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter" && logic.editingContent.trim()) {
-                        logic.handleUpdate(item.id);
+                      if (e.key === "Enter" && editingContent.trim()) {
+                        handleUpdate(item.id);
                       } else if (e.key === "Escape") {
-                        logic.cancelEditing();
+                        setEditingId(null);
                       }
                     }}
                     autoFocus
@@ -83,15 +102,18 @@ export default function CrudDemo() {
                   />
                 ) : (
                   <button
-                    onClick={() => logic.startEditing(item.id, item.content)}
+                    onClick={() => {
+                      setEditingId(item.id);
+                      setEditingContent(item.content);
+                    }}
                     className="text-slate-200 font-medium cursor-pointer hover:text-blue-400 transition-colors flex-1 text-left"
                   >
                     {item.content}
                   </button>
                 )}
                 <button
-                  onClick={() => logic.handleDelete(item.id)}
-                  disabled={logic.isDeleting}
+                  onClick={() => handleDelete(item.id)}
+                  disabled={deleteCrud.isPending}
                   className="text-slate-400 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors p-2 hover:bg-slate-700 rounded ml-2"
                 >
                   <svg
@@ -169,17 +191,17 @@ export default function CrudDemo() {
             <input
               className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
               placeholder="Add text here"
-              value={logic.content}
-              onChange={(e) => logic.setContent(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && logic.handleCreate()}
-              disabled={logic.isCreating}
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleCreate()}
+              disabled={createCrud.isPending}
             />
             <button
-              onClick={logic.handleCreate}
-              disabled={!logic.content.trim() || logic.isCreating}
+              onClick={handleCreate}
+              disabled={!content.trim() || createCrud.isPending}
               className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed px-6 py-3 rounded-lg text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-blue-500/20"
             >
-              {logic.isCreating ? "Adding..." : "Add"}
+              {createCrud.isPending ? "Adding..." : "Add"}
             </button>
           </div>
         </div>
@@ -187,11 +209,11 @@ export default function CrudDemo() {
         {/* Refresh Button */}
         <div className="mb-8 flex justify-center">
           <button
-            onClick={logic.handleRefresh}
-            disabled={logic.isRefetching}
+            onClick={handleRefresh}
+            disabled={crudList.isRefetching}
             className="bg-blue-500 hover:bg-blue-600 disabled:bg-slate-600 disabled:cursor-not-allowed px-4 py-2 rounded-lg text-white font-semibold transition-colors"
           >
-            {logic.isRefetching ? "Refreshing..." : "Refresh"}
+            {crudList.isRefetching ? "Refreshing..." : "Refresh"}
           </button>
         </div>
 
