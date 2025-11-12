@@ -7,7 +7,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AppContext } from './app.context';
 import { RollbarModule } from '@andeanwide/nestjs-rollbar';
 import { LoggerModule } from './utils/logger/logger.module';
+import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
+import { createBetterAuth } from './auth';
 
 @Module({
   imports: [
@@ -15,6 +17,12 @@ import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    TRPCModule.forRoot({
+      autoSchemaFile: '../../packages/trpc/src/server',
+      context: AppContext,
+      errorFormatter: trpcErrorFormatter,
+    }),
+    AuthModule.forRoot({ auth: createBetterAuth() }),
     RollbarModule.register({
       accessToken: process.env.ROLLBAR_ACCESS_TOKEN!,
       // @ts-expect-error (rollbar config allow any string)
@@ -26,11 +34,6 @@ import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
           | 'testing') || 'development',
     }),
     LoggerModule,
-    TRPCModule.forRoot({
-      autoSchemaFile: '../../packages/trpc/src/server',
-      context: AppContext,
-      errorFormatter: trpcErrorFormatter,
-    }),
     CrudModule,
     PrismaModule,
   ],

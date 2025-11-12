@@ -42,7 +42,9 @@ async function run() {
 }
 
 async function createNestApp() {
-  return NestFactory.create(AppModule);
+  return NestFactory.create(AppModule, {
+    bodyParser: false, // Required for Better Auth
+  });
 }
 
 function bootstrap(app: INestApplication<any>) {
