@@ -1,6 +1,6 @@
 # SonarQube Setup Guide
 
-For local analysis of your project’s code quality.
+For local analysis of your project's code quality.
 
 ---
 
@@ -9,23 +9,34 @@ For local analysis of your project’s code quality.
 ### 1. Copy and Create `.env`
 
 Before any action, make sure you are in the `sonarqube` directory.
-If not, run this command from the root of the project:
+
+**For macOS/Linux:**
 
 ```bash
 cd packages/sonarqube
+cp .env.example .env
 ```
 
-Copy the `.env.example` file to `.env`:
+**For Windows:**
 
-```bash
-cp .env.example .env
+```batch
+cd packages\sonarqube
+copy .env.example .env
 ```
 
 ---
 
 ### 2. Start the SonarQube Server
 
-Make the start script is executable (only once):
+**For macOS/Linux:**
+
+Navigate to the unix scripts directory:
+
+```bash
+cd packages/sonarqube/unix
+```
+
+Make the start script executable (only once):
 
 ```bash
 chmod +x start.sh
@@ -37,6 +48,20 @@ Then start the containers:
 ./start.sh
 ```
 
+**For Windows:**
+
+Navigate to the win scripts directory:
+
+```batch
+cd packages\sonarqube\win
+```
+
+Then start the containers:
+
+```batch
+start_w.bat
+```
+
 Wait until all containers finish starting.
 Once complete, open your browser at:
 
@@ -45,9 +70,9 @@ Once complete, open your browser at:
 
 ### Help:
 
-If you get the following message then run stop.sh and try again. 
+If you get the following message then run stop script and try again.
 
-```bash 
+```bash
 Error response from daemon: ports are not available: exposing port TCP 0.0.0.0:5433 -> 127.0.0.1:0: listen tcp 0.0.0.0:5433: bind: address already in use.
 ```
 
@@ -62,15 +87,14 @@ Error response from daemon: ports are not available: exposing port TCP 0.0.0.0:5
 2. **Change your password** (recommended).
 
 3. **Create a new local project:**
-
-    * Visit [http://localhost:9000/projects/create](http://localhost:9000/projects/create)
-    * Click **Create a local project**
-    * Enter a **project name**
-    * Enter a **project key**
-    * Set **main** as the main branch
-    * At step 2, choose **instance's default**
-    * Select **Analyze locally**
-    * Generate a **non-expiring token**
+   - Visit [http://localhost:9000/projects/create](http://localhost:9000/projects/create)
+   - Click **Create a local project**
+   - Enter a **project name**
+   - Enter a **project key**
+   - Set **main** as the main branch
+   - At step 2, choose **instance's default**
+   - Select **Analyze locally**
+   - Generate a **non-expiring token**
 
 4. Copy your **project key**, **project name**, and **token**, and paste them into your `.env` file.
    Also update the same values in `sonar-project.properties`.
@@ -79,7 +103,9 @@ Error response from daemon: ports are not available: exposing port TCP 0.0.0.0:5
 
 ### 4. Run the Code Scanner
 
-Make the scanner script is executable (only once):
+**For macOS/Linux:**
+
+Make the scanner script executable (only once):
 
 ```bash
 chmod +x scan.sh
@@ -91,6 +117,14 @@ To scan run:
 ./scan.sh
 ```
 
+**For Windows:**
+
+To scan run:
+
+```batch
+scan_w.bat
+```
+
 When complete, open **[http://localhost:9000](http://localhost:9000)** to view your analysis results.
 
 ---
@@ -99,7 +133,9 @@ When complete, open **[http://localhost:9000](http://localhost:9000)** to view y
 
 To gracefully stop the running SonarQube and PostgreSQL containers:
 
-Make the stop script is executable (only once):
+**For macOS/Linux:**
+
+Make the stop script executable (only once):
 
 ```bash
 chmod +x stop.sh
@@ -111,10 +147,18 @@ To stop run:
 ./stop.sh
 ```
 
+**For Windows:**
+
+To stop run:
+
+```batch
+stop_w.bat
+```
+
 This will:
 
-* Stop all SonarQube-related containers
-* Ensure no background processes are left running
+- Stop all SonarQube-related containers
+- Ensure no background processes are left running
 
 Use this when you simply want to **pause** your local SonarQube environment without deleting data.
 
@@ -124,40 +168,58 @@ Use this when you simply want to **pause** your local SonarQube environment with
 
 To completely remove all SonarQube containers, volumes, and networks:
 
-Make the clean script is executable (only once):
+**For macOS/Linux:**
+
+Make the clean script executable (only once):
 
 ```bash
-chmod +x clean.sh
+chmod +x cleanup.sh
 ```
+
 To clean run:
 
 ```bash
-./clean.sh
+./cleanup.sh
+```
+
+**For Windows:**
+
+To clean run:
+
+```batch
+cleanup_w.bat
 ```
 
 **Warning:**
 This will permanently delete:
 
-* The SonarQube database (analysis history, settings, and tokens)
-* All Docker volumes and cached data
-  Use this only when you want a **fresh reset**.
+- The SonarQube database (analysis history, settings, and tokens)
+- All Docker volumes and cached data
+
+Use this only when you want a **fresh reset**.
 
 ---
 
 ## Project Structure
 
-| File                         | Purpose                                          |
-|------------------------------| ------------------------------------------------ |
+| File/Directory               | Purpose                                          |
+| ---------------------------- | ------------------------------------------------ |
 | `.env`                       | Personal environment configuration               |
 | `.env.example`               | Template for creating `.env`                     |
 | `docker-compose.yml`         | Defines SonarQube server and PostgreSQL database |
 | `docker-compose-scanner.yml` | Defines the scanner container                    |
-| `start.sh`                   | Starts SonarQube server using Docker             |
-| `stop.sh`                    | Gracefully stops SonarQube containers            |
-| `clean.sh`                   | Removes all SonarQube containers and volumes     |
-| `scan.sh`                    | Runs the SonarQube scanner for code analysis     |
 | `sonar-project.properties`   | Project analysis configuration                   |
 | `README.md`                  | This setup guide                                 |
+| **unix/**                    | **Scripts for macOS/Linux**                      |
+| `unix/start.sh`              | Starts SonarQube server using Docker             |
+| `unix/stop.sh`               | Gracefully stops SonarQube containers            |
+| `unix/cleanup.sh`            | Removes all SonarQube containers and volumes     |
+| `unix/scan.sh`               | Runs the SonarQube scanner for code analysis     |
+| **win/**                     | **Scripts for Windows**                          |
+| `win/start_w.bat`            | Starts SonarQube server using Docker             |
+| `win/stop_w.bat`             | Gracefully stops SonarQube containers            |
+| `win/cleanup_w.bat`          | Removes all SonarQube containers and volumes     |
+| `win/scan_w.bat`             | Runs the SonarQube scanner for code analysis     |
 
 > You do not need to edit any `.yml` files — all configuration is handled via `.env`.
 
@@ -196,18 +258,33 @@ This will permanently delete:
 
 ## Summary
 
+**For macOS/Linux:**
+
 1. Copy `.env.example` → `.env`
-2. Run `chmod +x start.sh && ./start.sh`
-3. Login to SonarQube UI, create a project, and generate a token
-4. Update `.env` and `sonar-project.properties`
-5. Run `chmod +x scan.sh && ./scan.sh`
-6. View results in the SonarQube dashboard
-7. Stop with `./stop.sh` or fully reset with `./clean.sh`
+2. Navigate to unix scripts: `cd packages/sonarqube/unix`
+3. Run `chmod +x start.sh && ./start.sh`
+4. Login to SonarQube UI, create a project, and generate a token
+5. Update `.env` and `sonar-project.properties`
+6. Run `chmod +x scan.sh && ./scan.sh`
+7. View results in the SonarQube dashboard
+8. Stop with `./stop.sh` or fully reset with `./cleanup.sh`
+
+**For Windows:**
+
+1. Copy `.env.example` → `.env`
+2. Navigate to win scripts: `cd packages\sonarqube\win`
+3. Run `start_w.bat`
+4. Login to SonarQube UI, create a project, and generate a token
+5. Update `.env` and `sonar-project.properties`
+6. Run `scan_w.bat`
+7. View results in the SonarQube dashboard
+8. Stop with `stop_w.bat` or fully reset with `cleanup_w.bat`
 
 ---
 
 **Notes:**
 
-* No manual Docker commands are required.
-* Compatible with macOS and Linux.
-* All configuration is environment-based for consistency and portability.
+- No manual Docker commands are required.
+- Cross-platform compatible: Windows, macOS, and Linux.
+- All configuration is environment-based for consistency and portability.
+- Scripts are organized by platform in `unix/` and `win/` folders.
