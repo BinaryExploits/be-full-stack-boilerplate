@@ -15,7 +15,7 @@ export default function AuthDemo() {
     try {
       const data = await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/auth-demo",
+        callbackURL: "http://localhost:3000/auth-demo",
       });
       Logger.instance.info("Sign in With Google", data);
     } catch (error) {
