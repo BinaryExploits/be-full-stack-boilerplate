@@ -1,0 +1,368 @@
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  ActivityIndicator,
+} from "react-native";
+import { router } from "expo-router";
+import { trpc } from "@repo/trpc/client";
+import { useCrudLogic, CrudItem } from "@repo/ui/hooks";
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#0f172a",
+  },
+  safeArea: {
+    flex: 1,
+  },
+  content: {
+    padding: 32,
+  },
+  backButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 32,
+  },
+  backButtonText: {
+    color: "#94a3b8",
+    fontSize: 16,
+  },
+  header: {
+    alignItems: "center",
+    marginBottom: 48,
+  },
+  headerIcon: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: "#06b6d4",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 16,
+  },
+  headerIconText: {
+    color: "#0f172a",
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    color: "#60a5fa",
+    marginBottom: 8,
+  },
+  subtitle: {
+    fontSize: 14,
+    color: "#94a3b8",
+  },
+  inputSection: {
+    marginBottom: 32,
+    gap: 12,
+  },
+  input: {
+    backgroundColor: "#1e293b",
+    borderWidth: 1,
+    borderColor: "#334155",
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    color: "#ffffff",
+    fontSize: 16,
+  },
+  button: {
+    backgroundColor: "#3b82f6",
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: 48,
+  },
+  buttonDisabled: {
+    backgroundColor: "#475569",
+  },
+  buttonText: {
+    color: "#ffffff",
+    fontWeight: "600",
+    fontSize: 16,
+  },
+  listContainer: {
+    backgroundColor: "#1e293b",
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: "#334155",
+    overflow: "hidden",
+    flex: 1,
+    minHeight: 200,
+    maxHeight: 400,
+  },
+  listHeader: {
+    backgroundColor: "#334155",
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#334155",
+  },
+  listHeaderText: {
+    fontSize: 12,
+    fontWeight: "600",
+    color: "#cbd5e1",
+    textTransform: "uppercase",
+    letterSpacing: 0.5,
+  },
+  listItem: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#334155",
+  },
+  listItemText: {
+    flex: 1,
+    color: "#e2e8f0",
+    fontSize: 16,
+    fontWeight: "500",
+  },
+  editInput: {
+    flex: 1,
+    backgroundColor: "#334155",
+    borderWidth: 1,
+    borderColor: "#3b82f6",
+    borderRadius: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 6,
+    color: "#ffffff",
+    fontSize: 16,
+  },
+  deleteButton: {
+    padding: 8,
+    marginLeft: 12,
+  },
+  deleteButtonText: {
+    color: "#ef4444",
+    fontSize: 24,
+  },
+  emptyText: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingVertical: 64,
+  },
+  emptyTextContent: {
+    color: "#94a3b8",
+    fontSize: 16,
+    textAlign: "center",
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  refreshButton: {
+    backgroundColor: "#3b82f6",
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 6,
+    marginBottom: 12,
+  },
+  refreshButtonText: {
+    color: "#ffffff",
+    fontWeight: "600",
+    fontSize: 14,
+  },
+});
+
+export default function CrudPage() {
+  const utils = trpc.useUtils();
+
+  // Queries
+  const crudList = trpc.crud.findAll.useQuery(
+    {},
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: true,
+    },
+  );
+
+  // Mutations
+  const createCrud = trpc.crud.createCrud.useMutation({
+    onSuccess: () => {
+      void utils.crud.findAll.invalidate();
+      logic.setContent("");
+    },
+  });
+
+  const deleteCrud = trpc.crud.deleteCrud.useMutation({
+    onSuccess: () => utils.crud.findAll.invalidate(),
+  });
+
+  const updateCrud = trpc.crud.updateCrud?.useMutation({
+    onSuccess: () => {
+      void utils.crud.findAll.invalidate();
+      logic.cancelEditing();
+    },
+  });
+
+  // Use shared logic
+  const logic = useCrudLogic({
+    trpcUtils: utils,
+    crudList,
+    createMutation: createCrud,
+    updateMutation: updateCrud,
+    deleteMutation: deleteCrud,
+  });
+
+  const renderItem = ({ item }: { item: CrudItem }) => (
+    <View style={styles.listItem}>
+      {logic.editingId === item.id ? (
+        <>
+          <TextInput
+            style={styles.editInput}
+            value={logic.editingContent}
+            onChangeText={logic.setEditingContent}
+            autoFocus
+            placeholder="Edit item..."
+            placeholderTextColor="#64748b"
+          />
+          <TouchableOpacity
+            onPress={() => logic.handleUpdate(item.id)}
+            disabled={!logic.editingContent.trim()}
+            style={styles.deleteButton}
+          >
+            <Text style={{ color: "#10b981", fontSize: 20 }}>✓</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => logic.cancelEditing()}
+            style={styles.deleteButton}
+          >
+            <Text style={{ color: "#ef4444", fontSize: 20 }}>✕</Text>
+          </TouchableOpacity>
+        </>
+      ) : (
+        <>
+          <TouchableOpacity
+            onPress={() => logic.startEditing(item.id, item.content)}
+            style={{ flex: 1 }}
+          >
+            <Text style={styles.listItemText}>{item.content}</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => logic.handleDelete(item.id)}
+            disabled={logic.isDeleting}
+            style={styles.deleteButton}
+          >
+            <Text style={styles.deleteButtonText}>🗑</Text>
+          </TouchableOpacity>
+        </>
+      )}
+    </View>
+  );
+
+  const renderListContent = () => {
+    if (logic.isLoading) {
+      return (
+        <View style={styles.loadingContainer}>
+          <ActivityIndicator size="large" color="#60a5fa" />
+        </View>
+      );
+    }
+
+    if (logic.items.length > 0) {
+      return (
+        <>
+          <View style={styles.listHeader}>
+            <Text style={styles.listHeaderText}>
+              {logic.items.length} {logic.items.length === 1 ? "Item" : "Items"}
+            </Text>
+          </View>
+          <FlatList
+            data={logic.items}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id.toString()}
+            scrollEnabled
+          />
+        </>
+      );
+    }
+
+    return (
+      <View style={styles.emptyText}>
+        <Text style={styles.emptyTextContent}>
+          No items yet. Add one to get started!
+        </Text>
+      </View>
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <View style={styles.safeArea}>
+        <View style={styles.content}>
+          {/* Back Button */}
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={() => router.back()}
+          >
+            <Text style={styles.backButtonText}>←</Text>
+            <Text style={styles.backButtonText}>Back to Home</Text>
+          </TouchableOpacity>
+
+          {/* Header */}
+          <View style={styles.header}>
+            <View style={styles.headerIcon}>
+              <Text style={styles.headerIconText}>✓</Text>
+            </View>
+            <Text style={styles.title}>BE Tech Stack CRUD</Text>
+            <Text style={styles.subtitle}>NextJs, NestJs, Expo, Trpc</Text>
+          </View>
+
+          {/* Input Section */}
+          <View style={styles.inputSection}>
+            <TextInput
+              style={styles.input}
+              placeholder="Add text here"
+              placeholderTextColor="#64748b"
+              value={logic.content}
+              onChangeText={logic.setContent}
+              editable={!logic.isCreating}
+            />
+            <TouchableOpacity
+              style={[
+                styles.button,
+                (!logic.content.trim() || logic.isCreating) &&
+                  styles.buttonDisabled,
+              ]}
+              onPress={logic.handleCreate}
+              disabled={!logic.content.trim() || logic.isCreating}
+            >
+              <Text style={styles.buttonText}>
+                {logic.isCreating ? "Adding..." : "Add"}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Refresh Button */}
+          <TouchableOpacity
+            style={styles.refreshButton}
+            onPress={logic.handleRefresh}
+            disabled={logic.isRefetching}
+          >
+            <Text style={styles.refreshButtonText}>
+              {logic.isRefetching ? "Refreshing..." : "Refresh"}
+            </Text>
+          </TouchableOpacity>
+
+          {/* List Section */}
+          <View style={styles.listContainer}>{renderListContent()}</View>
+        </View>
+      </View>
+    </View>
+  );
+}

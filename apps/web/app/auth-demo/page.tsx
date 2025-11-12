@@ -1,7 +1,7 @@
 "use client";
 
 import { createAuthClient } from "better-auth/react";
-import { Logger } from "@repo/utils-core";
+import { useAuthLogic } from "@repo/ui/hooks";
 import Link from "next/link";
 
 const authClient = createAuthClient({
@@ -9,30 +9,12 @@ const authClient = createAuthClient({
 });
 
 export default function AuthDemo() {
-  const { data: session, isPending } = authClient.useSession();
+  const auth = useAuthLogic({
+    authClient,
+    callbackURL: "http://localhost:3000/auth-demo",
+  });
 
-  const signInWithGoogle = async () => {
-    try {
-      const data = await authClient.signIn.social({
-        provider: "google",
-        callbackURL: "http://localhost:3000/auth-demo",
-      });
-      Logger.instance.info("Sign in With Google", data);
-    } catch (error) {
-      Logger.instance.error(error);
-    }
-  };
-
-  const signOut = async () => {
-    try {
-      await authClient.signOut();
-      Logger.instance.info("Signed out successfully");
-    } catch (error) {
-      Logger.instance.error(error);
-    }
-  };
-
-  if (isPending) {
+  if (auth.isPending) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="text-center">
@@ -74,11 +56,11 @@ export default function AuthDemo() {
               Better Auth Demo
             </h1>
             <p className="text-gray-600">
-              {session ? "Welcome back!" : "Sign in to continue"}
+              {auth.session ? "Welcome back!" : "Sign in to continue"}
             </p>
           </div>
 
-          {session ? (
+          {auth.session ? (
             <div className="space-y-6">
               <div className="bg-green-50 border border-green-200 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
@@ -106,10 +88,10 @@ export default function AuthDemo() {
                   User Information
                 </h2>
                 <div className="space-y-3">
-                  {session.user.image && (
+                  {auth.session.user.image && (
                     <div className="flex justify-center">
                       <img
-                        src={session.user.image}
+                        src={auth.session.user.image}
                         alt="Profile"
                         className="w-20 h-20 rounded-full border-2 border-gray-200"
                       />
@@ -118,19 +100,19 @@ export default function AuthDemo() {
                   <div>
                     <p className="text-sm text-gray-600">Name</p>
                     <p className="text-gray-900 font-medium">
-                      {session.user.name || "N/A"}
+                      {auth.session.user.name || "N/A"}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">Email</p>
                     <p className="text-gray-900 font-medium">
-                      {session.user.email}
+                      {auth.session.user.email}
                     </p>
                   </div>
                   <div>
                     <p className="text-sm text-gray-600">User ID</p>
                     <p className="text-gray-900 font-mono text-sm">
-                      {session.user.id}
+                      {auth.session.user.id}
                     </p>
                   </div>
                 </div>
@@ -138,9 +120,7 @@ export default function AuthDemo() {
 
               <button
                 onClick={() => {
-                  signOut().catch((error) => {
-                    Logger.instance.error(error);
-                  });
+                  auth.signOut().catch(() => {});
                 }}
                 className="w-full px-4 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
               >
@@ -151,9 +131,7 @@ export default function AuthDemo() {
             <div className="space-y-4">
               <button
                 onClick={() => {
-                  signInWithGoogle().catch((error) => {
-                    Logger.instance.error(error);
-                  });
+                  auth.signInWithGoogle().catch(() => {});
                 }}
                 className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >
