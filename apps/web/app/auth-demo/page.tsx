@@ -1,8 +1,9 @@
 "use client";
 
 import { Logger } from "@repo/utils-core";
-import { authClient } from "../../lib/auth-client";
 import Link from "next/link";
+import { authClient } from "../lib/auth/auth-client";
+import { getJoinedFrontendUrl } from "../lib/utils/url";
 
 export default function AuthDemo() {
   const { data: session, isPending } = authClient.useSession();
@@ -10,7 +11,7 @@ export default function AuthDemo() {
   const signInWithGoogle = async () => {
     const signInResponse = await authClient.signIn.social({
       provider: "google",
-      callbackURL: "http://localhost:3000/auth-demo", // TODO: REMOVE HARD CODING
+      callbackURL: getJoinedFrontendUrl("auth-demo"),
     });
 
     if (signInResponse.error) {

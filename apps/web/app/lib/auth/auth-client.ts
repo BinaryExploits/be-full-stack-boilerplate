@@ -1,7 +1,8 @@
 import { createAuthClient } from "better-auth/react";
+import { getFrontendBaseUrl } from "../utils/url";
 
 export const authClient: ReturnType<typeof createAuthClient> = createAuthClient(
   {
-    baseURL: "http://localhost:3000", // remove hard code
+    baseURL: getFrontendBaseUrl(),
   },
 );
