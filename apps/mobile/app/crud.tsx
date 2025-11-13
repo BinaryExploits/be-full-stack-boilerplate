@@ -323,7 +323,6 @@ export default function CrudPage() {
     <View style={styles.container}>
       <View style={styles.safeArea}>
         <View style={styles.content}>
-          {/* Back Button */}
           <TouchableOpacity
             style={styles.backButton}
             onPress={() => router.back()}
@@ -332,7 +331,6 @@ export default function CrudPage() {
             <Text style={styles.backButtonText}>Back to Home</Text>
           </TouchableOpacity>
 
-          {/* Header */}
           <View style={styles.header}>
             <View style={styles.headerIcon}>
               <Text style={styles.headerIconText}>✓</Text>
@@ -341,7 +339,6 @@ export default function CrudPage() {
             <Text style={styles.subtitle}>NextJs, NestJs, Expo, Trpc</Text>
           </View>
 
-          {/* Input Section */}
           <View style={styles.inputSection}>
             <TextInput
               style={styles.input}
@@ -366,7 +363,6 @@ export default function CrudPage() {
             </TouchableOpacity>
           </View>
 
-          {/* Refresh Button */}
           <TouchableOpacity
             style={styles.refreshButton}
             onPress={handleRefresh}
@@ -377,7 +373,6 @@ export default function CrudPage() {
             </Text>
           </TouchableOpacity>
 
-          {/* List Section */}
           <View style={styles.listContainer}>{renderListContent()}</View>
         </View>
       </View>

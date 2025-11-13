@@ -8,23 +8,26 @@ export default function AuthDemo() {
   const { data: session, isPending } = authClient.useSession();
 
   const signInWithGoogle = async () => {
-    try {
-      const data = await authClient.signIn.social({
-        provider: "google",
-        callbackURL: "http://localhost:3000/auth-demo",
-      });
-      Logger.instance.info("Sign in With Google", data);
-    } catch (error) {
-      Logger.instance.error(error);
+    const signInResponse = await authClient.signIn.social({
+      provider: "google",
+      callbackURL: "http://localhost:3000/auth-demo", // TODO: REMOVE HARD CODING
+    });
+
+    if (signInResponse.error) {
+      Logger.instance.critical(
+        "Error while Signing in",
+        signInResponse.error.message,
+      );
     }
   };
 
   const signOut = async () => {
-    try {
-      await authClient.signOut();
-      Logger.instance.info("Signed out successfully");
-    } catch (error) {
-      Logger.instance.error(error);
+    const signOutResponse = await authClient.signOut();
+    if (signOutResponse.error) {
+      Logger.instance.critical(
+        "Error while signing out",
+        signOutResponse.error.message,
+      );
     }
   };
 
@@ -42,7 +45,6 @@ export default function AuthDemo() {
   return (
     <div className="min-h-screen bg-gray-50 p-8">
       <div className="max-w-md mx-auto">
-        {/* Back Button */}
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-8"
@@ -63,7 +65,6 @@ export default function AuthDemo() {
           Back to Home
         </Link>
 
-        {/* Auth Card */}
         <div className="w-full space-y-8 p-8 bg-white rounded-lg shadow-lg">
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
@@ -134,7 +135,9 @@ export default function AuthDemo() {
 
               <button
                 onClick={() => {
-                  signOut().catch(() => {});
+                  signOut().catch((err: Error) => {
+                    Logger.instance.critical(err);
+                  });
                 }}
                 className="w-full px-4 py-3 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors"
               >
@@ -145,7 +148,9 @@ export default function AuthDemo() {
             <div className="space-y-4">
               <button
                 onClick={() => {
-                  signInWithGoogle().catch(() => {});
+                  signInWithGoogle().catch((err: Error) => {
+                    Logger.instance.critical(err);
+                  });
                 }}
                 className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
               >

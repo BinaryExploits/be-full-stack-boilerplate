@@ -4,7 +4,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-8">
       <div className="max-w-4xl w-full">
-        {/* Header */}
         <div className="text-center mb-16">
           <div className="flex items-center justify-center gap-3 mb-6">
             <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 flex items-center justify-center">
@@ -19,9 +18,7 @@ export default function Home() {
           </p>
         </div>
 
-        {/* Demo Cards */}
         <div className="grid md:grid-cols-2 gap-6">
-          {/* CRUD Demo Card */}
           <Link href="/crud-demo">
             <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-blue-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-1">
               <div className="flex items-center gap-4 mb-4">
@@ -65,7 +62,6 @@ export default function Home() {
             </div>
           </Link>
 
-          {/* Auth Demo Card */}
           <Link href="/auth-demo">
             <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-green-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-green-500/20 hover:-translate-y-1">
               <div className="flex items-center gap-4 mb-4">
@@ -110,7 +106,6 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Footer */}
         <div className="mt-16 text-center">
           <p className="text-slate-500 text-sm">
             Built with modern tools for rapid development

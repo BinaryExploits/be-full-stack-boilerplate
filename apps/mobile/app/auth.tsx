@@ -198,7 +198,6 @@ export default function Auth() {
 
   return (
     <View style={styles.container}>
-      {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
         <Text style={styles.backButtonText}>←</Text>
         <Text style={styles.backButtonText}>Back to Home</Text>

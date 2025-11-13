@@ -149,7 +149,6 @@ export default function CrudDemo() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
       <div className="max-w-2xl mx-auto">
-        {/* Back Button */}
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8"
@@ -170,7 +169,6 @@ export default function CrudDemo() {
           Back to Home
         </Link>
 
-        {/* Header */}
         <div className="mb-12 text-center">
           <div className="flex items-center justify-center gap-3 mb-4">
             <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 flex items-center justify-center">
@@ -185,7 +183,6 @@ export default function CrudDemo() {
           </p>
         </div>
 
-        {/* Input Section */}
         <div className="mb-8">
           <div className="flex gap-3">
             <input
@@ -206,7 +203,6 @@ export default function CrudDemo() {
           </div>
         </div>
 
-        {/* Refresh Button */}
         <div className="mb-8 flex justify-center">
           <button
             onClick={handleRefresh}
@@ -217,7 +213,6 @@ export default function CrudDemo() {
           </button>
         </div>
 
-        {/* List Section */}
         <div className="bg-slate-700 rounded-lg shadow-2xl overflow-hidden border border-slate-600">
           {renderListContent()}
         </div>
