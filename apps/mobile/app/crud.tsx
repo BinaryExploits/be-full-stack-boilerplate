@@ -11,11 +11,6 @@ import { useState } from "react";
 import { router } from "expo-router";
 import { trpc } from "@repo/trpc/client";
 
-interface CrudItem {
-  id: number;
-  content: string;
-}
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -186,6 +181,7 @@ const styles = StyleSheet.create({
 
 export default function CrudPage() {
   const utils = trpc.useUtils();
+
   const [content, setContent] = useState("");
   const [editingId, setEditingId] = useState<number | null>(null);
   const [editingContent, setEditingContent] = useState("");
@@ -237,7 +233,7 @@ export default function CrudPage() {
     void utils.crud.findAll.invalidate();
   };
 
-  const renderItem = ({ item }: { item: CrudItem }) => (
+  const renderItem = ({ item }: { item: { id: number; content: string } }) => (
     <View style={styles.listItem}>
       {editingId === item.id ? (
         <>

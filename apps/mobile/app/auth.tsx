@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Alert,
   Platform,
 } from "react-native";
 import { router } from "expo-router";
@@ -150,38 +151,39 @@ const styles = StyleSheet.create({
   },
 });
 
-export default function AuthDemo() {
+export default function Auth() {
   const { data: session, isPending } = authClient.useSession();
 
   const signInWithGoogle = async () => {
-    try {
-      Logger.instance.info("SignIn with Google");
-      Logger.instance.info("Platform: ", Platform.OS);
+    // TODO: Get some base method to get us this always
+    const expoBaseUrl =
+      Platform.OS === "web" ? `${process.env.EXPO_PUBLIC_URL}/` : "mobile://";
 
-      // Use different callback URLs for web vs native
-      const callbackURL =
-        Platform.OS === "web"
-          ? `${window.location.origin}/auth` // Web uses current origin
-          : "mobile://auth"; // Native uses deep link
+    const callbackURL = expoBaseUrl + "auth";
+    Logger.instance.info("Callback: ", callbackURL);
 
-      Logger.instance.info("Callback: ", callbackURL);
+    const signInResponse = await authClient.signIn.social({
+      provider: "google",
+      callbackURL,
+    });
 
-      const data = await authClient.signIn.social({
-        provider: "google",
-        callbackURL,
-      });
-      Logger.instance.info("Sign in With Google", data);
-    } catch (error) {
-      Logger.instance.error(error);
+    if (signInResponse.error) {
+      Alert.alert("Error while Signing in", signInResponse.error.message);
+      Logger.instance.critical(
+        "Error while Signing in",
+        signInResponse.error.message,
+      );
     }
   };
 
   const signOut = async () => {
-    try {
-      await authClient.signOut();
-      Logger.instance.info("Signed out successfully");
-    } catch (error) {
-      Logger.instance.error(error);
+    const signOutResponse = await authClient.signOut();
+    if (signOutResponse.error) {
+      Alert.alert("Error while signing out", signOutResponse.error.message);
+      Logger.instance.critical(
+        "Error while signing out",
+        signOutResponse.error.message,
+      );
     }
   };
 
@@ -249,7 +251,9 @@ export default function AuthDemo() {
               <TouchableOpacity
                 style={styles.signOutButton}
                 onPress={() => {
-                  signOut().catch(() => {});
+                  signOut().catch((err: Error) => {
+                    Logger.instance.critical(err);
+                  });
                 }}
               >
                 <Text style={styles.signOutButtonText}>Sign Out</Text>
@@ -259,7 +263,9 @@ export default function AuthDemo() {
             <TouchableOpacity
               style={styles.signInButton}
               onPress={() => {
-                signInWithGoogle().catch(() => {});
+                signInWithGoogle().catch((err: Error) => {
+                  Logger.instance.critical(err);
+                });
               }}
             >
               <Text style={styles.signInButtonText}>Sign in with Google</Text>
