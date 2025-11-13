@@ -10,6 +10,10 @@ YELLOW="\033[1;33m"
 BLUE="\033[1;34m"
 RESET="\033[0m"
 
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR/.."
+
 echo -e "${BLUE}==========================================${RESET}"
 echo -e "${BLUE}Cleaning up SonarQube environment...${RESET}"
 echo -e "${BLUE}==========================================${RESET}"

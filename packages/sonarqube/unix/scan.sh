@@ -18,7 +18,7 @@ NC='\033[0m'
 
 # Get script directory
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
+cd "$SCRIPT_DIR/.."
 
 # Step 1: Check if .env file exists
 echo -e "${YELLOW}[Step 1/6]${NC} Checking configuration..."
