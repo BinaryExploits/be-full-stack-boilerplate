@@ -3,6 +3,10 @@
 
 set -e
 
+# Get script directory
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR/.."
+
 # Colors
 GREEN="\033[1;32m"
 RED="\033[1;31m"
