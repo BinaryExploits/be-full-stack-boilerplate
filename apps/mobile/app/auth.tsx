@@ -157,7 +157,7 @@ export default function Auth() {
   const signInWithGoogle = async () => {
     // TODO: Get some base method to get us this always
     const expoBaseUrl =
-      Platform.OS === "web" ? `${process.env.EXPO_PUBLIC_URL}/` : "mobile://";
+      Platform.OS === "web" ? `${process.env.EXPO_PUBLIC_URL}` : "mobile://";
 
     const callbackURL = expoBaseUrl + "auth";
     Logger.instance.info("Callback: ", callbackURL);
