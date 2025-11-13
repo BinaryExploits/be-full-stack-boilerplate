@@ -59,7 +59,7 @@ cd packages\sonarqube\win
 Then start the containers:
 
 ```batch
-start_w.bat
+start.bat
 ```
 
 Wait until all containers finish starting.
@@ -122,7 +122,7 @@ To scan run:
 To scan run:
 
 ```batch
-scan_w.bat
+scan.bat
 ```
 
 When complete, open **[http://localhost:9000](http://localhost:9000)** to view your analysis results.
@@ -152,7 +152,7 @@ To stop run:
 To stop run:
 
 ```batch
-stop_w.bat
+stop.bat
 ```
 
 This will:
@@ -173,13 +173,13 @@ To completely remove all SonarQube containers, volumes, and networks:
 Make the clean script executable (only once):
 
 ```bash
-chmod +x cleanup.sh
+chmod +x clean.sh
 ```
 
 To clean run:
 
 ```bash
-./cleanup.sh
+./clean.sh
 ```
 
 **For Windows:**
@@ -187,7 +187,7 @@ To clean run:
 To clean run:
 
 ```batch
-cleanup_w.bat
+clean.bat
 ```
 
 **Warning:**
@@ -202,24 +202,24 @@ Use this only when you want a **fresh reset**.
 
 ## Project Structure
 
-| File/Directory               | Purpose                                          |
-| ---------------------------- | ------------------------------------------------ |
-| `.env`                       | Personal environment configuration               |
-| `.env.example`               | Template for creating `.env`                     |
-| `docker-compose.yml`         | Defines SonarQube server and PostgreSQL database |
+| File/Directory           | Purpose                                          |
+| ------------------------ | ------------------------------------------------ |
+| `.env`                   | Personal environment configuration               |
+| `.env.example`           | Template for creating `.env`                     |
+| `docker-compose.yml`     | Defines SonarQube server and PostgreSQL database |
 | `docker-compose-scanner.yml` | Defines the scanner container                    |
-| `sonar-project.properties`   | Project analysis configuration                   |
-| `README.md`                  | This setup guide                                 |
-| **unix/**                    | **Scripts for macOS/Linux**                      |
-| `unix/start.sh`              | Starts SonarQube server using Docker             |
-| `unix/stop.sh`               | Gracefully stops SonarQube containers            |
-| `unix/cleanup.sh`            | Removes all SonarQube containers and volumes     |
-| `unix/scan.sh`               | Runs the SonarQube scanner for code analysis     |
-| **win/**                     | **Scripts for Windows**                          |
-| `win/start_w.bat`            | Starts SonarQube server using Docker             |
-| `win/stop_w.bat`             | Gracefully stops SonarQube containers            |
-| `win/cleanup_w.bat`          | Removes all SonarQube containers and volumes     |
-| `win/scan_w.bat`             | Runs the SonarQube scanner for code analysis     |
+| `sonar-project.properties` | Project analysis configuration                   |
+| `README.md`              | This setup guide                                 |
+| **unix/**                | **Scripts for macOS/Linux**                      |
+| `unix/start.sh`          | Starts SonarQube server using Docker             |
+| `unix/stop.sh`           | Gracefully stops SonarQube containers            |
+| `unix/clean.sh`          | Removes all SonarQube containers and volumes     |
+| `unix/scan.sh`           | Runs the SonarQube scanner for code analysis     |
+| **win/**                 | **Scripts for Windows**                          |
+| `win/start.bat`        | Starts SonarQube server using Docker             |
+| `win/stop.bat`         | Gracefully stops SonarQube containers            |
+| `win/clean.bat`        | Removes all SonarQube containers and volumes     |
+| `win/scan.bat`         | Runs the SonarQube scanner for code analysis     |
 
 > You do not need to edit any `.yml` files — all configuration is handled via `.env`.
 
@@ -267,18 +267,18 @@ Use this only when you want a **fresh reset**.
 5. Update `.env` and `sonar-project.properties`
 6. Run `chmod +x scan.sh && ./scan.sh`
 7. View results in the SonarQube dashboard
-8. Stop with `./stop.sh` or fully reset with `./cleanup.sh`
+8. Stop with `./stop.sh` or fully reset with `./clean.sh`
 
 **For Windows:**
 
 1. Copy `.env.example` → `.env`
 2. Navigate to win scripts: `cd packages\sonarqube\win`
-3. Run `start_w.bat`
+3. Run `start.bat`
 4. Login to SonarQube UI, create a project, and generate a token
 5. Update `.env` and `sonar-project.properties`
-6. Run `scan_w.bat`
+6. Run `scan.bat`
 7. View results in the SonarQube dashboard
-8. Stop with `stop_w.bat` or fully reset with `cleanup_w.bat`
+8. Stop with `stop.bat` or fully reset with `clean.bat`
 
 ---
 

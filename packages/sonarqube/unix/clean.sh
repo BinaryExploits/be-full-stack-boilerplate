@@ -14,8 +14,6 @@ RESET="\033[0m"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR/.."
 
-
-
 echo -e "${BLUE}==========================================${RESET}"
 echo -e "${BLUE}Cleaning up SonarQube environment...${RESET}"
 echo -e "${BLUE}==========================================${RESET}"

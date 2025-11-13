@@ -117,7 +117,7 @@ git diff --name-only --diff-filter=d origin/main...HEAD | Select-String -Pattern
 
 ### Test Linting in Workspaces
 
-**For macOS/Linux:**
+**For macOS/Linux & Windows:**
 
 ```bash
 # Discover all workspaces
@@ -132,20 +132,7 @@ cd packages/ui
 npx eslint src/
 ```
 
-**For Windows:**
 
-```batch
-# Discover all workspaces
-pnpm list -r --depth -1 --parseable
-
-# Test a specific workspace (example: api)
-cd apps\api
-npx eslint src/
-
-# Test another workspace (example: ui)
-cd packages\ui
-npx eslint src/
-```
 
 **Note:** The workflow dynamically discovers all workspaces from `pnpm-workspace.yaml`, so you don't need to manually maintain a list. Any new workspace you add will automatically be included in linting.
 
@@ -179,9 +166,9 @@ The workflow checks **all** workspaces with changed files and reports **all** er
 
 ## Debugging Tips
 
-**For macOS/Linux:**
+**For macOS/Linux & Windows :**
 
-```bash
+```bash & batch
 # Check that your branch has commits compared to main
 git log main..HEAD
 
@@ -190,24 +177,6 @@ pnpm list -r --depth -1
 
 # Verify ESLint configs are valid
 npx eslint --print-config apps/api/src/main.ts
-
-# Test with verbose output: Add --debug to eslint commands
-
-# Check node_modules are installed
-pnpm install
-```
-
-**For Windows:**
-
-```batch
-# Check that your branch has commits compared to main
-git log main..HEAD
-
-# List all workspaces
-pnpm list -r --depth -1
-
-# Verify ESLint configs are valid
-npx eslint --print-config apps\api\src\main.ts
 
 # Test with verbose output: Add --debug to eslint commands
 
@@ -228,12 +197,10 @@ Unfortunately, this is hard to test locally because it requires GitHub's issue c
 ### Windows Users
 
 - The Windows batch script (`run-lint-pr.bat`) provides equivalent functionality to the bash script
-- Use backslashes (`\`) for paths instead of forward slashes (`/`)
 - PowerShell can be used for more advanced text processing if needed
 - `act` is not natively supported; use the Quick Test Script (Option 1) or install WSL
 
 ### macOS/Linux Users
 
 - The bash script (`run-lint-pr.sh`) requires execute permissions: `chmod +x run-lint-pr.sh`
-- Use forward slashes (`/`) for paths
 - `act` can be installed via Homebrew or package managers for local GitHub Actions testing
