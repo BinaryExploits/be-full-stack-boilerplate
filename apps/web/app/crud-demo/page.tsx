@@ -4,11 +4,6 @@ import { useState } from "react";
 import { trpc } from "@repo/trpc/client";
 import Link from "next/link";
 
-interface CrudItem {
-  id: number;
-  content: string;
-}
-
 export default function CrudDemo() {
   const utils = trpc.useUtils();
   const [content, setContent] = useState("");
@@ -80,58 +75,60 @@ export default function CrudDemo() {
             </p>
           </div>
           <ul className="divide-y divide-slate-600">
-            {crudList.data.cruds.map((item: CrudItem) => (
-              <li
-                key={item.id}
-                className="px-6 py-4 flex justify-between items-center hover:bg-slate-600 transition-colors"
-              >
-                {editingId === item.id ? (
-                  <input
-                    type="text"
-                    value={editingContent}
-                    onChange={(e) => setEditingContent(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && editingContent.trim()) {
-                        handleUpdate(item.id);
-                      } else if (e.key === "Escape") {
-                        setEditingId(null);
-                      }
-                    }}
-                    autoFocus
-                    className="flex-1 bg-slate-600 border border-blue-400 rounded px-2 py-1 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                ) : (
-                  <button
-                    onClick={() => {
-                      setEditingId(item.id);
-                      setEditingContent(item.content);
-                    }}
-                    className="text-slate-200 font-medium cursor-pointer hover:text-blue-400 transition-colors flex-1 text-left"
-                  >
-                    {item.content}
-                  </button>
-                )}
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  disabled={deleteCrud.isPending}
-                  className="text-slate-400 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors p-2 hover:bg-slate-700 rounded ml-2"
+            {crudList.data.cruds.map(
+              (item: { id: number; content: string }) => (
+                <li
+                  key={item.id}
+                  className="px-6 py-4 flex justify-between items-center hover:bg-slate-600 transition-colors"
                 >
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  {editingId === item.id ? (
+                    <input
+                      type="text"
+                      value={editingContent}
+                      onChange={(e) => setEditingContent(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && editingContent.trim()) {
+                          handleUpdate(item.id);
+                        } else if (e.key === "Escape") {
+                          setEditingId(null);
+                        }
+                      }}
+                      autoFocus
+                      className="flex-1 bg-slate-600 border border-blue-400 rounded px-2 py-1 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
-                  </svg>
-                </button>
-              </li>
-            ))}
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setEditingId(item.id);
+                        setEditingContent(item.content);
+                      }}
+                      className="text-slate-200 font-medium cursor-pointer hover:text-blue-400 transition-colors flex-1 text-left"
+                    >
+                      {item.content}
+                    </button>
+                  )}
+                  <button
+                    onClick={() => handleDelete(item.id)}
+                    disabled={deleteCrud.isPending}
+                    className="text-slate-400 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors p-2 hover:bg-slate-700 rounded ml-2"
+                  >
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      />
+                    </svg>
+                  </button>
+                </li>
+              ),
+            )}
           </ul>
         </div>
       );

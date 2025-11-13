@@ -1,3 +1,4 @@
+import { Platform } from "react-native";
 import { StringExtensions } from "@repo/utils-core";
 
 /**
@@ -5,7 +6,25 @@ import { StringExtensions } from "@repo/utils-core";
  */
 // TODO: MAKE SONARQUBE HAPPY
 export function getFrontendBaseUrl(): string {
-  return process.env.NEXT_PUBLIC_FRONTEND_URL?.replace(/\/+$/, "") || "";
+  let baseUrl: string;
+  if (Platform.OS === "web") {
+    baseUrl = process.env.EXPO_PUBLIC_WEB_URL?.replace(/\/+$/, "") || "";
+  } else {
+    baseUrl = process.env.EXPO_PUBLIC_APP_URL!;
+  }
+
+  return baseUrl;
+}
+
+export function getApiUrl(): string {
+  let baseUrl: string;
+  if (Platform.OS === "android") {
+    baseUrl = process.env.EXPO_PUBLIC_API_URL_ANDROID!;
+  } else {
+    baseUrl = process.env.EXPO_PUBLIC_API_URL!;
+  }
+
+  return baseUrl.replace(/\/+$/, "");
 }
 
 /**

@@ -6,11 +6,11 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
-  Platform,
 } from "react-native";
 import { router } from "expo-router";
 import { Logger } from "@repo/utils-core";
-import { authClient } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth/auth-client";
+import { getJoinedFrontendUrl } from "@/lib/utils/url";
 
 const styles = StyleSheet.create({
   container: {
@@ -155,16 +155,9 @@ export default function Auth() {
   const { data: session, isPending } = authClient.useSession();
 
   const signInWithGoogle = async () => {
-    // TODO: Get some base method to get us this always
-    const expoBaseUrl =
-      Platform.OS === "web" ? `${process.env.EXPO_PUBLIC_URL}` : "mobile://";
-
-    const callbackURL = expoBaseUrl + "auth";
-    Logger.instance.info("Callback: ", callbackURL);
-
     const signInResponse = await authClient.signIn.social({
       provider: "google",
-      callbackURL,
+      callbackURL: getJoinedFrontendUrl("auth"),
     });
 
     if (signInResponse.error) {
