@@ -1,12 +1,8 @@
 "use client";
 
-import { createAuthClient } from "better-auth/react";
 import { Logger } from "@repo/utils-core";
+import { authClient } from "../../lib/auth-client";
 import Link from "next/link";
-
-const authClient = createAuthClient({
-  baseURL: "http://localhost:3000",
-});
 
 export default function AuthDemo() {
   const { data: session, isPending } = authClient.useSession();

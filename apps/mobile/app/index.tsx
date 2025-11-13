@@ -142,7 +142,7 @@ export default function Home() {
         {/* Demo Cards */}
         <View style={styles.cardsContainer}>
           {/* CRUD Demo Card */}
-          <Link href="/crud-demo" asChild>
+          <Link href="/crud" asChild>
             <TouchableOpacity style={styles.card} activeOpacity={0.7}>
               <View style={styles.cardHeader}>
                 <View style={[styles.cardIcon, styles.cardIconBlue]}>
@@ -162,7 +162,7 @@ export default function Home() {
           </Link>
 
           {/* Auth Demo Card */}
-          <Link href="/auth-demo" asChild>
+          <Link href="/auth" asChild>
             <TouchableOpacity style={styles.card} activeOpacity={0.7}>
               <View style={styles.cardHeader}>
                 <View style={[styles.cardIcon, styles.cardIconGreen]}>

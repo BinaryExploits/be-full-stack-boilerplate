@@ -5,10 +5,11 @@ import {
   StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
+  Platform,
 } from "react-native";
 import { router } from "expo-router";
 import { Logger } from "@repo/utils-core";
-import { authClient } from "./auth-client";
+import { authClient } from "@/lib/auth-client";
 
 const styles = StyleSheet.create({
   container: {
@@ -154,9 +155,20 @@ export default function AuthDemo() {
 
   const signInWithGoogle = async () => {
     try {
+      Logger.instance.info("SignIn with Google");
+      Logger.instance.info("Platform: ", Platform.OS);
+
+      // Use different callback URLs for web vs native
+      const callbackURL =
+        Platform.OS === "web"
+          ? `${window.location.origin}/auth` // Web uses current origin
+          : "mobile://auth"; // Native uses deep link
+
+      Logger.instance.info("Callback: ", callbackURL);
+
       const data = await authClient.signIn.social({
         provider: "google",
-        callbackURL: "http://localhost:8081/auth-demo",
+        callbackURL,
       });
       Logger.instance.info("Sign in With Google", data);
     } catch (error) {
@@ -220,9 +232,7 @@ export default function AuthDemo() {
 
                 <View style={styles.field}>
                   <Text style={styles.label}>Name</Text>
-                  <Text style={styles.value}>
-                    {session.user.name || "N/A"}
-                  </Text>
+                  <Text style={styles.value}>{session.user.name || "N/A"}</Text>
                 </View>
 
                 <View style={styles.field}>
