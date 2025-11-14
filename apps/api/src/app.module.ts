@@ -9,6 +9,7 @@ import { RollbarModule } from '@andeanwide/nestjs-rollbar';
 import { LoggerModule } from './utils/logger/logger.module';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { EmailModule } from './email/email.module';
+import { EmailService } from './email/email.service';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
 import { createBetterAuth } from './auth';
 
@@ -23,7 +24,13 @@ import { createBetterAuth } from './auth';
       context: AppContext,
       errorFormatter: trpcErrorFormatter,
     }),
-    AuthModule.forRoot({ auth: createBetterAuth() }),
+    AuthModule.forRootAsync({
+      imports: [EmailModule],
+      inject: [EmailService],
+      useFactory: (emailService: EmailService) => ({
+        auth: createBetterAuth(emailService),
+      }),
+    }),
     RollbarModule.register({
       accessToken: process.env.ROLLBAR_ACCESS_TOKEN!,
       // @ts-expect-error (rollbar config allow any string)
@@ -43,6 +50,7 @@ import { createBetterAuth } from './auth';
   providers: [AppContext],
 })
 export class AppModule implements NestModule {
+  // noinspection JSUnusedGlobalSymbols
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }

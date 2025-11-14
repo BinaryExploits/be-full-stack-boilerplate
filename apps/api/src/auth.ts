@@ -7,7 +7,8 @@ import { EmailService } from './email/email.service';
 
 const prisma = new PrismaClient();
 
-export const createBetterAuth = () => {
+export const createBetterAuth = (emailService: EmailService) => {
+  // noinspection JSUnusedGlobalSymbols
   return betterAuth({
     trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',') || [],
     basePath: '/api/auth',
@@ -27,7 +28,6 @@ export const createBetterAuth = () => {
       expo(),
       emailOTP({
         async sendVerificationOTP({ email, otp, type }) {
-          const emailService = new EmailService(); // TODO: Inject it
           if (type === 'sign-in') {
             await emailService.sendVerificationEmail(email, otp, type);
           }
