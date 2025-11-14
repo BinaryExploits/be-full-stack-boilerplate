@@ -48,7 +48,7 @@ export class EmailService {
     sendEmailArgs: SendEmailArgs<T>,
   ): Promise<void> {
     const { to, templateName, templateData } = sendEmailArgs;
-    const renderedEmail: RenderedEmail = renderEmail(
+    const renderedEmail: RenderedEmail = await renderEmail(
       templateName,
       templateData,
     );
