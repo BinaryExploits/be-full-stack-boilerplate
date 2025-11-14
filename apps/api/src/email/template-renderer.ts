@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import {
   EmailTemplateName,
   EmailTemplateData,
-  RenderedEmailTemplate,
+  RenderedEmail,
   EMAIL_TEMPLATE_META,
 } from './types/email.types';
 
@@ -29,10 +29,10 @@ function fillTemplate<T extends EmailTemplateName>(
   return filledTemplate;
 }
 
-export function renderEmailTemplate<T extends EmailTemplateName>(
+export function renderEmail<T extends EmailTemplateName>(
   templateName: T,
   templateData: EmailTemplateData<T>,
-): RenderedEmailTemplate {
+): RenderedEmail {
   const meta = EMAIL_TEMPLATE_META[templateName];
 
   const htmlTemplate: string = readTemplateFile(meta.htmlFile);

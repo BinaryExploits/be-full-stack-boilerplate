@@ -1,10 +1,10 @@
-export interface BaseEmailTemplateData {
+export interface BaseEmailData {
   companyName: string;
   productName: string;
   supportEmail: string;
 }
 
-export interface SignInOtpEmailData extends BaseEmailTemplateData {
+export interface SignInOtpEmailData extends BaseEmailData {
   otp: string;
 }
 
@@ -17,7 +17,7 @@ export type EmailTemplateName = keyof EmailTemplateRegistry;
 export type EmailTemplateData<T extends EmailTemplateName> =
   EmailTemplateRegistry[T];
 
-export interface EmailSendArgs<T extends EmailTemplateName> {
+export interface SendEmailArgs<T extends EmailTemplateName> {
   to: string;
   templateName: T;
   templateData: EmailTemplateData<T>;
@@ -27,8 +27,6 @@ export interface EmailTemplateMeta {
   subject: string;
   htmlFile: string;
   textFile: string;
-  previewText?: string;
-  category?: string;
 }
 
 export const EMAIL_TEMPLATE_META: Record<EmailTemplateName, EmailTemplateMeta> =
@@ -40,7 +38,7 @@ export const EMAIL_TEMPLATE_META: Record<EmailTemplateName, EmailTemplateMeta> =
     },
   };
 
-export interface RenderedEmailTemplate {
+export interface RenderedEmail {
   html: string;
   text: string;
   subject: string;

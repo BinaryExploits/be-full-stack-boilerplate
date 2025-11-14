@@ -8,10 +8,10 @@ import {
 import { Resend } from 'resend';
 import {
   EmailTemplateName,
-  EmailSendArgs,
-  RenderedEmailTemplate,
+  SendEmailArgs,
+  RenderedEmail,
 } from './types/email.types';
-import { renderEmailTemplate } from './template-renderer';
+import { renderEmail } from './template-renderer';
 
 @Injectable()
 export class EmailService {
@@ -45,10 +45,10 @@ export class EmailService {
   }
 
   private async sendEmail<T extends EmailTemplateName>(
-    emailSendArgs: EmailSendArgs<T>,
+    sendEmailArgs: SendEmailArgs<T>,
   ): Promise<void> {
-    const { to, templateName, templateData } = emailSendArgs;
-    const renderedEmail: RenderedEmailTemplate = renderEmailTemplate(
+    const { to, templateName, templateData } = sendEmailArgs;
+    const renderedEmail: RenderedEmail = renderEmail(
       templateName,
       templateData,
     );
