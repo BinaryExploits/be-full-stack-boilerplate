@@ -1,6 +1,11 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { COMPANY_NAME, PRODUCT_NAME, SUPPORT_EMAIL } from '@repo/utils-core';
+import {
+  EmailTemplateName,
+  TemplateData,
+  LoadedTemplate,
+  TEMPLATE_METADATA,
+} from './types/email.types';
 
 const TEMPLATES_DIR: string = join(__dirname, 'templates');
 
@@ -9,26 +14,68 @@ function readTemplateFile(fileName: string): string {
   return readFileSync(filePath, 'utf8');
 }
 
-function fillTemplate(template: string, map: Record<string, string>): string {
+/**
+ * Fills template with the provided data
+ * Replaces {{KEY}} placeholders with values from data
+ */
+function fillTemplate<T extends EmailTemplateName>(
+  template: string,
+  data: TemplateData<T>,
+): string {
   let result: string = template;
 
-  for (const key of Object.keys(map)) {
-    const placeholder = `{{${key}}}`;
-    result = result.split(placeholder).join(map[key]);
+  for (const [key, value] of Object.entries(data)) {
+    const placeholderKey: string = camelToSnakeCase(key);
+    const placeholderLiteral = `{{${placeholderKey}}}`;
+    result = result.split(placeholderLiteral).join(String(value));
   }
 
   return result;
 }
 
-export function loadSignInOtpTemplate(otp: string): string {
-  const template: string = readTemplateFile('sign-in-otp.html');
+/**
+ * Converts camelCase to SNAKE_CASE
+ * Examples: otp -> OTP, companyName -> COMPANY_NAME, supportEmail -> SUPPORT_EMAIL
+ */
+function camelToSnakeCase(str: string): string {
+  return str
+    .replaceAll(/([A-Z])/g, '_$1')
+    .toUpperCase()
+    .replace(/^_/, ''); // Remove leading underscore if any
+}
 
-  const params = {
-    OTP: otp,
-    COMPANY_NAME: COMPANY_NAME,
-    PRODUCT_NAME: PRODUCT_NAME,
-    SUPPORT_EMAIL: SUPPORT_EMAIL,
+/**
+ * Type-safe template loader
+ * Loads both HTML and text versions of a template and fills them with data
+ *
+ * @param templateName - The name of the template to load
+ * @param data - The data required for this template (type-checked at compile time)
+ * @returns LoadedTemplate with HTML and text versions
+ *
+ * @example
+ * const template = loadTemplate('sign-in-otp', {
+ *   otp: '123456',
+ *   companyName: 'Acme Inc',
+ *   productName: 'Acme App',
+ *   supportEmail: 'support@acme.com'
+ * });
+ * // TypeScript ensures all required fields are provided!
+ */
+export function loadTemplate<T extends EmailTemplateName>(
+  templateName: T,
+  data: TemplateData<T>,
+): LoadedTemplate {
+  const metadata = TEMPLATE_METADATA[templateName];
+
+  const htmlTemplate: string = readTemplateFile(metadata.htmlFile);
+  const textTemplate: string = readTemplateFile(metadata.textFile);
+
+  const html: string = fillTemplate(htmlTemplate, data);
+  const text: string = fillTemplate(textTemplate, data);
+
+  return {
+    html,
+    text,
+    subject: metadata.subject,
   };
-
-  return fillTemplate(template, params);
 }
