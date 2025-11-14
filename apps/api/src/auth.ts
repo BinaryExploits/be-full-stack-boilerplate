@@ -29,11 +29,8 @@ export const createBetterAuth = () => {
         async sendVerificationOTP({ email, otp, type }) {
           const emailService = new EmailService(); // TODO: Inject it
           if (type === 'sign-in') {
-            const subject = 'Your Sign-In Code';
             await emailService.sendVerificationEmail({
-              from: 'onboarding@resend.dev',
               to: email,
-              subject: subject,
               otp: otp,
               type: type,
             });

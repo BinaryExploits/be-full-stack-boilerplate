@@ -1,29 +1,29 @@
 import { Injectable } from '@nestjs/common';
 import { Logger } from '@repo/utils-core';
 import { Resend } from 'resend';
-import { BaseEmail, OTPEmail } from './types/email.types';
+import { VerificationEmailArgs } from './types/email.types';
 import { loadSignInOtpTemplate } from './template-loader';
 
 @Injectable()
 export class EmailService {
   private readonly resend: Resend = new Resend(process.env.RESEND_API_KEY);
 
-  async sendVerificationEmail(emailArgs: OTPEmail<BaseEmail>) {
+  async sendVerificationEmail(emailArgs: VerificationEmailArgs) {
+    let subject: string = '';
     let htmlContent: string = '';
-    switch (emailArgs.type) {
-      case 'sign-in': {
-        htmlContent = loadSignInOtpTemplate(emailArgs.otp);
-        break;
-      }
-      case 'email-verification':
-      case 'forget-password':
-        break;
+
+    if (emailArgs.type === 'sign-in') {
+      subject = 'Sign in OTP';
+      htmlContent = loadSignInOtpTemplate(emailArgs.otp);
+    } else {
+      Logger.instance.critical('Unsupported email type', emailArgs.type);
+      return;
     }
 
     const { data: sendEmailResponse, error } = await this.resend.emails.send({
-      from: emailArgs.from,
+      from: 'onboarding@resend.dev',
       to: emailArgs.to,
-      subject: emailArgs.subject,
+      subject: subject,
       html: htmlContent,
     });
 

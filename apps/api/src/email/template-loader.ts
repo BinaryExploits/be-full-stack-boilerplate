@@ -25,7 +25,7 @@ export function loadSignInOtpTemplate(otp: string): string {
 
   const params = {
     OTP: otp,
-    COMPANY_NAME: COMPANY_NAME!,
+    COMPANY_NAME: COMPANY_NAME,
     PRODUCT_NAME: PRODUCT_NAME,
     SUPPORT_EMAIL: SUPPORT_EMAIL,
   };
