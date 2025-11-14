@@ -6,6 +6,10 @@ const nextConfig = {
         source: "/trpc/:path*",
         destination: `${process.env.TRPC_URL}/:path*`,
       },
+      {
+        source: "/api/auth/:path*",
+        destination: `${process.env.API_URL}/api/auth/:path*`,
+      },
     ];
   },
 };

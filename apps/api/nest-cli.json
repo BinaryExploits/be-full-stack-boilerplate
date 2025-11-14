@@ -4,6 +4,13 @@
   "sourceRoot": "src",
   "entryFile": "./apps/api/src/main.js",
   "compilerOptions": {
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "assets": [
+      {
+        "include": "email/templates/**/*",
+        "outDir": "./dist/apps/api/src/"
+      }
+    ],
+    "watchAssets": true
   }
 }
