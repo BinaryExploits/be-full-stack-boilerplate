@@ -8,9 +8,9 @@ import { AppContext } from './app.context';
 import { RollbarModule } from '@andeanwide/nestjs-rollbar';
 import { LoggerModule } from './utils/logger/logger.module';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
+import { EmailModule } from './email/email.module';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
 import { createBetterAuth } from './auth';
-import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
