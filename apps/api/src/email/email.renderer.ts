@@ -9,6 +9,7 @@ import {
 
 const TEMPLATES_DIR: string = join(__dirname, 'templates');
 
+// TODO: Optimize
 function readTemplateFile(fileName: string): string {
   const filePath: string = join(TEMPLATES_DIR, fileName);
   return readFileSync(filePath, 'utf8');

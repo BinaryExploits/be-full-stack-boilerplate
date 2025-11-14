@@ -11,7 +11,7 @@ import {
   SendEmailArgs,
   RenderedEmail,
 } from './types/email.types';
-import { renderEmail } from './template-renderer';
+import { renderEmail } from './email.renderer';
 
 @Injectable()
 export class EmailService {
