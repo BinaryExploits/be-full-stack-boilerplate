@@ -10,6 +10,7 @@ import { LoggerModule } from './utils/logger/logger.module';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
 import { createBetterAuth } from './auth';
+import { EmailModule } from './email/email.module';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { createBetterAuth } from './auth';
     LoggerModule,
     CrudModule,
     PrismaModule,
+    EmailModule,
   ],
   controllers: [],
   providers: [AppContext],
