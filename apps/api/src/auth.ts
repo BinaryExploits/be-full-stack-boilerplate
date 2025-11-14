@@ -29,11 +29,7 @@ export const createBetterAuth = () => {
         async sendVerificationOTP({ email, otp, type }) {
           const emailService = new EmailService(); // TODO: Inject it
           if (type === 'sign-in') {
-            await emailService.sendVerificationEmail({
-              to: email,
-              otp: otp,
-              type: type,
-            });
+            await emailService.sendVerificationEmail(email, otp, type);
           }
         },
       }),

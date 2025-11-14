@@ -1,10 +1,10 @@
-{{COMPANY_NAME}} - Sign In Verification Code
+{{companyName}} - Sign In Verification Code
 
 Hello,
 
-Your one-time password (OTP) for signing in to {{PRODUCT_NAME}} is:
+Your one-time password (OTP) for signing in to {{productName}} is:
 
-{{OTP}}
+{{otp}}
 
 This code is valid for 10 minutes. Do not share this code with anyone.
 
@@ -12,7 +12,7 @@ If you did not request this code, please ignore this email or contact our suppor
 
 ---
 
-{{COMPANY_NAME}}
-Support: {{SUPPORT_EMAIL}}
+{{companyName}}
+Support: {{supportEmail}}
 
-© {{COMPANY_NAME}}. All rights reserved.
+© {{companyName}}. All rights reserved.

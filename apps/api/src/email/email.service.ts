@@ -7,47 +7,58 @@ import {
 } from '@repo/utils-core';
 import { Resend } from 'resend';
 import {
-  VerificationEmailArgs,
   EmailTemplateName,
-  TypedEmailArgs,
-  LoadedTemplate,
+  EmailSendArgs,
+  RenderedEmailTemplate,
 } from './types/email.types';
-import { loadTemplate } from './template-loader';
+import { renderEmailTemplate } from './template-renderer';
 
 @Injectable()
 export class EmailService {
-  private readonly resend: Resend = new Resend(process.env.RESEND_API_KEY);
-  private readonly fromEmail: string = process.env.RESEND_FROM_EMAIL!;
+  private readonly resend: Resend;
+  private readonly fromEmail: string;
 
-  async sendVerificationEmail(emailArgs: VerificationEmailArgs): Promise<void> {
-    if (emailArgs.type === 'sign-in') {
+  constructor() {
+    this.fromEmail = process.env.RESEND_FROM_EMAIL!;
+    this.resend = new Resend(process.env.RESEND_API_KEY || '');
+  }
+
+  async sendVerificationEmail(
+    to: string,
+    otp: string,
+    type: 'sign-in',
+  ): Promise<void> {
+    if (type === 'sign-in') {
       await this.sendEmail({
+        to: to,
         templateName: 'sign-in-otp',
-        to: emailArgs.to,
-        data: {
-          otp: emailArgs.otp,
+        templateData: {
+          otp: otp,
           companyName: COMPANY_NAME,
           productName: PRODUCT_NAME,
           supportEmail: SUPPORT_EMAIL,
         },
       });
     } else {
-      Logger.instance.critical('Unsupported email type', emailArgs.type);
+      Logger.instance.critical('Unsupported email type', type);
     }
   }
 
-  async sendEmail<T extends EmailTemplateName>(
-    emailArgs: TypedEmailArgs<T>,
+  private async sendEmail<T extends EmailTemplateName>(
+    emailSendArgs: EmailSendArgs<T>,
   ): Promise<void> {
-    const { to, templateName, data } = emailArgs;
-    const template: LoadedTemplate = loadTemplate(templateName, data);
+    const { to, templateName, templateData } = emailSendArgs;
+    const renderedEmail: RenderedEmailTemplate = renderEmailTemplate(
+      templateName,
+      templateData,
+    );
 
     const { data: sendEmailResponse, error } = await this.resend.emails.send({
       from: this.fromEmail,
       to: to,
-      subject: template.subject,
-      html: template.html,
-      text: template.text,
+      subject: renderedEmail.subject,
+      html: renderedEmail.html,
+      text: renderedEmail.text,
     });
 
     if (!sendEmailResponse) {
