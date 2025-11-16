@@ -1,18 +1,19 @@
 import { betterAuth } from 'better-auth';
 import { emailOTP } from 'better-auth/plugins';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
-import { PrismaClient } from '@repo/prisma-db';
 import { expo } from '@better-auth/expo';
+import { PrismaService } from './prisma/prisma.service';
 import { EmailService } from './email/email.service';
 
-const prisma = new PrismaClient();
-
-export const createBetterAuth = (emailService: EmailService) => {
+export const createBetterAuth = (
+  prismaService: PrismaService,
+  emailService: EmailService,
+) => {
   // noinspection JSUnusedGlobalSymbols
   return betterAuth({
     trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',') || [],
     basePath: '/api/auth',
-    database: prismaAdapter(prisma, {
+    database: prismaAdapter(prismaService, {
       provider: 'postgresql',
     }),
     socialProviders: {

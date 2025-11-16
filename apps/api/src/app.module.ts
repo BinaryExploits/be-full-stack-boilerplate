@@ -12,6 +12,7 @@ import { EmailModule } from './email/email.module';
 import { EmailService } from './email/email.service';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
 import { createBetterAuth } from './auth';
+import { PrismaService } from './prisma/prisma.service';
 
 @Module({
   imports: [
@@ -25,10 +26,13 @@ import { createBetterAuth } from './auth';
       errorFormatter: trpcErrorFormatter,
     }),
     AuthModule.forRootAsync({
-      imports: [EmailModule],
-      inject: [EmailService],
-      useFactory: (emailService: EmailService) => ({
-        auth: createBetterAuth(emailService),
+      imports: [PrismaModule, EmailModule],
+      inject: [PrismaService, EmailService],
+      useFactory: (
+        prismaService: PrismaService,
+        emailService: EmailService,
+      ) => ({
+        auth: createBetterAuth(prismaService, emailService),
       }),
     }),
     RollbarModule.register({
