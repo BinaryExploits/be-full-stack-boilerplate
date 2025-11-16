@@ -10,10 +10,10 @@ import { LoggerModule } from './utils/logger/logger.module';
 import { AuthModule } from '@thallesp/nestjs-better-auth';
 import { EmailModule } from './email/email.module';
 import { EmailService } from './email/email.service';
-import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
-import { createBetterAuth } from './auth';
 import { PrismaService } from './prisma/prisma.service';
 import { BetterAuthLogger } from './utils/logger/logger-better-auth';
+import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
+import { createBetterAuth } from './auth';
 
 @Module({
   imports: [
