@@ -4,10 +4,12 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { expo } from '@better-auth/expo';
 import { PrismaService } from './prisma/prisma.service';
 import { EmailService } from './email/email.service';
+import { BetterAuthLogger } from './utils/logger/logger-better-auth';
 
 export const createBetterAuth = (
   prismaService: PrismaService,
   emailService: EmailService,
+  betterAuthLogger: BetterAuthLogger,
 ) => {
   // noinspection JSUnusedGlobalSymbols
   return betterAuth({
@@ -35,5 +37,6 @@ export const createBetterAuth = (
         },
       }),
     ],
+    logger: betterAuthLogger,
   });
 };

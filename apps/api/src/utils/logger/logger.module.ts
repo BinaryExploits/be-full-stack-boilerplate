@@ -2,6 +2,7 @@ import { ConsoleLogger, Global, Module } from '@nestjs/common';
 import { RollbarService } from '@andeanwide/nestjs-rollbar';
 import NestJsLogger from './logger-nestjs';
 import { FlagExtensions, Logger, LogLevel } from '@repo/utils-core';
+import { BetterAuthLogger } from './logger-better-auth';
 
 @Global()
 @Module({
@@ -33,7 +34,8 @@ import { FlagExtensions, Logger, LogLevel } from '@repo/utils-core';
       },
       inject: [RollbarService],
     },
+    BetterAuthLogger,
   ],
-  exports: [NestJsLogger],
+  exports: [NestJsLogger, BetterAuthLogger],
 })
 export class LoggerModule {}

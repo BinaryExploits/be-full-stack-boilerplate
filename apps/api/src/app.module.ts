@@ -13,6 +13,7 @@ import { EmailService } from './email/email.service';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
 import { createBetterAuth } from './auth';
 import { PrismaService } from './prisma/prisma.service';
+import { BetterAuthLogger } from './utils/logger/logger-better-auth';
 
 @Module({
   imports: [
@@ -27,12 +28,13 @@ import { PrismaService } from './prisma/prisma.service';
     }),
     AuthModule.forRootAsync({
       imports: [PrismaModule, EmailModule],
-      inject: [PrismaService, EmailService],
+      inject: [PrismaService, EmailService, BetterAuthLogger],
       useFactory: (
         prismaService: PrismaService,
         emailService: EmailService,
+        betterAuthLogger: BetterAuthLogger,
       ) => ({
-        auth: createBetterAuth(prismaService, emailService),
+        auth: createBetterAuth(prismaService, emailService, betterAuthLogger),
       }),
     }),
     RollbarModule.register({
