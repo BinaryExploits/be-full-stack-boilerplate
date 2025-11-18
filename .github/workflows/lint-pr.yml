@@ -101,6 +101,16 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-prisma-
 
+      - name: Cache built packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            packages/**/dist
+            packages/**/.turbo
+          key: ${{ runner.os }}-packages-build-${{ hashFiles('packages/**/package.json', 'packages/**/tsconfig.json', 'packages/**/*.ts') }}
+          restore-keys: |
+            ${{ runner.os }}-packages-build-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
@@ -121,6 +131,12 @@ jobs:
               sleep 5
             fi
           done
+
+      - name: Build packages
+        run: |
+          # Build only the packages (not the apps)
+          # This generates TypeScript types for @repo/utils-core and other packages
+          pnpm --filter "./packages/**" build || echo "Some packages don't have build scripts, continuing..."
 
       - name: Get changed files
         id: changed-files
