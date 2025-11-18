@@ -2,7 +2,7 @@ name: Lint PR Changes
 
 on:
   pull_request:
-    types: [opened, reopened]
+    types: [opened, reopened, synchronize]
   issue_comment:
     types: [created]
 
