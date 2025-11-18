@@ -325,7 +325,7 @@ export default function CrudPage() {
         <View style={styles.content}>
           <TouchableOpacity
             style={styles.backButton}
-            onPress={() => router.back()}
+            onPress={() => router.push("/")}
           >
             <Text style={styles.backButtonText}>←</Text>
             <Text style={styles.backButtonText}>Back to Home</Text>

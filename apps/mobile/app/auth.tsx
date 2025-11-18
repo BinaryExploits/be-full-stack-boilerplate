@@ -407,7 +407,7 @@ export default function Auth() {
       >
         <TouchableOpacity
           style={styles.backButton}
-          onPress={() => router.back()}
+          onPress={() => router.push("/")}
         >
           <Text style={styles.backButtonText}>←</Text>
           <Text style={styles.backButtonText}>Back to Home</Text>
