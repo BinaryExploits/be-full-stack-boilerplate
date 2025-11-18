@@ -6,10 +6,11 @@ import { QueryClientProvider } from "@tanstack/react-query";
 
 interface TrpcProviderProps extends PropsWithChildren {
   url: string;
+  getCookies: (() => string) | undefined;
 }
 
-export default function TrpcProvider({ children, url }: Readonly<TrpcProviderProps>) {
-  const client = createTrpcClient(url);
+export default function TrpcProvider({ children, url, getCookies }: Readonly<TrpcProviderProps>) {
+  const client = createTrpcClient(url, getCookies);
 
   return (
     <trpc.Provider client={client} queryClient={queryClient}>

@@ -13,11 +13,27 @@ export const trpc: CreateTRPCReact<AppRouter, object> = createTRPCReact<
 
 export const queryClient = new QueryClient();
 
-export const createTrpcClient = (url: string) => {
+export const createTrpcClient = (url: string, getCookies: (() => string) | undefined) => {
   return trpc.createClient({
     links: [
       httpBatchLink({
         url,
+        headers() {
+          const headers = new Map<string, string>();
+          if (getCookies) {
+            const cookies : string = getCookies();
+            if (cookies) {
+              headers.set("Cookie", cookies);
+            }
+          }
+          return Object.fromEntries(headers);
+        },
+        fetch(url, options) {
+          return fetch(url, {
+            ...options,
+            credentials: "include",
+          } as RequestInit);
+        },
       }),
     ],
   });

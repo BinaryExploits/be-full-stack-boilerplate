@@ -11,6 +11,15 @@ import { useColorScheme } from "@/hooks/use-color-scheme";
 import TrpcProvider from "@repo/trpc/trpc-provider";
 import { LoggerProvider } from "@repo/ui/logger-provider";
 import { FlagExtensions, LogLevel } from "@repo/utils-core";
+import { authClient } from "@/lib/auth/auth-client";
+
+const getCookies = (): string => {
+  if (Platform.OS === "web") {
+    return "";
+  }
+
+  return authClient.getCookie();
+};
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -23,6 +32,7 @@ export default function RootLayout() {
             ? process.env.EXPO_PUBLIC_TRPC_URL_ANDROID!
             : process.env.EXPO_PUBLIC_TRPC_URL!
         }
+        getCookies={getCookies}
       >
         <LoggerProvider
           logLevel={FlagExtensions.fromStringList(

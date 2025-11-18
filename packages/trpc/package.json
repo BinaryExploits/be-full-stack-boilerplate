@@ -7,6 +7,9 @@
     "./client": "./src/client/client.ts",
     "./trpc-provider": "./src/client/providers/trpc-provider.tsx"
   },
+  "dependencies": {
+    "@repo/utils-core": "workspace:*"
+  },
   "peerDependencies": {
     "zod": "3.25.5",
     "@trpc/server": "11.1.2"
