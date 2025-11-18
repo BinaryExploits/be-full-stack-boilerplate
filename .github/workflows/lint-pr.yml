@@ -2,7 +2,7 @@ name: Lint PR Changes
 
 on:
   pull_request:
-    types: [opened, reopened, synchronize]
+    types: [opened, reopened]
   issue_comment:
     types: [created]
 
@@ -120,14 +120,14 @@ jobs:
           # Retry up to 3 times if Prisma's binary server fails
           for i in 1 2 3; do
             if pnpm exec prisma generate; then
-              echo "✅ Prisma client generated successfully"
+              echo "Prisma client generated successfully"
               break
             else
               if [ $i -eq 3 ]; then
-                echo "❌ Failed to generate Prisma client after 3 attempts"
+                echo "Failed to generate Prisma client after 3 attempts"
                 exit 1
               fi
-              echo "⚠️  Attempt $i failed, retrying in 5 seconds..."
+              echo "Attempt $i failed, retrying in 5 seconds..."
               sleep 5
             fi
           done
