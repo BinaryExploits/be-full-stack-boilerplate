@@ -170,7 +170,7 @@ jobs:
 
               # Run eslint and capture output - don't stop on error
               WORKSPACE_EXIT=0
-              WORKSPACE_OUTPUT=$(npx eslint $RELATIVE_FILES --max-warnings 0 2>&1) || WORKSPACE_EXIT=$?
+              WORKSPACE_OUTPUT=$(npx eslint $RELATIVE_FILES --max-warnings 0 --no-warn-ignored 2>&1) || WORKSPACE_EXIT=$?
 
               if [ $WORKSPACE_EXIT -ne 0 ]; then
                 LINT_EXIT_CODE=1
