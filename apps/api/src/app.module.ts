@@ -7,13 +7,9 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AppContext } from './app.context';
 import { RollbarModule } from '@andeanwide/nestjs-rollbar';
 import { LoggerModule } from './utils/logger/logger.module';
-import { AuthModule } from '@thallesp/nestjs-better-auth';
+import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
-import { EmailService } from './email/email.service';
-import { PrismaService } from './prisma/prisma.service';
-import { BetterAuthLogger } from './utils/logger/logger-better-auth';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
-import { createBetterAuth } from './auth';
 
 @Module({
   imports: [
@@ -26,17 +22,7 @@ import { createBetterAuth } from './auth';
       context: AppContext,
       errorFormatter: trpcErrorFormatter,
     }),
-    AuthModule.forRootAsync({
-      imports: [PrismaModule, EmailModule],
-      inject: [PrismaService, EmailService, BetterAuthLogger],
-      useFactory: (
-        prismaService: PrismaService,
-        emailService: EmailService,
-        betterAuthLogger: BetterAuthLogger,
-      ) => ({
-        auth: createBetterAuth(prismaService, emailService, betterAuthLogger),
-      }),
-    }),
+    AuthModule,
     RollbarModule.register({
       accessToken: process.env.ROLLBAR_ACCESS_TOKEN!,
       // @ts-expect-error (rollbar config allow any string)

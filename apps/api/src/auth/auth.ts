@@ -2,9 +2,9 @@ import { betterAuth } from 'better-auth';
 import { emailOTP } from 'better-auth/plugins';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { expo } from '@better-auth/expo';
-import { PrismaService } from './prisma/prisma.service';
-import { EmailService } from './email/email.service';
-import { BetterAuthLogger } from './utils/logger/logger-better-auth';
+import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
+import { BetterAuthLogger } from '../utils/logger/logger-better-auth';
 
 export const createBetterAuth = (
   prismaService: PrismaService,
