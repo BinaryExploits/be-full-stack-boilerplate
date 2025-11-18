@@ -397,6 +397,10 @@ importers:
       zod:
         specifier: 3.25.5
         version: 3.25.5
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
 
   packages/typescript-config: {}
 

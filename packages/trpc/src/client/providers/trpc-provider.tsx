@@ -9,7 +9,11 @@ interface TrpcProviderProps extends PropsWithChildren {
   getCookies: (() => string) | undefined;
 }
 
-export default function TrpcProvider({ children, url, getCookies }: Readonly<TrpcProviderProps>) {
+export default function TrpcProvider({
+  children,
+  url,
+  getCookies,
+}: Readonly<TrpcProviderProps>) {
   const client = createTrpcClient(url, getCookies);
 
   return (
