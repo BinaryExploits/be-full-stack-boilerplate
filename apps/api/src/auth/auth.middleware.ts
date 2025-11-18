@@ -3,7 +3,7 @@ import { TRPCMiddleware, MiddlewareOptions } from 'nestjs-trpc';
 import { TRPCError } from '@trpc/server';
 import { AppContextType } from '../app.context';
 import { AuthService } from './auth.service';
-import { fromNodeHeaders } from 'better-auth/node'; // helper included
+import { fromNodeHeaders } from 'better-auth/node';
 
 @Injectable()
 export class AuthMiddleware implements TRPCMiddleware {
