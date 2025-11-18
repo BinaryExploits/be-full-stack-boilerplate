@@ -91,13 +91,36 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
+      - name: Cache Prisma engines
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/prisma
+            packages/prisma-db/generated
+          key: ${{ runner.os }}-prisma-${{ hashFiles('packages/prisma-db/schema.prisma') }}
+          restore-keys: |
+            ${{ runner.os }}-prisma-
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
       - name: Generate Prisma Client
         run: |
           cd packages/prisma-db
-          pnpm exec prisma generate
+          # Retry up to 3 times if Prisma's binary server fails
+          for i in 1 2 3; do
+            if pnpm exec prisma generate; then
+              echo "✅ Prisma client generated successfully"
+              break
+            else
+              if [ $i -eq 3 ]; then
+                echo "❌ Failed to generate Prisma client after 3 attempts"
+                exit 1
+              fi
+              echo "⚠️  Attempt $i failed, retrying in 5 seconds..."
+              sleep 5
+            fi
+          done
 
       - name: Get changed files
         id: changed-files
