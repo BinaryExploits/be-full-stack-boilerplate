@@ -328,11 +328,13 @@ export default function Auth() {
       return;
     }
 
-    if (success) {
-      setAuthStep("otp");
-    } else {
+    if (!success) {
       setError("Unable to send OTP");
+
+      return;
     }
+
+    setAuthStep("otp");
   };
 
   const handleVerifyOTP = async () => {
@@ -359,10 +361,7 @@ export default function Auth() {
 
     if (!data) {
       setError("Unable to verify OTP");
-      return;
     }
-
-    // Session will be updated automatically and user will see the session page
   };
 
   const resetAuthFlow = () => {
@@ -381,7 +380,6 @@ export default function Auth() {
         signOutResponse.error.message,
       );
     } else {
-      // Reset auth flow to initial state
       resetAuthFlow();
     }
   };
@@ -504,7 +502,10 @@ export default function Auth() {
                     </View>
 
                     <TouchableOpacity
-                      style={[styles.otpButton, loading && styles.buttonDisabled]}
+                      style={[
+                        styles.otpButton,
+                        loading && styles.buttonDisabled,
+                      ]}
                       onPress={() => setAuthStep("email")}
                       disabled={loading}
                     >
@@ -534,7 +535,11 @@ export default function Auth() {
                         styles.primaryButton,
                         loading && styles.buttonDisabled,
                       ]}
-                      onPress={handleSendOTP}
+                      onPress={() => {
+                        handleSendOTP().catch((err: Error) => {
+                          Logger.instance.critical(err);
+                        });
+                      }}
                       disabled={loading}
                     >
                       <Text style={styles.primaryButtonText}>
@@ -580,7 +585,11 @@ export default function Auth() {
                         styles.primaryButton,
                         loading && styles.buttonDisabled,
                       ]}
-                      onPress={handleVerifyOTP}
+                      onPress={() => {
+                        handleVerifyOTP().catch((err: Error) => {
+                          Logger.instance.critical(err);
+                        });
+                      }}
                       disabled={loading}
                     >
                       <Text style={styles.primaryButtonText}>

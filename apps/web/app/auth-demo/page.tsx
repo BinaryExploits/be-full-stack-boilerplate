@@ -39,13 +39,11 @@ export default function AuthDemo() {
         signOutResponse.error.message,
       );
     } else {
-      // Reset auth flow to initial state
       resetAuthFlow();
     }
   };
 
-  const handleSendOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSendOTP = async () => {
     setLoading(true);
     setError(null);
 
@@ -63,15 +61,15 @@ export default function AuthDemo() {
       return;
     }
 
-    if (success) {
-      setAuthStep("otp");
-    } else {
+    if (!success) {
       setError("Unable to send OTP");
+      return;
     }
+
+    setAuthStep("otp");
   };
 
-  const handleVerifyOTP = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleVerifyOTP = async () => {
     setLoading(true);
     setError(null);
 
@@ -90,10 +88,7 @@ export default function AuthDemo() {
 
     if (!data) {
       setError("Unable to verify OTP");
-      return;
     }
-
-    // Session will be updated automatically and user will see the session page
   };
 
   const resetAuthFlow = () => {
@@ -304,7 +299,14 @@ export default function AuthDemo() {
               )}
 
               {authStep === "email" && (
-                <form onSubmit={handleSendOTP} className="space-y-4">
+                <form
+                  onSubmit={() => {
+                    handleSendOTP().catch((err: Error) => {
+                      Logger.instance.critical(err);
+                    });
+                  }}
+                  className="space-y-4"
+                >
                   <div>
                     <label
                       htmlFor="email"
@@ -343,7 +345,14 @@ export default function AuthDemo() {
               )}
 
               {authStep === "otp" && (
-                <form onSubmit={handleVerifyOTP} className="space-y-4">
+                <form
+                  onSubmit={() => {
+                    handleVerifyOTP().catch((err: Error) => {
+                      Logger.instance.critical(err);
+                    });
+                  }}
+                  className="space-y-4"
+                >
                   <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                     <p className="text-sm text-blue-800">
                       We sent a verification code to{" "}
