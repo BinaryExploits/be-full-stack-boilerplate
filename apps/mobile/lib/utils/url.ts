@@ -2,7 +2,7 @@ import { Platform } from "react-native";
 import { StringExtensions } from "@repo/utils-core";
 import { AppConstants } from "@/constants/app";
 
-export function getFrontendBaseUrl(): string {
+export function getFrontendUrl(): string {
   let baseUrl: string;
   if (Platform.OS === "web") {
     baseUrl = process.env.EXPO_PUBLIC_WEB_URL || "";
@@ -25,7 +25,7 @@ export function getApiUrl(): string {
 }
 
 export function getJoinedFrontendUrl(path: string): string {
-  const base: string = getFrontendBaseUrl();
+  const base: string = getFrontendUrl();
   if (StringExtensions.IsNullOrEmpty(base)) {
     return base;
   }

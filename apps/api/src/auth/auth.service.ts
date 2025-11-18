@@ -1,14 +1,20 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import type { Auth } from 'better-auth';
-
-export const BETTER_AUTH_TOKEN = 'BETTER_AUTH';
+import { PrismaService } from '../prisma/prisma.service';
+import { EmailService } from '../email/email.service';
+import { BetterAuthLogger } from '../utils/logger/logger-better-auth';
+import { createBetterAuth } from './auth';
 
 @Injectable()
 export class AuthService {
-  constructor(@Inject(BETTER_AUTH_TOKEN) private readonly authInstance: Auth) {}
+  public readonly auth: Auth;
 
-  get auth(): Auth {
-    return this.authInstance;
+  constructor(
+    prisma: PrismaService,
+    email: EmailService,
+    logger: BetterAuthLogger,
+  ) {
+    this.auth = createBetterAuth(prisma, email, logger);
   }
 
   async getSession(headers: Headers | HeadersInit) {

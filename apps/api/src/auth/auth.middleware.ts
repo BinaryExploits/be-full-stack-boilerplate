@@ -3,6 +3,7 @@ import { TRPCMiddleware, MiddlewareOptions } from 'nestjs-trpc';
 import { TRPCError } from '@trpc/server';
 import { AppContextType } from '../app.context';
 import { AuthService } from './auth.service';
+import { fromNodeHeaders } from 'better-auth/node'; // helper included
 
 @Injectable()
 export class AuthMiddleware implements TRPCMiddleware {
@@ -13,22 +14,10 @@ export class AuthMiddleware implements TRPCMiddleware {
     const { ctx, next } = opts;
     const appCtx = ctx as AppContextType;
 
-    const headers = new Headers();
-    const reqHeaders = appCtx.req.headers;
+    const session = await this.authService.getSession(
+      fromNodeHeaders(appCtx.req.headers),
+    );
 
-    for (const [key, value] of Object.entries(reqHeaders)) {
-      if (value) {
-        if (Array.isArray(value)) {
-          for (const v of value) {
-            headers.append(key, v);
-          }
-        } else {
-          headers.set(key, String(value));
-        }
-      }
-    }
-
-    const session = await this.authService.getSession(headers);
     if (!session) {
       throw new TRPCError({
         code: 'UNAUTHORIZED',

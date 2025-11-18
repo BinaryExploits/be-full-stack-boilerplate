@@ -5,7 +5,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { EmailModule } from '../email/email.module';
 import { EmailService } from '../email/email.service';
 import { BetterAuthLogger } from '../utils/logger/logger-better-auth';
-import { AuthService, BETTER_AUTH_TOKEN } from './auth.service';
+import { AuthService } from './auth.service';
 import { createBetterAuth } from './auth';
 import { AuthMiddleware } from './auth.middleware';
 
@@ -25,19 +25,7 @@ import { AuthMiddleware } from './auth.middleware';
     PrismaModule,
     EmailModule,
   ],
-  providers: [
-    {
-      provide: BETTER_AUTH_TOKEN,
-      inject: [PrismaService, EmailService, BetterAuthLogger],
-      useFactory: (
-        prismaService: PrismaService,
-        emailService: EmailService,
-        betterAuthLogger: BetterAuthLogger,
-      ) => createBetterAuth(prismaService, emailService, betterAuthLogger),
-    },
-    AuthService,
-    AuthMiddleware,
-  ],
+  providers: [AuthService, AuthMiddleware],
   exports: [AuthService, AuthMiddleware],
 })
 export class AuthModule {}
