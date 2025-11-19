@@ -300,7 +300,8 @@ export default function AuthDemo() {
 
               {authStep === "email" && (
                 <form
-                  onSubmit={() => {
+                  onSubmit={(e) => {
+                    e.preventDefault();
                     handleSendOTP().catch((err: Error) => {
                       Logger.instance.critical(err);
                     });
@@ -346,7 +347,8 @@ export default function AuthDemo() {
 
               {authStep === "otp" && (
                 <form
-                  onSubmit={() => {
+                  onSubmit={(e) => {
+                    e.preventDefault();
                     handleVerifyOTP().catch((err: Error) => {
                       Logger.instance.critical(err);
                     });
