@@ -11,6 +11,7 @@ export const config = [
   {
     ignores: [
       "eslint.config.js",
+      "metro.config.cjs",
       "postcss.config.js",
       "tailwind.config.js",
       "expo-env.d.ts",

@@ -7,6 +7,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AppContext } from './app.context';
 import { RollbarModule } from '@andeanwide/nestjs-rollbar';
 import { LoggerModule } from './utils/logger/logger.module';
+import { AuthModule } from './auth/auth.module';
+import { EmailModule } from './email/email.module';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
 
 @Module({
@@ -15,6 +17,12 @@ import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
       isGlobal: true,
       envFilePath: '.env',
     }),
+    TRPCModule.forRoot({
+      autoSchemaFile: '../../packages/trpc/src/server',
+      context: AppContext,
+      errorFormatter: trpcErrorFormatter,
+    }),
+    AuthModule,
     RollbarModule.register({
       accessToken: process.env.ROLLBAR_ACCESS_TOKEN!,
       // @ts-expect-error (rollbar config allow any string)
@@ -26,18 +34,15 @@ import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
           | 'testing') || 'development',
     }),
     LoggerModule,
-    TRPCModule.forRoot({
-      autoSchemaFile: '../../packages/trpc/src/server',
-      context: AppContext,
-      errorFormatter: trpcErrorFormatter,
-    }),
     CrudModule,
     PrismaModule,
+    EmailModule,
   ],
   controllers: [],
   providers: [AppContext],
 })
 export class AppModule implements NestModule {
+  // noinspection JSUnusedGlobalSymbols
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(LoggerMiddleware).forRoutes('*');
   }

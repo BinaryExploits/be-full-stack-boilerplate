@@ -2,10 +2,20 @@
   "name": "@repo/trpc",
   "version": "1.0.0",
   "private": true,
+  "scripts": {
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix"
+  },
   "exports": {
     "./router": "./src/server/server.ts",
     "./client": "./src/client/client.ts",
     "./trpc-provider": "./src/client/providers/trpc-provider.tsx"
+  },
+  "dependencies": {
+    "@repo/utils-core": "workspace:*"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*"
   },
   "peerDependencies": {
     "zod": "3.25.5",

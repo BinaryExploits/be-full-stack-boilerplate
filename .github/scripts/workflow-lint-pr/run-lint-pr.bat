@@ -68,13 +68,10 @@ for %%f in (%CHANGED_FILES%) do (
     REM Check if file has lintable extension
     echo !file! | findstr /R "\.ts$ \.tsx$ \.js$ \.jsx$ \.mjs$ \.cjs$" >nul 2>&1
     if not errorlevel 1 (
-        REM Skip node_modules and eslint config files
+        REM Skip node_modules only
         echo !file! | findstr /I "node_modules" >nul 2>&1
         if errorlevel 1 (
-            echo !file! | findstr /I "eslint.config .eslintrc" >nul 2>&1
-            if errorlevel 1 (
-                set "LINTABLE_FILES=!LINTABLE_FILES!%%f "
-            )
+            set "LINTABLE_FILES=!LINTABLE_FILES!%%f "
         )
     )
 )
@@ -157,7 +154,7 @@ if defined workspace_files (
     echo.
 
     REM Run ESLint and capture output
-    npx eslint !RELATIVE_FILES! --max-warnings 0 >temp_lint_output.txt 2>&1
+    npx eslint !RELATIVE_FILES! --max-warnings 0 --no-warn-ignored >temp_lint_output.txt 2>&1
     set "WORKSPACE_EXIT_CODE=!errorlevel!"
 
     if !WORKSPACE_EXIT_CODE! equ 0 (

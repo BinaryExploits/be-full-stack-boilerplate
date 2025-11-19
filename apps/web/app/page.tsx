@@ -1,111 +1,30 @@
-"use client";
-
-import { useState } from "react";
-import { trpc } from "@repo/trpc/client";
+import Link from "next/link";
 
 export default function Home() {
-  return <CrudTestUI />;
-}
-
-function CrudTestUI() {
-  const utils = trpc.useUtils();
-  const [content, setContent] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
-  const [editingContent, setEditingContent] = useState("");
-
-  // Queries
-  const crudList = trpc.crud.findAll.useQuery(
-    {},
-    {
-      refetchOnWindowFocus: false,
-    },
-  );
-
-  // Mutations
-  const createCrud = trpc.crud.createCrud.useMutation({
-    onSuccess: () => {
-      void utils.crud.findAll.invalidate();
-      setContent("");
-    },
-  });
-
-  const deleteCrud = trpc.crud.deleteCrud.useMutation({
-    onSuccess: () => utils.crud.findAll.invalidate(),
-  });
-
-  const updateCrud = trpc.crud.updateCrud?.useMutation({
-    onSuccess: () => {
-      void utils.crud.findAll.invalidate();
-      setEditingId(null);
-      setEditingContent("");
-    },
-  });
-
-  const handleCreate = () => {
-    if (!content.trim()) return;
-    createCrud.mutate({ content });
-  };
-
-  const renderListContent = () => {
-    if (crudList.isLoading) {
-      return (
-        <div className="p-8 text-center">
-          <p className="text-slate-400">Loading items...</p>
-        </div>
-      );
-    }
-
-    if (crudList.data && crudList.data.cruds.length > 0) {
-      return (
-        <div>
-          <div className="px-6 py-4 bg-slate-600 border-b border-slate-500">
-            <p className="text-sm font-semibold text-slate-300 uppercase tracking-wide">
-              {crudList.data.cruds.length}{" "}
-              {crudList.data.cruds.length === 1 ? "Item" : "Items"}
-            </p>
+  return (
+    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-8">
+      <div className="max-w-4xl w-full">
+        <div className="text-center mb-16">
+          <div className="flex items-center justify-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 flex items-center justify-center">
+              <span className="text-slate-900 font-bold text-2xl">BE</span>
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+              Full Stack Boilerplate
+            </h1>
           </div>
-          <ul className="divide-y divide-slate-600">
-            {crudList.data.cruds.map((item) => (
-              <li
-                key={item.id}
-                className="px-6 py-4 flex justify-between items-center hover:bg-slate-600 transition-colors"
-              >
-                {editingId === item.id ? (
-                  <input
-                    type="text"
-                    value={editingContent}
-                    onChange={(e) => setEditingContent(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && editingContent.trim()) {
-                        updateCrud?.mutate({
-                          id: item.id,
-                          data: { content: editingContent },
-                        });
-                      } else if (e.key === "Escape") {
-                        setEditingId(null);
-                      }
-                    }}
-                    autoFocus
-                    className="flex-1 bg-slate-600 border border-blue-400 rounded px-2 py-1 text-white focus:outline-none focus:ring-2 focus:ring-blue-400"
-                  />
-                ) : (
-                  <button
-                    onClick={() => {
-                      setEditingId(item.id);
-                      setEditingContent(item.content);
-                    }}
-                    className="text-slate-200 font-medium cursor-pointer hover:text-blue-400 transition-colors flex-1 text-left"
-                  >
-                    {item.content}
-                  </button>
-                )}
-                <button
-                  onClick={() => deleteCrud.mutate({ id: item.id })}
-                  disabled={deleteCrud.isPending}
-                  className="text-slate-400 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors p-2 hover:bg-slate-700 rounded ml-2"
-                >
+          <p className="text-slate-400 text-lg">
+            NextJs (Tailwind CSS), NestJs, Expo, tRPC, Better Auth
+          </p>
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <Link href="/crud-demo">
+            <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-blue-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-1">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <svg
-                    className="w-5 h-5"
+                    className="w-8 h-8 text-white"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -114,68 +33,83 @@ function CrudTestUI() {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                       strokeWidth={2}
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      d="M4 7h16M4 12h16M4 17h16"
                     />
                   </svg>
-                </button>
-              </li>
-            ))}
-          </ul>
-        </div>
-      );
-    }
-
-    return (
-      <div className="p-12 text-center">
-        <p className="text-slate-400 text-lg">
-          No items yet. Add one to get started!
-        </p>
-      </div>
-    );
-  };
-
-  return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-12 text-center">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 flex items-center justify-center">
-              <span className="text-slate-900 font-bold text-lg">✓</span>
+                </div>
+                <h2 className="text-2xl font-bold text-white">CRUD Demo</h2>
+              </div>
+              <p className="text-slate-400 mb-6">
+                Test Create, Read, Update, Delete operations with tRPC and
+                Prisma integration. Full-stack type safety demonstration.
+              </p>
+              <div className="flex items-center text-blue-400 font-medium group-hover:gap-3 gap-2 transition-all">
+                <span>Try it out</span>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </div>
             </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-              BE Tech Stack CRUD
-            </h1>
-          </div>
-          <p className="text-slate-400">
-            NextJs (tailwindcss), NestJs, Expo, Trpc
+          </Link>
+
+          <Link href="/auth-demo">
+            <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-green-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-green-500/20 hover:-translate-y-1">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 rounded-lg bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg
+                    className="w-8 h-8 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                    />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-white">Auth Demo</h2>
+              </div>
+              <p className="text-slate-400 mb-6">
+                Test authentication with Better Auth. OAuth integration with
+                Google, session management, and protected routes.
+              </p>
+              <div className="flex items-center text-green-400 font-medium group-hover:gap-3 gap-2 transition-all">
+                <span>Try it out</span>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </Link>
+        </div>
+
+        <div className="mt-16 text-center">
+          <p className="text-slate-500 text-sm">
+            Built with modern tools for rapid development
           </p>
-        </div>
-
-        {/* Input Section */}
-        <div className="mb-8">
-          <div className="flex gap-3">
-            <input
-              className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
-              placeholder="Add text here"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleCreate()}
-              disabled={createCrud.isPending}
-            />
-            <button
-              onClick={handleCreate}
-              disabled={!content.trim() || createCrud.isPending}
-              className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed px-6 py-3 rounded-lg text-white font-semibold transition-all duration-200 shadow-lg hover:shadow-blue-500/20"
-            >
-              {createCrud.isPending ? "Adding..." : "Add"}
-            </button>
-          </div>
-        </div>
-
-        {/* List Section */}
-        <div className="bg-slate-700 rounded-lg shadow-2xl overflow-hidden border border-slate-600">
-          {renderListContent()}
         </div>
       </div>
     </main>

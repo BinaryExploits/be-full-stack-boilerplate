@@ -1,4 +1,4 @@
-import { Input, Mutation, Query, Router } from 'nestjs-trpc';
+import { Input, Mutation, Query, Router, UseMiddlewares } from 'nestjs-trpc';
 import { CrudService } from './crud.service';
 import * as CrudSchema from './crud.schema';
 
@@ -15,10 +15,13 @@ import {
   ZCrudUpdateResponse,
 } from './crud.schema';
 
+import { AuthMiddleware } from '../auth/auth.middleware';
+
 @Router({ alias: 'crud' })
 export class CrudRouter {
   constructor(private readonly crudService: CrudService) {}
 
+  @UseMiddlewares(AuthMiddleware)
   @Mutation({
     input: ZCrudCreateRequest,
     output: ZCrudCreateResponse,
@@ -65,6 +68,7 @@ export class CrudRouter {
     return result ?? null;
   }
 
+  @UseMiddlewares(AuthMiddleware)
   @Mutation({
     input: ZCrudUpdateRequest,
     output: ZCrudUpdateResponse,
@@ -80,6 +84,7 @@ export class CrudRouter {
     };
   }
 
+  @UseMiddlewares(AuthMiddleware)
   @Mutation({
     input: ZCrudDeleteRequest,
     output: ZCrudDeleteResponse,

@@ -35,8 +35,8 @@ echo ""
 # Filter to only lintable files (ts, tsx, js, jsx, mjs, cjs)
 LINTABLE_FILES=$(echo "$CHANGED_FILES" | grep -E '\.(ts|tsx|js|jsx|mjs|cjs)$' || true)
 
-# Remove empty lines, node_modules, and commonly ignored files
-LINTABLE_FILES=$(echo "$LINTABLE_FILES" | grep -v 'node_modules' | grep -v '^$' | grep -v 'eslint.config' | grep -v '.eslintrc' || true)
+# Remove empty lines and node_modules
+LINTABLE_FILES=$(echo "$LINTABLE_FILES" | grep -v 'node_modules' | grep -v '^$' || true)
 
 if [ -z "$LINTABLE_FILES" ]; then
   echo "No lintable files changed"
@@ -95,7 +95,7 @@ lint_workspace() {
     # Capture output and exit code, but don't stop on failure
     set +e
     # shellcheck disable=SC2086 # Word splitting is intentional here to pass multiple files to eslint
-    WORKSPACE_OUTPUT=$(npx eslint $RELATIVE_FILES --max-warnings 0 2>&1)
+    WORKSPACE_OUTPUT=$(npx eslint $RELATIVE_FILES --max-warnings 0 --no-warn-ignored 2>&1)
     WORKSPACE_EXIT_CODE=$?
     set -e
 
