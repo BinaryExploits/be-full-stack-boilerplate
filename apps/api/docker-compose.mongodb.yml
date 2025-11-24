@@ -4,24 +4,19 @@ services:
     image: mongodb/mongodb-community-server:latest
     container_name: ${MONGODB_CONTAINER_NAME}
     restart: unless-stopped
-    command: ["--replSet", "${MONGODB_REPLICA_SET_NAME}", "--bind_ip_all"]
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
     ports:
       - "${MONGODB_PORT}:27017"
     volumes:
       - mongodb_data:/data/db
     healthcheck:
-      test: |
-        mongosh --quiet --eval "
-        try {
-          rs.status().ok
-        } catch(e) {
-          rs.initiate({_id: '${MONGODB_REPLICA_SET_NAME}', members: [{_id: 0, host: 'mongodb:27017'}]})
-        }
-        "
+      test: mongosh -u ${MONGODB_USER} -p ${MONGODB_PASSWORD} --authenticationDatabase admin --quiet --eval "db.runCommand('ping').ok"
       interval: 10s
-      timeout: 10s
+      timeout: 5s
       retries: 5
-      start_period: 30s
+      start_period: 20s
 
   mongo-express:
     image: mongo-express:latest
@@ -29,7 +24,7 @@ services:
     restart: unless-stopped
     environment:
       ME_CONFIG_MONGODB_SERVER: mongodb
-      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/?replicaSet=${MONGODB_REPLICA_SET_NAME}
+      ME_CONFIG_MONGODB_URL: mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@mongodb:27017/?authSource=admin
       ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER}
       ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
     ports:
