@@ -15,7 +15,7 @@ services:
         try {
           rs.status().ok
         } catch(e) {
-          rs.initiate({_id: '${MONGODB_REPLICA_SET_NAME}', members: [{_id: 0, host: 'localhost:27017'}]})
+          rs.initiate({_id: '${MONGODB_REPLICA_SET_NAME}', members: [{_id: 0, host: 'mongodb:27017'}]})
         }
         "
       interval: 10s
