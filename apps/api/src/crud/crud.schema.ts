@@ -13,7 +13,7 @@ const ZBaseResponse = z.object({
 
 // Crud schemas
 export const ZCrudModel = z.object({
-  id: z.string(),
+  _id: z.string(),
   content: z.string().min(1).max(1000),
 });
 
@@ -26,11 +26,11 @@ export const ZCrudCreateRequest = ZBaseRequest.extend({
 });
 
 export const ZCrudCreateResponse = ZBaseResponse.extend({
-  id: z.string(),
+  _id: z.string(),
 });
 
 export const ZCrudFindOneRequest = ZBaseRequest.extend({
-  id: z.string(),
+  _id: z.string(),
 });
 
 export const ZCrudFindOneResponse = ZCrudModel.nullable();
@@ -48,7 +48,7 @@ export const ZCrudFindAllResponse = ZBaseResponse.extend({
 });
 
 export const ZCrudUpdateRequest = ZBaseRequest.extend({
-  id: z.string(),
+  _id: z.string(),
   data: z
     .object({
       content: z.string().min(1).max(1000),
@@ -63,7 +63,7 @@ export const ZCrudUpdateResponse = ZBaseResponse.extend({
 });
 
 export const ZCrudDeleteRequest = ZBaseRequest.extend({
-  id: z.string(),
+  _id: z.string(),
 });
 
 export const ZCrudDeleteResponse = ZBaseResponse;

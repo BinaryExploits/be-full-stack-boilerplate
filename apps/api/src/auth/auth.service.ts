@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import type { Auth } from 'better-auth';
-import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
 import { BetterAuthLogger } from '../utils/logger/logger-better-auth';
 import { createBetterAuth } from './auth';
@@ -9,12 +8,8 @@ import { createBetterAuth } from './auth';
 export class AuthService {
   public readonly auth: Auth;
 
-  constructor(
-    prisma: PrismaService,
-    email: EmailService,
-    logger: BetterAuthLogger,
-  ) {
-    this.auth = createBetterAuth(prisma, email, logger);
+  constructor(email: EmailService, logger: BetterAuthLogger) {
+    this.auth = createBetterAuth(email, logger);
   }
 
   async getSession(headers: Headers | HeadersInit) {

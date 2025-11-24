@@ -10,6 +10,7 @@ import { LoggerModule } from './utils/logger/logger.module';
 import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
     }),
     LoggerModule,
     CrudModule,
-    PrismaModule,
+    MongooseModule.forRoot(process.env.DATABASE_URL!),
     EmailModule,
   ],
   controllers: [],

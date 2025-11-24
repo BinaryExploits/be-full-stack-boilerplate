@@ -1,22 +1,24 @@
 import { betterAuth } from 'better-auth';
 import { emailOTP } from 'better-auth/plugins';
-import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { MongoClient } from 'mongodb';
 import { expo } from '@better-auth/expo';
-import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../email/email.service';
 import { BetterAuthLogger } from '../utils/logger/logger-better-auth';
+import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 
 export const createBetterAuth = (
-  prismaService: PrismaService,
   emailService: EmailService,
   betterAuthLogger: BetterAuthLogger,
 ) => {
+  const client = new MongoClient(process.env.DATABASE_URL!);
+  const db = client.db();
+
   // noinspection JSUnusedGlobalSymbols
   return betterAuth({
     trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',') || [],
     basePath: '/api/auth',
-    database: prismaAdapter(prismaService, {
-      provider: 'postgresql',
+    database: mongodbAdapter(db, {
+      client,
     }),
     socialProviders: {
       google: {

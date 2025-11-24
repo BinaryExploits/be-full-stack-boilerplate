@@ -183,7 +183,7 @@ export default function CrudPage() {
   const utils = trpc.useUtils();
 
   const [content, setContent] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState("");
 
   // Queries
@@ -220,22 +220,22 @@ export default function CrudPage() {
     createCrud.mutate({ content });
   };
 
-  const handleUpdate = (id: number) => {
+  const handleUpdate = (_id: string) => {
     if (!editingContent.trim()) return;
-    updateCrud?.mutate({ id, data: { content: editingContent } });
+    updateCrud?.mutate({ _id, data: { content: editingContent } });
   };
 
-  const handleDelete = (id: number) => {
-    deleteCrud.mutate({ id });
+  const handleDelete = (_id: string) => {
+    deleteCrud.mutate({ _id });
   };
 
   const handleRefresh = () => {
     void utils.crud.findAll.invalidate();
   };
 
-  const renderItem = ({ item }: { item: { id: number; content: string } }) => (
+  const renderItem = ({ item }: { item: { _id: string; content: string } }) => (
     <View style={styles.listItem}>
-      {editingId === item.id ? (
+      {editingId === item._id ? (
         <>
           <TextInput
             style={styles.editInput}
@@ -246,7 +246,7 @@ export default function CrudPage() {
             placeholderTextColor="#64748b"
           />
           <TouchableOpacity
-            onPress={() => handleUpdate(item.id)}
+            onPress={() => handleUpdate(item._id)}
             disabled={!editingContent.trim()}
             style={styles.deleteButton}
           >
@@ -263,7 +263,7 @@ export default function CrudPage() {
         <>
           <TouchableOpacity
             onPress={() => {
-              setEditingId(item.id);
+              setEditingId(item._id);
               setEditingContent(item.content);
             }}
             style={{ flex: 1 }}
@@ -271,7 +271,7 @@ export default function CrudPage() {
             <Text style={styles.listItemText}>{item.content}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => handleDelete(item.id)}
+            onPress={() => handleDelete(item._id)}
             disabled={deleteCrud.isPending}
             style={styles.deleteButton}
           >
@@ -303,7 +303,7 @@ export default function CrudPage() {
           <FlatList
             data={crudList.data.cruds}
             renderItem={renderItem}
-            keyExtractor={(item) => item.id.toString()}
+            keyExtractor={(item) => item._id}
             scrollEnabled
           />
         </>

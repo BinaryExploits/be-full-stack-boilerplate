@@ -7,7 +7,7 @@ import Link from "next/link";
 export default function CrudDemo() {
   const utils = trpc.useUtils();
   const [content, setContent] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState("");
 
   // Queries
@@ -43,13 +43,13 @@ export default function CrudDemo() {
     createCrud.mutate({ content });
   };
 
-  const handleUpdate = (id: number) => {
+  const handleUpdate = (_id: string) => {
     if (!editingContent.trim()) return;
-    updateCrud?.mutate({ id, data: { content: editingContent } });
+    updateCrud?.mutate({ _id, data: { content: editingContent } });
   };
 
-  const handleDelete = (id: number) => {
-    deleteCrud.mutate({ id });
+  const handleDelete = (_id: string) => {
+    deleteCrud.mutate({ _id });
   };
 
   const handleRefresh = () => {
@@ -76,19 +76,19 @@ export default function CrudDemo() {
           </div>
           <ul className="divide-y divide-slate-600">
             {crudList.data.cruds.map(
-              (item: { id: number; content: string }) => (
+              (item: { _id: string; content: string }) => (
                 <li
-                  key={item.id}
+                  key={item._id}
                   className="px-6 py-4 flex justify-between items-center hover:bg-slate-600 transition-colors"
                 >
-                  {editingId === item.id ? (
+                  {editingId === item._id ? (
                     <input
                       type="text"
                       value={editingContent}
                       onChange={(e) => setEditingContent(e.target.value)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter" && editingContent.trim()) {
-                          handleUpdate(item.id);
+                          handleUpdate(item._id);
                         } else if (e.key === "Escape") {
                           setEditingId(null);
                         }
@@ -99,7 +99,7 @@ export default function CrudDemo() {
                   ) : (
                     <button
                       onClick={() => {
-                        setEditingId(item.id);
+                        setEditingId(item._id);
                         setEditingContent(item.content);
                       }}
                       className="text-slate-200 font-medium cursor-pointer hover:text-blue-400 transition-colors flex-1 text-left"
@@ -108,7 +108,7 @@ export default function CrudDemo() {
                     </button>
                   )}
                   <button
-                    onClick={() => handleDelete(item.id)}
+                    onClick={() => handleDelete(item._id)}
                     disabled={deleteCrud.isPending}
                     className="text-slate-400 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors p-2 hover:bg-slate-700 rounded ml-2"
                   >
