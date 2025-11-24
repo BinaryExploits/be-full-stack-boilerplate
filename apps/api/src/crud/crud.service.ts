@@ -18,20 +18,20 @@ export class CrudService {
     });
   }
 
-  async findOne(id: number): Promise<Crud | null> {
+  async findOne(id: string): Promise<Crud | null> {
     return this.prisma.crud.findUnique({
       where: { id },
     });
   }
 
-  async update(id: number, updatedContent: string): Promise<Crud> {
+  async update(id: string, updatedContent: string): Promise<Crud> {
     return this.prisma.crud.update({
       where: { id },
       data: { content: updatedContent },
     });
   }
 
-  async delete(id: number): Promise<Crud> {
+  async delete(id: string): Promise<Crud> {
     return this.prisma.crud.delete({
       where: { id },
     });

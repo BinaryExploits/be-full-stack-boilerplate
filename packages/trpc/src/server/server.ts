@@ -18,7 +18,7 @@ const appRouter = t.router({
       success: z.boolean(),
       message: z.string().optional(),
     }).extend({
-      id: z.number().int().positive().optional(),
+      id: z.string(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     findAll: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
@@ -31,7 +31,7 @@ const appRouter = t.router({
       message: z.string().optional(),
     }).extend({
       cruds: z.array(z.object({
-        id: z.number().int().positive(),
+        id: z.string(),
         content: z.string().min(1).max(1000),
       })),
       total: z.number().int().nonnegative(),
@@ -42,16 +42,16 @@ const appRouter = t.router({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
     }).extend({
-      id: z.number().int().positive('ID must be positive'),
+      id: z.string(),
     })).output(z.object({
-      id: z.number().int().positive(),
+      id: z.string(),
       content: z.string().min(1).max(1000),
     }).nullable()).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     updateCrud: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
     }).extend({
-      id: z.number().int().positive('ID must be positive'),
+      id: z.string(),
       data: z
         .object({
           content: z.string().min(1).max(1000),
@@ -64,7 +64,7 @@ const appRouter = t.router({
       message: z.string().optional(),
     }).extend({
       data: z.object({
-        id: z.number().int().positive(),
+        id: z.string(),
         content: z.string().min(1).max(1000),
       }).optional(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
@@ -72,7 +72,7 @@ const appRouter = t.router({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
     }).extend({
-      id: z.number().int().positive('ID must be positive'),
+      id: z.string(),
     })).output(z.object({
       success: z.boolean(),
       message: z.string().optional(),

@@ -10,13 +10,13 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "mongodb"
   url      = env("DATABASE_URL")
 }
 
 model Crud {
-  id        Int      @id @default(autoincrement())
-  content   String   @db.VarChar(500)
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -24,13 +24,13 @@ model Crud {
 }
 
 model User {
-  id            String    @id
+  id            String    @id @map("_id")
   name          String
   email         String
   emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
+  updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
 
@@ -39,7 +39,7 @@ model User {
 }
 
 model Session {
-  id        String   @id
+  id        String   @id @map("_id")
   expiresAt DateTime
   token     String
   createdAt DateTime @default(now())
@@ -50,11 +50,12 @@ model Session {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
+  @@index([userId])
   @@map("session")
 }
 
 model Account {
-  id                    String    @id
+  id                    String    @id @map("_id")
   accountId             String
   providerId            String
   userId                String
@@ -69,16 +70,18 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
+  @@index([userId])
   @@map("account")
 }
 
 model Verification {
-  id         String   @id
+  id         String   @id @map("_id")
   identifier String
   value      String
   expiresAt  DateTime
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
+  updatedAt  DateTime @updatedAt
 
+  @@index([identifier])
   @@map("verification")
 }

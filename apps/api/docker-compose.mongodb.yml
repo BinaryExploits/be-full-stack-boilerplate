@@ -1,0 +1,42 @@
+name: app-mongodb
+services:
+  mongodb:
+    image: mongodb/mongodb-community-server:latest
+    container_name: ${MONGODB_CONTAINER_NAME}
+    restart: unless-stopped
+    command: ["--replSet", "${MONGODB_REPLICA_SET_NAME}", "--bind_ip_all"]
+    ports:
+      - "${MONGODB_PORT}:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: |
+        mongosh --quiet --eval "
+        try {
+          rs.status().ok
+        } catch(e) {
+          rs.initiate({_id: '${MONGODB_REPLICA_SET_NAME}', members: [{_id: 0, host: 'localhost:27017'}]})
+        }
+        "
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: ${MONGO_EXPRESS_CONTAINER_NAME}
+    restart: unless-stopped
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongodb
+      ME_CONFIG_MONGODB_URL: mongodb://mongodb:27017/?replicaSet=${MONGODB_REPLICA_SET_NAME}
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
+    ports:
+      - "${MONGO_EXPRESS_PORT}:8081"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+
+volumes:
+  mongodb_data:
