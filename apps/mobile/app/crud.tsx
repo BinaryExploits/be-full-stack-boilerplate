@@ -220,22 +220,22 @@ export default function CrudPage() {
     createCrud.mutate({ content });
   };
 
-  const handleUpdate = (_id: string) => {
+  const handleUpdate = (id: string) => {
     if (!editingContent.trim()) return;
-    updateCrud?.mutate({ _id, data: { content: editingContent } });
+    updateCrud?.mutate({ id, data: { content: editingContent } });
   };
 
-  const handleDelete = (_id: string) => {
-    deleteCrud.mutate({ _id });
+  const handleDelete = (id: string) => {
+    deleteCrud.mutate({ id });
   };
 
   const handleRefresh = () => {
     void utils.crud.findAll.invalidate();
   };
 
-  const renderItem = ({ item }: { item: { _id: string; content: string } }) => (
+  const renderItem = ({ item }: { item: { id: string; content: string } }) => (
     <View style={styles.listItem}>
-      {editingId === item._id ? (
+      {editingId === item.id ? (
         <>
           <TextInput
             style={styles.editInput}
@@ -246,7 +246,7 @@ export default function CrudPage() {
             placeholderTextColor="#64748b"
           />
           <TouchableOpacity
-            onPress={() => handleUpdate(item._id)}
+            onPress={() => handleUpdate(item.id)}
             disabled={!editingContent.trim()}
             style={styles.deleteButton}
           >
@@ -263,7 +263,7 @@ export default function CrudPage() {
         <>
           <TouchableOpacity
             onPress={() => {
-              setEditingId(item._id);
+              setEditingId(item.id);
               setEditingContent(item.content);
             }}
             style={{ flex: 1 }}
@@ -271,7 +271,7 @@ export default function CrudPage() {
             <Text style={styles.listItemText}>{item.content}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            onPress={() => handleDelete(item._id)}
+            onPress={() => handleDelete(item.id)}
             disabled={deleteCrud.isPending}
             style={styles.deleteButton}
           >
@@ -303,7 +303,7 @@ export default function CrudPage() {
           <FlatList
             data={crudList.data.cruds}
             renderItem={renderItem}
-            keyExtractor={(item) => item._id}
+            keyExtractor={(item) => item.id}
             scrollEnabled
           />
         </>

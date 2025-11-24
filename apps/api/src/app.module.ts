@@ -3,14 +3,13 @@ import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { TRPCModule } from 'nestjs-trpc';
 import { CrudModule } from './crud/crud.module';
-import { PrismaModule } from './prisma/prisma.module';
 import { AppContext } from './app.context';
 import { RollbarModule } from '@andeanwide/nestjs-rollbar';
 import { LoggerModule } from './utils/logger/logger.module';
 import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
-import { MongooseModule } from '@nestjs/mongoose';
+import { DatabaseModule } from './database';
 
 @Module({
   imports: [
@@ -23,6 +22,7 @@ import { MongooseModule } from '@nestjs/mongoose';
       context: AppContext,
       errorFormatter: trpcErrorFormatter,
     }),
+    DatabaseModule.forRoot(),
     AuthModule,
     RollbarModule.register({
       accessToken: process.env.ROLLBAR_ACCESS_TOKEN!,
@@ -36,7 +36,6 @@ import { MongooseModule } from '@nestjs/mongoose';
     }),
     LoggerModule,
     CrudModule,
-    MongooseModule.forRoot(process.env.DATABASE_URL!),
     EmailModule,
   ],
   controllers: [],

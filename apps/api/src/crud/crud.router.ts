@@ -31,7 +31,7 @@ export class CrudRouter {
   ): Promise<CrudSchema.TCrudCreateResponse> {
     const created = await this.crudService.createCrud(req.content);
     return {
-      _id: created?._id.toString() ?? '',
+      id: created?.id ?? '',
       success: created != null,
       message: created ? 'Item created successfully' : 'Failed to create item',
     };
@@ -51,7 +51,7 @@ export class CrudRouter {
     return {
       success: data != null,
       cruds: data.map((item) => ({
-        _id: item._id.toString(),
+        id: item.id,
         content: item.content,
       })),
       total: data.length,
@@ -67,9 +67,9 @@ export class CrudRouter {
   async findOneCrud(
     @Input() req: CrudSchema.TCrudFindOneRequest,
   ): Promise<CrudSchema.TCrudFindOneResponse> {
-    const result = await this.crudService.findOne(req._id);
+    const result = await this.crudService.findOne(req.id);
     if (!result) return null;
-    return { _id: result._id.toString(), content: result.content };
+    return { id: result.id, content: result.content };
   }
 
   @UseMiddlewares(AuthMiddleware)
@@ -80,12 +80,10 @@ export class CrudRouter {
   async updateCrud(
     @Input() req: CrudSchema.TCrudUpdateRequest,
   ): Promise<CrudSchema.TCrudUpdateResponse> {
-    const updated = await this.crudService.update(req._id, req.data.content);
+    const updated = await this.crudService.update(req.id, req.data.content);
     return {
       success: updated != null,
-      data: updated
-        ? { _id: updated._id.toString(), content: updated.content }
-        : undefined,
+      data: updated ? { id: updated.id, content: updated.content } : undefined,
       message: updated ? 'Item updated successfully' : 'Failed to update item',
     };
   }
@@ -98,7 +96,7 @@ export class CrudRouter {
   async deleteCrud(
     @Input() req: CrudSchema.TCrudDeleteRequest,
   ): Promise<CrudSchema.TCrudDeleteResponse> {
-    const deleted = await this.crudService.delete(req._id);
+    const deleted = await this.crudService.delete(req.id);
     return {
       success: deleted != null,
       message: deleted ? 'Item deleted successfully' : 'Failed to delete item',

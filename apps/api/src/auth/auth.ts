@@ -5,21 +5,36 @@ import { expo } from '@better-auth/expo';
 import { EmailService } from '../email/email.service';
 import { BetterAuthLogger } from '../utils/logger/logger-better-auth';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { PrismaClient } from '@repo/prisma-db';
+
+type DbProvider = 'postgres' | 'mongodb';
+
+const createDatabaseAdapter = () => {
+  const dbProvider = process.env.DB_PROVIDER as DbProvider;
+
+  if (dbProvider === 'mongodb') {
+    const client = new MongoClient(process.env.DATABASE_URL_MONGODB!);
+    const db = client.db();
+    return mongodbAdapter(db, { client });
+  }
+
+  // Default to PostgreSQL with Prisma
+  const prisma = new PrismaClient();
+  return prismaAdapter(prisma, {
+    provider: 'postgresql',
+  });
+};
 
 export const createBetterAuth = (
   emailService: EmailService,
   betterAuthLogger: BetterAuthLogger,
 ) => {
-  const client = new MongoClient(process.env.DATABASE_URL!);
-  const db = client.db();
-
   // noinspection JSUnusedGlobalSymbols
   return betterAuth({
     trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',') || [],
     basePath: '/api/auth',
-    database: mongodbAdapter(db, {
-      client,
-    }),
+    database: createDatabaseAdapter(),
     socialProviders: {
       google: {
         clientId: process.env.GOOGLE_CLIENT_ID!,

@@ -1,0 +1,54 @@
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { CrudDocument } from '../schemas/crud.schema';
+import {
+  CrudRepositoryInterface,
+  CrudEntity,
+  CreateCrudDto,
+  UpdateCrudDto,
+} from '../../interfaces';
+
+@Injectable()
+export class CrudMongooseRepository implements CrudRepositoryInterface {
+  constructor(
+    @InjectModel(CrudDocument.name)
+    private readonly crudModel: Model<CrudDocument>,
+  ) {}
+
+  private toEntity(doc: CrudDocument): CrudEntity {
+    return {
+      id: doc._id.toString(),
+      content: doc.content,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+    };
+  }
+
+  async findAll(): Promise<CrudEntity[]> {
+    const docs = await this.crudModel.find().sort({ createdAt: -1 }).exec();
+    return docs.map((doc) => this.toEntity(doc));
+  }
+
+  async findById(id: string): Promise<CrudEntity | null> {
+    const doc = await this.crudModel.findById(id).exec();
+    return doc ? this.toEntity(doc) : null;
+  }
+
+  async create(data: CreateCrudDto): Promise<CrudEntity> {
+    const doc = await this.crudModel.create(data);
+    return this.toEntity(doc);
+  }
+
+  async update(id: string, data: UpdateCrudDto): Promise<CrudEntity | null> {
+    const doc = await this.crudModel
+      .findByIdAndUpdate(id, data, { new: true })
+      .exec();
+    return doc ? this.toEntity(doc) : null;
+  }
+
+  async delete(id: string): Promise<CrudEntity | null> {
+    const doc = await this.crudModel.findByIdAndDelete(id).exec();
+    return doc ? this.toEntity(doc) : null;
+  }
+}
