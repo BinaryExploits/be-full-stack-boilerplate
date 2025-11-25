@@ -1,6 +1,6 @@
 -- CreateTable
 CREATE TABLE "crud" (
-    "id" SERIAL NOT NULL,
+    "id" TEXT NOT NULL,
     "content" VARCHAR(500) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,

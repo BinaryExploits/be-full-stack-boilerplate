@@ -29,7 +29,7 @@ export class CrudRouter {
   async createCrud(
     @Input() req: CrudSchema.TCrudCreateRequest,
   ): Promise<CrudSchema.TCrudCreateResponse> {
-    const created = await this.crudService.createCrud({ content: req.content });
+    const created = await this.crudService.createCrud(req);
     return {
       success: created != null,
       id: created?.id,
