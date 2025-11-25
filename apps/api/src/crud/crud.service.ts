@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CrudRepository } from '../database/interfaces/crud.repository.interface';
+import { CrudRepository } from '../database/interfaces/crud.repository';
 import {
   CrudEntity,
   CreateCrudDto,

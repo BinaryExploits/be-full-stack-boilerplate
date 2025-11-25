@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CrudDocument } from '../models/crud.model';
-import { CrudRepository } from '../../interfaces/crud.repository.interface';
+import { CrudRepository } from '../../interfaces/crud.repository';
 import {
   CrudEntity,
   CreateCrudDto,

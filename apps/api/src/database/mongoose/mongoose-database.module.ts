@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CrudDocument, CrudSchema } from './models/crud.model';
 import { CrudMongooseRepository } from './repositories/crud.mongoose.repository';
-import { CrudRepository } from '../interfaces/crud.repository.interface';
+import { CrudRepository } from '../interfaces/crud.repository';
 
 @Module({
   imports: [

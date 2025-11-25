@@ -1,14 +1,13 @@
 import { betterAuth } from 'better-auth';
 import { emailOTP } from 'better-auth/plugins';
-import { MongoClient } from 'mongodb';
 import { expo } from '@better-auth/expo';
-import { EmailService } from '../email/email.service';
-import { BetterAuthLogger } from '../utils/logger/logger-better-auth';
 import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { MongoClient } from 'mongodb';
 import { PrismaClient } from '@repo/prisma-db';
-
-type DbProvider = 'postgresql' | 'mongodb';
+import { EmailService } from '../email/email.service';
+import { BetterAuthLogger } from '../utils/logger/logger-better-auth';
+import { DbProvider } from '../database/database.module';
 
 const createDatabaseAdapter = () => {
   const dbProvider = process.env.DB_PROVIDER as DbProvider;

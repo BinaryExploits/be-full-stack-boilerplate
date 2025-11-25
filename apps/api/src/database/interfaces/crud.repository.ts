@@ -1,4 +1,4 @@
-import { BaseRepositoryInterface } from './base.repository.interface';
+import { BaseRepository } from './base.repository';
 import {
   CrudEntity,
   CreateCrudDto,
@@ -6,7 +6,7 @@ import {
 } from '../../schemas/crud.schema';
 
 export abstract class CrudRepository
-  implements BaseRepositoryInterface<CrudEntity, CreateCrudDto, UpdateCrudDto>
+  implements BaseRepository<CrudEntity, CreateCrudDto, UpdateCrudDto>
 {
   abstract find(): Promise<CrudEntity[]>;
   abstract findOne(id: string): Promise<CrudEntity | null>;

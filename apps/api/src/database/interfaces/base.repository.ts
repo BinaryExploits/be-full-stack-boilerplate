@@ -1,4 +1,4 @@
-export interface BaseRepositoryInterface<T, CreateCrudDto, UpdateCrudDto> {
+export interface BaseRepository<T, CreateCrudDto, UpdateCrudDto> {
   find(): Promise<T[]>;
   findOne(id: string): Promise<T | null>;
   create(data: CreateCrudDto): Promise<T>;
