@@ -1,7 +1,7 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { PrismaDatabaseModule } from './prisma/prisma-database.module';
-import { MongooseDatabaseModule } from './mongoose/mongoose-database.module';
+import { PrismaDatabaseModule } from './prisma/module';
+import { MongooseDatabaseModule } from './mongoose/module';
 
 export type DbProvider = 'postgresql' | 'mongodb';
 
@@ -23,7 +23,6 @@ export class DatabaseModule {
       };
     }
 
-    // Default to PostgreSQL with Prisma
     return {
       global: true,
       module: DatabaseModule,
