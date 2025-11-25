@@ -1,13 +1,30 @@
 import { betterAuth } from 'better-auth';
 import { emailOTP } from 'better-auth/plugins';
-import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { expo } from '@better-auth/expo';
-import { PrismaService } from '../prisma/prisma.service';
+import { mongodbAdapter } from 'better-auth/adapters/mongodb';
+import { prismaAdapter } from 'better-auth/adapters/prisma';
+import { MongoClient } from 'mongodb';
+import { PrismaClient } from '@repo/prisma-db';
 import { EmailService } from '../email/email.service';
 import { BetterAuthLogger } from '../utils/logger/logger-better-auth';
+import { DbProvider } from '../database/database.module';
+
+const createDatabaseAdapter = () => {
+  const dbProvider = process.env.DB_PROVIDER as DbProvider;
+
+  if (dbProvider === 'mongodb') {
+    const client = new MongoClient(process.env.DATABASE_URL_MONGODB!);
+    const db = client.db();
+    return mongodbAdapter(db, { client });
+  }
+
+  const prisma = new PrismaClient();
+  return prismaAdapter(prisma, {
+    provider: 'postgresql',
+  });
+};
 
 export const createBetterAuth = (
-  prismaService: PrismaService,
   emailService: EmailService,
   betterAuthLogger: BetterAuthLogger,
 ) => {
@@ -15,9 +32,7 @@ export const createBetterAuth = (
   return betterAuth({
     trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',') || [],
     basePath: '/api/auth',
-    database: prismaAdapter(prismaService, {
-      provider: 'postgresql',
-    }),
+    database: createDatabaseAdapter(),
     socialProviders: {
       google: {
         clientId: process.env.GOOGLE_CLIENT_ID!,

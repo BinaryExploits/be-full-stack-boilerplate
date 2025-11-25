@@ -1,39 +1,32 @@
 import { z } from 'zod';
+import { ZBaseRequest, ZBaseResponse } from './base.schema';
 
-// Base schemas (Ideally in a separate file)
-const ZBaseRequest = z.object({
-  requestId: z.string().uuid().optional(),
-  timestamp: z.number().optional(),
-});
-
-const ZBaseResponse = z.object({
-  success: z.boolean(),
-  message: z.string().optional(),
-});
-
-// Crud schemas
-export const ZCrudModel = z.object({
-  id: z.number().int().positive(),
+export const ZCrudEntity = z.object({
+  id: z.string(),
   content: z.string().min(1).max(1000),
+  createdAt: z.date(),
+  updatedAt: z.date(),
 });
 
-// API schemas
-export const ZCrudCreateRequest = ZBaseRequest.extend({
-  content: z
-    .string()
-    .min(1, 'Content cannot be empty')
-    .max(500, 'Content too long'),
+export const ZCreateCrudDto = ZCrudEntity.pick({
+  content: true,
 });
+
+export const ZUpdateCrudDto = ZCrudEntity.pick({
+  content: true,
+});
+
+export const ZCrudCreateRequest = ZBaseRequest.merge(ZCreateCrudDto);
 
 export const ZCrudCreateResponse = ZBaseResponse.extend({
-  id: z.number().int().positive().optional(),
+  id: z.string(),
 });
 
 export const ZCrudFindOneRequest = ZBaseRequest.extend({
-  id: z.number().int().positive('ID must be positive'),
+  id: z.string(),
 });
 
-export const ZCrudFindOneResponse = ZCrudModel.nullable();
+export const ZCrudFindOneResponse = ZCrudEntity.nullable();
 
 export const ZCrudFindAllRequest = ZBaseRequest.extend({
   limit: z.number().int().positive().max(100).default(10).optional(),
@@ -41,35 +34,33 @@ export const ZCrudFindAllRequest = ZBaseRequest.extend({
 });
 
 export const ZCrudFindAllResponse = ZBaseResponse.extend({
-  cruds: z.array(ZCrudModel),
+  cruds: z.array(ZCrudEntity),
   total: z.number().int().nonnegative(),
   limit: z.number().int().positive(),
   offset: z.number().int().nonnegative(),
 });
 
 export const ZCrudUpdateRequest = ZBaseRequest.extend({
-  id: z.number().int().positive('ID must be positive'),
-  data: z
-    .object({
-      content: z.string().min(1).max(1000),
-    })
-    .refine((data) => Object.keys(data).length > 0, {
-      message: 'At least one field must be provided for update',
-    }),
+  id: z.string(),
+  data: ZUpdateCrudDto.refine((data) => Object.keys(data).length > 0, {
+    message: 'At least one field must be provided for update',
+  }),
 });
 
 export const ZCrudUpdateResponse = ZBaseResponse.extend({
-  data: ZCrudModel.optional(),
+  data: ZCrudEntity.optional(),
 });
 
 export const ZCrudDeleteRequest = ZBaseRequest.extend({
-  id: z.number().int().positive('ID must be positive'),
+  id: z.string(),
 });
 
 export const ZCrudDeleteResponse = ZBaseResponse;
 
-// Types
-export type TCrudModel = z.infer<typeof ZCrudModel>;
+export type CrudEntity = z.infer<typeof ZCrudEntity>;
+export type CreateCrudDto = z.infer<typeof ZCreateCrudDto>;
+export type UpdateCrudDto = z.infer<typeof ZUpdateCrudDto>;
+
 export type TCrudCreateRequest = z.infer<typeof ZCrudCreateRequest>;
 export type TCrudCreateResponse = z.infer<typeof ZCrudCreateResponse>;
 export type TCrudFindOneRequest = z.infer<typeof ZCrudFindOneRequest>;

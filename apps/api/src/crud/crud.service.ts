@@ -1,39 +1,38 @@
-import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
-import { Crud } from '@repo/prisma-db';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CrudRepository } from '../database/interfaces/crud.repository';
+import {
+  CrudEntity,
+  CreateCrudDto,
+  UpdateCrudDto,
+} from '../schemas/crud.schema';
 
 @Injectable()
 export class CrudService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly crudRepository: CrudRepository) {}
 
-  async createCrud(content: string): Promise<Crud> {
-    return this.prisma.crud.create({
-      data: { content },
-    });
+  async createCrud(data: CreateCrudDto): Promise<CrudEntity> {
+    return this.crudRepository.create(data);
   }
 
-  async findAll(): Promise<Crud[]> {
-    return this.prisma.crud.findMany({
-      orderBy: { createdAt: 'desc' },
-    });
+  async findAll(): Promise<CrudEntity[]> {
+    return this.crudRepository.find();
   }
 
-  async findOne(id: number): Promise<Crud | null> {
-    return this.prisma.crud.findUnique({
-      where: { id },
-    });
+  async findOne(id: string): Promise<CrudEntity> {
+    const crud = await this.crudRepository.findOne(id);
+    if (!crud) throw new NotFoundException(`Crud with id ${id} not found`);
+    return crud;
   }
 
-  async update(id: number, updatedContent: string): Promise<Crud> {
-    return this.prisma.crud.update({
-      where: { id },
-      data: { content: updatedContent },
-    });
+  async update(id: string, data: UpdateCrudDto): Promise<CrudEntity> {
+    const updated = await this.crudRepository.update(id, data);
+    if (!updated) throw new NotFoundException(`Crud with id ${id} not found`);
+    return updated;
   }
 
-  async delete(id: number): Promise<Crud> {
-    return this.prisma.crud.delete({
-      where: { id },
-    });
+  async delete(id: string): Promise<CrudEntity> {
+    const deleted = await this.crudRepository.delete(id);
+    if (!deleted) throw new NotFoundException(`Crud with id ${id} not found`);
+    return deleted;
   }
 }

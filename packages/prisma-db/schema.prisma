@@ -15,7 +15,7 @@ datasource db {
 }
 
 model Crud {
-  id        Int      @id @default(autoincrement())
+  id        String   @id @default(uuid())
   content   String   @db.VarChar(500)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

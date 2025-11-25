@@ -6,9 +6,11 @@ A **modern full-stack TypeScript monorepo** using:
 * **NestJS** (API)
 * **Expo** (Mobile)
 * **tRPC** (End-to-end type-safe API calls)
-* **Prisma + PostgreSQL** (Database)
-* **SonarQube**
-* **Rollbar**
+* **PostgreSQL** or **MongoDB** (Database - your choice!)
+* **Prisma** or **Mongoose** (ORM/ODM - based on your DB choice)
+* **Better Auth** (Authentication with OAuth, Email OTP)
+* **SonarQube** (Code quality)
+* **Rollbar** (Error tracking)
 * **Turborepo** (Build orchestration)
 
 This repository is structured for scalability, developer experience, and seamless cross-platform sharing of logic and types.
@@ -64,6 +66,23 @@ packages/prisma-db/.env
 packages/sonarqube/.env
 ```
 
+**Important environment variables for `apps/api/.env`:**
+
+```bash
+# Database Configuration
+DB_PROVIDER=postgresql  # or 'mongodb'
+DATABASE_URL_MONGODB=mongodb://localhost:27017/your-db-name  # if using MongoDB
+DATABASE_URL=postgresql://user:password@localhost:5432/db    # if using PostgreSQL
+
+# Better Auth
+BETTER_AUTH_SECRET=your-secret-key
+BETTER_AUTH_TRUSTED_ORIGINS=http://localhost:3000,http://localhost:8081
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Email service, Rollbar, etc.
+```
+
 Each `.env` file should contain the necessary variables (e.g. database URLs, API base URLs, etc.).
 
 ---
@@ -77,28 +96,27 @@ cd apps/api
 docker-compose up -d
 ```
 
-This spins up the PostgreSQL container defined in your `docker-compose.yml`.
+This starts both PostgreSQL and MongoDB containers.
 
----
+**Choose your database provider by setting `DB_PROVIDER` in `apps/api/.env`:**
 
-### 5. Setup Prisma (Database)
+#### If using PostgreSQL (with Prisma)
 
-Go to the Prisma package:
+Setup Prisma:
 
 ```bash
 cd packages/prisma-db
-```
-
-Run the following commands:
-
-```bash
 pnpm prisma migrate deploy
 pnpm prisma generate
 ```
 
+#### If using MongoDB (with Mongoose)
+
+No additional setup needed - Mongoose handles schema creation automatically.
+
 ---
 
-### 6. Run the Development Servers
+### 5. Run the Development Servers
 
 From the **root directory**:
 
@@ -149,9 +167,15 @@ This command runs all apps (API, Web, and Mobile) concurrently using Turborepo.
 
 * ⚡ **Turborepo** – Monorepo management
 * 💬 **tRPC** – End-to-end type-safe API communication
-* 🧠 **Zod** – Runtime validation
-* 🗄️ **Prisma ORM** – Database modeling
-* 🐘 **PostgreSQL** – Database
+* 🧠 **Zod** – Runtime validation & schema definition
+* 🗄️ **Database Options** – Choose between:
+  * **PostgreSQL + Prisma** – Relational database with type-safe ORM
+  * **MongoDB + Mongoose** – NoSQL database with ODM
+* 🔐 **Better Auth** – Modern authentication framework with:
+  * Email OTP authentication
+  * Google OAuth
+  * Expo mobile support
+  * Email verification
 * 💻 **Next.js** – Web frontend
 * 📱 **Expo (React Native)** – Mobile app
 * 🧱 **NestJS** – Backend API
@@ -163,5 +187,7 @@ This command runs all apps (API, Web, and Mobile) concurrently using Turborepo.
 
 * Keep Docker running while developing backend/API.
 * Use `pnpm` consistently — **do not use npm or yarn**.
+* Set `DB_PROVIDER` env variable (`postgresql` or `mongodb`) before starting the API.
+* Better Auth requires proper environment variables for OAuth providers.
 
 ---

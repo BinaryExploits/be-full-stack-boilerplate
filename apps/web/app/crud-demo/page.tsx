@@ -7,7 +7,7 @@ import Link from "next/link";
 export default function CrudDemo() {
   const utils = trpc.useUtils();
   const [content, setContent] = useState("");
-  const [editingId, setEditingId] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [editingContent, setEditingContent] = useState("");
 
   // Queries
@@ -43,12 +43,12 @@ export default function CrudDemo() {
     createCrud.mutate({ content });
   };
 
-  const handleUpdate = (id: number) => {
+  const handleUpdate = (id: string) => {
     if (!editingContent.trim()) return;
     updateCrud?.mutate({ id, data: { content: editingContent } });
   };
 
-  const handleDelete = (id: number) => {
+  const handleDelete = (id: string) => {
     deleteCrud.mutate({ id });
   };
 
@@ -76,7 +76,7 @@ export default function CrudDemo() {
           </div>
           <ul className="divide-y divide-slate-600">
             {crudList.data.cruds.map(
-              (item: { id: number; content: string }) => (
+              (item: { id: string; content: string }) => (
                 <li
                   key={item.id}
                   className="px-6 py-4 flex justify-between items-center hover:bg-slate-600 transition-colors"

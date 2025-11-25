@@ -1,6 +1,6 @@
 import { Input, Mutation, Query, Router, UseMiddlewares } from 'nestjs-trpc';
 import { CrudService } from './crud.service';
-import * as CrudSchema from './crud.schema';
+import * as CrudSchema from '../schemas/crud.schema';
 
 import {
   ZCrudCreateRequest,
@@ -13,7 +13,7 @@ import {
   ZCrudFindOneResponse,
   ZCrudUpdateRequest,
   ZCrudUpdateResponse,
-} from './crud.schema';
+} from '../schemas/crud.schema';
 
 import { AuthMiddleware } from '../auth/auth.middleware';
 
@@ -29,7 +29,7 @@ export class CrudRouter {
   async createCrud(
     @Input() req: CrudSchema.TCrudCreateRequest,
   ): Promise<CrudSchema.TCrudCreateResponse> {
-    const created = await this.crudService.createCrud(req.content);
+    const created = await this.crudService.createCrud(req);
     return {
       success: created != null,
       id: created?.id,
@@ -76,7 +76,7 @@ export class CrudRouter {
   async updateCrud(
     @Input() req: CrudSchema.TCrudUpdateRequest,
   ): Promise<CrudSchema.TCrudUpdateResponse> {
-    const updated = await this.crudService.update(req.id, req.data.content);
+    const updated = await this.crudService.update(req.id, req.data);
     return {
       success: updated != null,
       data: updated ?? undefined,

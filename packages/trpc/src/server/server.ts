@@ -9,16 +9,18 @@ const appRouter = t.router({
     createCrud: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
-    }).extend({
-      content: z
-        .string()
-        .min(1, 'Content cannot be empty')
-        .max(500, 'Content too long'),
-    })).output(z.object({
+    }).merge(z.object({
+      id: z.string(),
+      content: z.string().min(1).max(1000),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+    }).pick({
+      content: true,
+    }))).output(z.object({
       success: z.boolean(),
       message: z.string().optional(),
     }).extend({
-      id: z.number().int().positive().optional(),
+      id: z.string(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     findAll: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
@@ -31,8 +33,10 @@ const appRouter = t.router({
       message: z.string().optional(),
     }).extend({
       cruds: z.array(z.object({
-        id: z.number().int().positive(),
+        id: z.string(),
         content: z.string().min(1).max(1000),
+        createdAt: z.date(),
+        updatedAt: z.date(),
       })),
       total: z.number().int().nonnegative(),
       limit: z.number().int().positive(),
@@ -42,37 +46,44 @@ const appRouter = t.router({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
     }).extend({
-      id: z.number().int().positive('ID must be positive'),
+      id: z.string(),
     })).output(z.object({
-      id: z.number().int().positive(),
+      id: z.string(),
       content: z.string().min(1).max(1000),
+      createdAt: z.date(),
+      updatedAt: z.date(),
     }).nullable()).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     updateCrud: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
     }).extend({
-      id: z.number().int().positive('ID must be positive'),
-      data: z
-        .object({
-          content: z.string().min(1).max(1000),
-        })
-        .refine((data) => Object.keys(data).length > 0, {
-          message: 'At least one field must be provided for update',
-        }),
+      id: z.string(),
+      data: z.object({
+        id: z.string(),
+        content: z.string().min(1).max(1000),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      }).pick({
+        content: true,
+      }).refine((data) => Object.keys(data).length > 0, {
+        message: 'At least one field must be provided for update',
+      }),
     })).output(z.object({
       success: z.boolean(),
       message: z.string().optional(),
     }).extend({
       data: z.object({
-        id: z.number().int().positive(),
+        id: z.string(),
         content: z.string().min(1).max(1000),
+        createdAt: z.date(),
+        updatedAt: z.date(),
       }).optional(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     deleteCrud: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
     }).extend({
-      id: z.number().int().positive('ID must be positive'),
+      id: z.string(),
     })).output(z.object({
       success: z.boolean(),
       message: z.string().optional(),
