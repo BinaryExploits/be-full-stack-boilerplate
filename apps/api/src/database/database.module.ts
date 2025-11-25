@@ -4,7 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PrismaDatabaseModule } from './prisma';
 import { MongooseDatabaseModule } from './mongoose';
 
-export type DbProvider = 'postgres' | 'mongodb';
+export type DbProvider = 'postgresql' | 'mongodb';
 
 @Global()
 @Module({})

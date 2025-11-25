@@ -16,7 +16,7 @@ datasource db {
 
 model Crud {
   id        String   @id @default(uuid())
-  content   String
+  content   String   @db.VarChar(500)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -24,23 +24,24 @@ model Crud {
 }
 
 model User {
-  id            String    @id @default(uuid())
+  id            String    @id
   name          String
-  email         String    @unique
+  email         String
   emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  updatedAt     DateTime  @default(now()) @updatedAt
   sessions      Session[]
   accounts      Account[]
 
+  @@unique([email])
   @@map("user")
 }
 
 model Session {
-  id        String   @id @default(uuid())
+  id        String   @id
   expiresAt DateTime
-  token     String   @unique
+  token     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
@@ -48,12 +49,12 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@index([userId])
+  @@unique([token])
   @@map("session")
 }
 
 model Account {
-  id                    String    @id @default(uuid())
+  id                    String    @id
   accountId             String
   providerId            String
   userId                String
@@ -68,18 +69,16 @@ model Account {
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
 
-  @@index([userId])
   @@map("account")
 }
 
 model Verification {
-  id         String   @id @default(uuid())
+  id         String   @id
   identifier String
   value      String
   expiresAt  DateTime
   createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  updatedAt  DateTime @default(now()) @updatedAt
 
-  @@index([identifier])
   @@map("verification")
 }

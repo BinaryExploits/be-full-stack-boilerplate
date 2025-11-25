@@ -8,7 +8,7 @@ import { mongodbAdapter } from 'better-auth/adapters/mongodb';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '@repo/prisma-db';
 
-type DbProvider = 'postgres' | 'mongodb';
+type DbProvider = 'postgresql' | 'mongodb';
 
 const createDatabaseAdapter = () => {
   const dbProvider = process.env.DB_PROVIDER as DbProvider;
@@ -19,7 +19,6 @@ const createDatabaseAdapter = () => {
     return mongodbAdapter(db, { client });
   }
 
-  // Default to PostgreSQL with Prisma
   const prisma = new PrismaClient();
   return prismaAdapter(prisma, {
     provider: 'postgresql',

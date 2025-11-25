@@ -31,8 +31,8 @@ export class CrudRouter {
   ): Promise<CrudSchema.TCrudCreateResponse> {
     const created = await this.crudService.createCrud(req.content);
     return {
-      id: created?.id ?? '',
       success: created != null,
+      id: created?.id,
       message: created ? 'Item created successfully' : 'Failed to create item',
     };
   }
@@ -50,10 +50,7 @@ export class CrudRouter {
 
     return {
       success: data != null,
-      cruds: data.map((item) => ({
-        id: item.id,
-        content: item.content,
-      })),
+      cruds: data,
       total: data.length,
       limit,
       offset,
@@ -68,8 +65,7 @@ export class CrudRouter {
     @Input() req: CrudSchema.TCrudFindOneRequest,
   ): Promise<CrudSchema.TCrudFindOneResponse> {
     const result = await this.crudService.findOne(req.id);
-    if (!result) return null;
-    return { id: result.id, content: result.content };
+    return result ?? null;
   }
 
   @UseMiddlewares(AuthMiddleware)
@@ -83,7 +79,7 @@ export class CrudRouter {
     const updated = await this.crudService.update(req.id, req.data.content);
     return {
       success: updated != null,
-      data: updated ? { id: updated.id, content: updated.content } : undefined,
+      data: updated ?? undefined,
       message: updated ? 'Item updated successfully' : 'Failed to update item',
     };
   }

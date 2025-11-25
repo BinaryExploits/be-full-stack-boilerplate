@@ -3,7 +3,7 @@ import {
   CRUD_REPOSITORY,
   CrudRepositoryInterface,
   CrudEntity,
-} from '../database/interfaces';
+} from '../database';
 
 @Injectable()
 export class CrudService {
