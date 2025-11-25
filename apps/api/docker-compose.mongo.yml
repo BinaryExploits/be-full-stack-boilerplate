@@ -1,4 +1,4 @@
-name: app-mongodb
+name: app-mongo-db
 services:
   mongodb:
     image: mongodb/mongodb-community-server:latest
