@@ -11,13 +11,13 @@ import {
 export class CrudPrismaRepository implements CrudRepositoryInterface {
   constructor(private readonly prisma: PrismaService) {}
 
-  async findAll(): Promise<CrudEntity[]> {
+  async find(): Promise<CrudEntity[]> {
     return this.prisma.crud.findMany({
       orderBy: { createdAt: 'desc' },
     });
   }
 
-  async findById(id: string): Promise<CrudEntity | null> {
+  async findOne(id: string): Promise<CrudEntity | null> {
     return this.prisma.crud.findUnique({
       where: { id },
     });

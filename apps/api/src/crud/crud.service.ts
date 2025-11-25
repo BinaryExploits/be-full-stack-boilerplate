@@ -17,11 +17,11 @@ export class CrudService {
   }
 
   async findAll(): Promise<CrudEntity[]> {
-    return this.crudRepository.findAll();
+    return this.crudRepository.find();
   }
 
   async findOne(id: string): Promise<CrudEntity> {
-    const crud = await this.crudRepository.findById(id);
+    const crud = await this.crudRepository.findOne(id);
     if (!crud) throw new NotFoundException(`Crud with id ${id} not found`);
     return crud;
   }

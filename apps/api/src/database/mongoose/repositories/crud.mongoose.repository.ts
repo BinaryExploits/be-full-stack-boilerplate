@@ -25,12 +25,12 @@ export class CrudMongooseRepository implements CrudRepositoryInterface {
     };
   }
 
-  async findAll(): Promise<CrudEntity[]> {
+  async find(): Promise<CrudEntity[]> {
     const docs = await this.crudModel.find().sort({ createdAt: -1 }).exec();
     return docs.map((doc) => this.toEntity(doc));
   }
 
-  async findById(id: string): Promise<CrudEntity | null> {
+  async findOne(id: string): Promise<CrudEntity | null> {
     const doc = await this.crudModel.findById(id).exec();
     return doc ? this.toEntity(doc) : null;
   }

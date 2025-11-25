@@ -15,7 +15,10 @@ export interface UpdateCrudDto {
   content?: string;
 }
 
-export interface CrudRepositoryInterface
-  extends BaseRepositoryInterface<CrudEntity, CreateCrudDto, UpdateCrudDto> {}
+export type CrudRepositoryInterface = BaseRepositoryInterface<
+  CrudEntity,
+  CreateCrudDto,
+  UpdateCrudDto
+>;
 
 export const CRUD_REPOSITORY = 'CRUD_REPOSITORY';
