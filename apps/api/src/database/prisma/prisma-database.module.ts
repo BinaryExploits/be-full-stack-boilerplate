@@ -1,16 +1,16 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { CrudPrismaRepository } from './repositories/crud.prisma.repository';
-import { CRUD_REPOSITORY } from '../interfaces';
+import { CrudRepository } from '../interfaces/crud.repository.interface';
 
 @Module({
   imports: [PrismaModule],
   providers: [
     {
-      provide: CRUD_REPOSITORY,
+      provide: CrudRepository,
       useClass: CrudPrismaRepository,
     },
   ],
-  exports: [CRUD_REPOSITORY],
+  exports: [CrudRepository],
 })
 export class PrismaDatabaseModule {}

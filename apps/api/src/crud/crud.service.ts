@@ -1,19 +1,17 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { CrudRepository } from '../database/interfaces/crud.repository.interface';
 import {
-  CRUD_REPOSITORY,
-  CrudRepositoryInterface,
   CrudEntity,
-} from '../database';
+  CreateCrudDto,
+  UpdateCrudDto,
+} from '../schemas/crud.schema';
 
 @Injectable()
 export class CrudService {
-  constructor(
-    @Inject(CRUD_REPOSITORY)
-    private readonly crudRepository: CrudRepositoryInterface,
-  ) {}
+  constructor(private readonly crudRepository: CrudRepository) {}
 
-  async createCrud(content: string): Promise<CrudEntity> {
-    return this.crudRepository.create({ content });
+  async createCrud(data: CreateCrudDto): Promise<CrudEntity> {
+    return this.crudRepository.create(data);
   }
 
   async findAll(): Promise<CrudEntity[]> {
@@ -26,10 +24,8 @@ export class CrudService {
     return crud;
   }
 
-  async update(id: string, updatedContent: string): Promise<CrudEntity> {
-    const updated = await this.crudRepository.update(id, {
-      content: updatedContent,
-    });
+  async update(id: string, data: UpdateCrudDto): Promise<CrudEntity> {
+    const updated = await this.crudRepository.update(id, data);
     if (!updated) throw new NotFoundException(`Crud with id ${id} not found`);
     return updated;
   }

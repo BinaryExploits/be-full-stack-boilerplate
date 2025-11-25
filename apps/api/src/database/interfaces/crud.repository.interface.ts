@@ -1,24 +1,16 @@
 import { BaseRepositoryInterface } from './base.repository.interface';
-
-export interface CrudEntity {
-  id: string;
-  content: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface CreateCrudDto {
-  content: string;
-}
-
-export interface UpdateCrudDto {
-  content?: string;
-}
-
-export type CrudRepositoryInterface = BaseRepositoryInterface<
+import {
   CrudEntity,
   CreateCrudDto,
-  UpdateCrudDto
->;
+  UpdateCrudDto,
+} from '../../schemas/crud.schema';
 
-export const CRUD_REPOSITORY = 'CRUD_REPOSITORY';
+export abstract class CrudRepository
+  implements BaseRepositoryInterface<CrudEntity, CreateCrudDto, UpdateCrudDto>
+{
+  abstract find(): Promise<CrudEntity[]>;
+  abstract findOne(id: string): Promise<CrudEntity | null>;
+  abstract create(data: CreateCrudDto): Promise<CrudEntity>;
+  abstract update(id: string, data: UpdateCrudDto): Promise<CrudEntity | null>;
+  abstract delete(id: string): Promise<CrudEntity | null>;
+}

@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { CrudDocument, CrudSchema } from './schemas/crud.schema';
+import { CrudDocument, CrudSchema } from './models/crud.model';
 import { CrudMongooseRepository } from './repositories/crud.mongoose.repository';
-import { CRUD_REPOSITORY } from '../interfaces';
+import { CrudRepository } from '../interfaces/crud.repository.interface';
 
 @Module({
   imports: [
@@ -12,10 +12,10 @@ import { CRUD_REPOSITORY } from '../interfaces';
   ],
   providers: [
     {
-      provide: CRUD_REPOSITORY,
+      provide: CrudRepository,
       useClass: CrudMongooseRepository,
     },
   ],
-  exports: [CRUD_REPOSITORY],
+  exports: [CrudRepository],
 })
 export class MongooseDatabaseModule {}

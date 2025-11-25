@@ -1,15 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../prisma/prisma.service';
+import { CrudRepository } from '../../interfaces/crud.repository.interface';
 import {
-  CrudRepositoryInterface,
   CrudEntity,
   CreateCrudDto,
   UpdateCrudDto,
-} from '../../interfaces';
+} from '../../../schemas/crud.schema';
 
 @Injectable()
-export class CrudPrismaRepository implements CrudRepositoryInterface {
-  constructor(private readonly prisma: PrismaService) {}
+export class CrudPrismaRepository extends CrudRepository {
+  constructor(private readonly prisma: PrismaService) {
+    super();
+  }
 
   async find(): Promise<CrudEntity[]> {
     return this.prisma.crud.findMany({

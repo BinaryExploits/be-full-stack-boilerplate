@@ -1,8 +1,7 @@
 import { DynamicModule, Global, Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { PrismaDatabaseModule } from './prisma';
-import { MongooseDatabaseModule } from './mongoose';
+import { PrismaDatabaseModule } from './prisma/prisma-database.module';
+import { MongooseDatabaseModule } from './mongoose/mongoose-database.module';
 
 export type DbProvider = 'postgresql' | 'mongodb';
 
@@ -17,14 +16,7 @@ export class DatabaseModule {
         global: true,
         module: DatabaseModule,
         imports: [
-          ConfigModule,
-          MongooseModule.forRootAsync({
-            imports: [ConfigModule],
-            useFactory: (configService: ConfigService) => ({
-              uri: configService.get<string>('DATABASE_URL_MONGODB'),
-            }),
-            inject: [ConfigService],
-          }),
+          MongooseModule.forRoot(process.env.DATABASE_URL_MONGODB!),
           MongooseDatabaseModule,
         ],
         exports: [MongooseDatabaseModule],

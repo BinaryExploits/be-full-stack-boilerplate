@@ -9,7 +9,7 @@ import { LoggerModule } from './utils/logger/logger.module';
 import { AuthModule } from './auth/auth.module';
 import { EmailModule } from './email/email.module';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
-import { DatabaseModule } from './database';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
   imports: [

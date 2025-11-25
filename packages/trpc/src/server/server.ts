@@ -9,12 +9,14 @@ const appRouter = t.router({
     createCrud: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
-    }).extend({
-      content: z
-        .string()
-        .min(1, 'Content cannot be empty')
-        .max(500, 'Content too long'),
-    })).output(z.object({
+    }).merge(z.object({
+      id: z.string(),
+      content: z.string().min(1).max(1000),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+    }).pick({
+      content: true,
+    }))).output(z.object({
       success: z.boolean(),
       message: z.string().optional(),
     }).extend({
@@ -33,6 +35,8 @@ const appRouter = t.router({
       cruds: z.array(z.object({
         id: z.string(),
         content: z.string().min(1).max(1000),
+        createdAt: z.date(),
+        updatedAt: z.date(),
       })),
       total: z.number().int().nonnegative(),
       limit: z.number().int().positive(),
@@ -46,19 +50,24 @@ const appRouter = t.router({
     })).output(z.object({
       id: z.string(),
       content: z.string().min(1).max(1000),
+      createdAt: z.date(),
+      updatedAt: z.date(),
     }).nullable()).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     updateCrud: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
     }).extend({
       id: z.string(),
-      data: z
-        .object({
-          content: z.string().min(1).max(1000),
-        })
-        .refine((data) => Object.keys(data).length > 0, {
-          message: 'At least one field must be provided for update',
-        }),
+      data: z.object({
+        id: z.string(),
+        content: z.string().min(1).max(1000),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      }).pick({
+        content: true,
+      }).refine((data) => Object.keys(data).length > 0, {
+        message: 'At least one field must be provided for update',
+      }),
     })).output(z.object({
       success: z.boolean(),
       message: z.string().optional(),
@@ -66,6 +75,8 @@ const appRouter = t.router({
       data: z.object({
         id: z.string(),
         content: z.string().min(1).max(1000),
+        createdAt: z.date(),
+        updatedAt: z.date(),
       }).optional(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     deleteCrud: publicProcedure.input(z.object({
