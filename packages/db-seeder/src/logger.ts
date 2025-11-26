@@ -1,3 +1,8 @@
+/**
+ * Centralized logger for database seeding operations
+ * Supports multiple database types (Prisma, Mongoose, etc.)
+ * Provides colored console output for better visibility
+ */
 export class SeedLogger {
   private static readonly COLORS = {
     reset: "\x1b[0m",
@@ -10,7 +15,14 @@ export class SeedLogger {
     gray: "\x1b[90m",
   };
 
-  private static readonly PREFIX = "[SEED_PRISMA]";
+  /**
+   * Set a custom prefix for the logger (e.g., "SEED_PRISMA", "SEED_MONGOOSE")
+   */
+  private static prefix = "[DB_SEED]";
+
+  static setPrefix(prefix: string): void {
+    this.prefix = prefix;
+  }
 
   static log(message: unknown, context?: string): void {
     console.log(
@@ -67,7 +79,7 @@ export class SeedLogger {
   }
 
   static step(stepNumber: number, message: string): void {
-    const prefixPart = `${this.COLORS.cyan}${this.PREFIX}${this.COLORS.reset}`;
+    const prefixPart = `${this.COLORS.cyan}${this.prefix}${this.COLORS.reset}`;
     const stepPart = ` ${this.COLORS.yellow}[Step ${stepNumber}]${this.COLORS.reset}`;
     const messagePart = ` ${this.COLORS.blue}${message}${this.COLORS.reset}`;
 
@@ -83,7 +95,7 @@ export class SeedLogger {
     const messageStr =
       typeof message === "string" ? message : JSON.stringify(message);
 
-    const prefixPart = `${this.COLORS.cyan}${this.PREFIX}${this.COLORS.reset}`;
+    const prefixPart = `${this.COLORS.cyan}${this.prefix}${this.COLORS.reset}`;
 
     const contextPart = context
       ? ` ${contextColor || this.COLORS.magenta}[${context}]${this.COLORS.reset}`

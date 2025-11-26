@@ -111,6 +111,9 @@ importers:
       '@nestjs/testing':
         specifier: ^11.0.1
         version: 11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.6)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.6(@nestjs/common@11.1.6(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.6))
+      '@repo/db-seeder':
+        specifier: workspace:*
+        version: link:../../packages/db-seeder
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../../packages/eslint-config
@@ -348,6 +351,12 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
+  packages/db-seeder:
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+
   packages/eslint-config:
     dependencies:
       '@eslint/js':
@@ -390,7 +399,11 @@ importers:
         specifier: ^8.40.0
         version: 8.46.1(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.2)
 
-  packages/prisma-db: {}
+  packages/prisma-db:
+    devDependencies:
+      '@repo/db-seeder':
+        specifier: workspace:*
+        version: link:../db-seeder
 
   packages/trpc:
     dependencies:

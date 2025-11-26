@@ -1,14 +1,9 @@
-import { Crud, PrismaClient } from "../generated/prisma";
-import { BaseSeeder } from "./base.seeder";
-import { SeedLogger } from "./logger";
+import { Crud } from "../generated/prisma";
+import { PrismaSeeder } from "./prisma.seeder";
 
-export class CrudSeeder extends BaseSeeder<Partial<Crud>> {
+export class CrudSeeder extends PrismaSeeder<Partial<Crud>> {
   readonly entityName = "CRUD";
   readonly seedFile = "crud.json";
-
-  constructor(private readonly prisma: PrismaClient) {
-    super();
-  }
 
   validate(): string[] {
     if (this.records.length <= 0) {
@@ -27,7 +22,7 @@ export class CrudSeeder extends BaseSeeder<Partial<Crud>> {
     }
 
     if (errors.length === 0) {
-      SeedLogger.success(
+      this.logger.success(
         `✓ Validated ${this.records.length} record(s)`,
         this.entityName,
       );
@@ -38,7 +33,7 @@ export class CrudSeeder extends BaseSeeder<Partial<Crud>> {
 
   async clean(): Promise<void> {
     const deletedRecords = await this.prisma.crud.deleteMany();
-    SeedLogger.success(
+    this.logger.success(
       `✓ Cleaned ${deletedRecords.count} record(s)`,
       this.entityName,
     );
@@ -51,7 +46,7 @@ export class CrudSeeder extends BaseSeeder<Partial<Crud>> {
       });
     }
 
-    SeedLogger.success(
+    this.logger.success(
       `✓ Seeded ${this.records.length} record(s)`,
       this.entityName,
     );
