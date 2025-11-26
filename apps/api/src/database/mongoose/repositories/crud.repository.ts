@@ -4,10 +4,10 @@ import { Model } from 'mongoose';
 import { CrudDocument } from '../models/crud.model';
 import { CrudRepository } from '../../interfaces/crud.repository';
 import {
-  CrudEntity,
   CreateCrudDto,
+  CrudEntity,
   UpdateCrudDto,
-} from '../../../schemas/crud.schema';
+} from '@/schemas/crud.schema';
 
 @Injectable()
 export class CrudMongooseRepository extends CrudRepository {
@@ -16,15 +16,6 @@ export class CrudMongooseRepository extends CrudRepository {
     private readonly crudModel: Model<CrudDocument>,
   ) {
     super();
-  }
-
-  private toEntity(doc: CrudDocument): CrudEntity {
-    return {
-      id: doc._id.toString(),
-      content: doc.content,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-    };
   }
 
   async find(): Promise<CrudEntity[]> {
@@ -52,5 +43,14 @@ export class CrudMongooseRepository extends CrudRepository {
   async delete(id: string): Promise<CrudEntity | null> {
     const doc = await this.crudModel.findByIdAndDelete(id).exec();
     return doc ? this.toEntity(doc) : null;
+  }
+
+  private toEntity(doc: CrudDocument): CrudEntity {
+    return {
+      id: doc._id.toString(),
+      content: doc.content,
+      createdAt: doc.createdAt,
+      updatedAt: doc.updatedAt,
+    };
   }
 }
