@@ -15,7 +15,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "db:seed:mongo": "dotenvx run -- ts-node -r tsconfig-paths/register src/database/mongoose/seed.ts",
+    "db:seed:prisma": "cd ../../packages/prisma-db && pnpm run db:seed",
+    "db:seed:all": "pnpm run db:seed:prisma && pnpm run db:seed:mongo"
   },
   "dependencies": {
     "@andeanwide/nestjs-rollbar": "^1.0.0",

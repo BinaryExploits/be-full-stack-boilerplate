@@ -4,6 +4,11 @@ import * as fs from "node:fs";
 
 const prisma = new PrismaClient();
 
+const logger = {
+  log: (message: unknown) => console.log(`[SEED_PRISMA]`, message),
+  error: (message: unknown) => console.error(`[SEED_PRISMA]`, message),
+};
+
 const SEED_DATA_DIR = "seed-data";
 
 const SEED_FILES = {
@@ -16,28 +21,24 @@ function loadJsonSeedFile<T>(jsonFileName: string): T[] {
     SEED_DATA_DIR,
     jsonFileName,
   );
-  console.log(`[SEED] Loading data from ${absoluteFilePath}...`);
+  logger.log(`Loading data from ${absoluteFilePath}...`);
 
   const rawJsonContent: string = fs.readFileSync(absoluteFilePath, "utf-8");
-  return JSON.parse(rawJsonContent);
+  return JSON.parse(rawJsonContent) as T[];
 }
 
 function validateCrudRecord(
   record: Partial<Crud>,
   index: number,
 ): string | null {
-  if (
-    !record.content ||
-    typeof record.content !== "string" ||
-    record.content.trim().length === 0
-  ) {
+  if (!record.content || record.content.trim().length === 0) {
     return `Record at index ${index}: 'content' property is required and must be a non-empty string`;
   }
   return null;
 }
 
 function validateCrudRecords(crudRecords: Partial<Crud>[]): string[] {
-  console.log(`[SEED] Validating ${crudRecords.length} CRUD record(s)...`);
+  logger.log(`Validating ${crudRecords.length} CRUD record(s)...`);
   const validationErrors: string[] = [];
 
   for (let index = 0; index < crudRecords.length; index++) {
@@ -48,21 +49,21 @@ function validateCrudRecords(crudRecords: Partial<Crud>[]): string[] {
   }
 
   if (validationErrors.length > 0) {
-    console.error(
-      `[SEED] CRUD validation failed with ${validationErrors.length} error(s):`,
+    logger.error(
+      `CRUD validation failed with ${validationErrors.length} error(s):`,
     );
     for (const error of validationErrors) {
-      console.error(`[SEED] ✗ ${error}`);
+      logger.error(`✗ ${error}`);
     }
   } else {
-    console.log(`[SEED] CRUD validation successful`);
+    logger.log(`CRUD validation successful`);
   }
 
   return validationErrors;
 }
 
 async function seedCrudRecords(crudRecords: Partial<Crud>[]): Promise<void> {
-  console.log(`[SEED] Seeding ${crudRecords.length} CRUD record(s)...`);
+  logger.log(`Seeding ${crudRecords.length} CRUD record(s)...`);
 
   let createdCount = 0;
   for (const crudRecord of crudRecords) {
@@ -70,29 +71,32 @@ async function seedCrudRecords(crudRecords: Partial<Crud>[]): Promise<void> {
       data: { content: crudRecord.content },
     });
     createdCount++;
-    console.log(
-      `[SEED] ✓ Created CRUD record ${createdCount}/${crudRecords.length}: "${crudRecord.content}"`,
+    logger.log(
+      `✓ Created CRUD record ${createdCount}/${crudRecords.length}: "${crudRecord.content}"`,
     );
   }
 
-  console.log(`[SEED] Successfully seeded ${createdCount} CRUD record(s)`);
+  logger.log(`Successfully seeded ${createdCount} CRUD record(s)`);
 }
 
 async function cleanCrudRecords(): Promise<void> {
-  console.log("[SEED] Cleaning CRUD records...");
+  logger.log("Cleaning CRUD records...");
   const deletedRecords = await prisma.crud.deleteMany();
-  console.log(`[SEED] Deleted ${deletedRecords.count} CRUD record(s)`);
+  logger.log(`Deleted ${deletedRecords.count} CRUD record(s)`);
 }
 
 async function cleanDatabase(): Promise<void> {
-  console.log("[SEED] Cleaning database...");
+  logger.log("Cleaning database...");
   await cleanCrudRecords();
 }
 
-async function validateSeedData(crudRecords: Partial<Crud>[]): Promise<void> {
-  console.log("[SEED] Validating seed data...");
+function validateSeedData(crudRecords: Partial<Crud>[]): void {
+  logger.log("Validating seed data...");
 
-  const validationErrors = validateCrudRecords(crudRecords);
+  const validationErrors: string[] = [];
+
+  const crudErrors: string[] = validateCrudRecords(crudRecords);
+  validationErrors.push(...crudErrors);
 
   if (validationErrors.length > 0) {
     throw new Error(
@@ -100,24 +104,24 @@ async function validateSeedData(crudRecords: Partial<Crud>[]): Promise<void> {
     );
   }
 
-  console.log(`[SEED] Validation completed successfully`);
+  logger.log(`Validation completed successfully`);
 }
 
 async function seedDatabase(crudRecords: Partial<Crud>[]): Promise<void> {
-  console.log("[SEED] Seeding database...");
+  logger.log("Seeding database...");
   await seedCrudRecords(crudRecords);
 }
 
 async function main() {
-  console.log("[SEED] Starting database seeding process...");
+  logger.log("Starting database seeding process...");
 
   const crudRecords: Partial<Crud>[] = loadJsonSeedFile(SEED_FILES.CRUD);
+  validateSeedData(crudRecords);
 
   await cleanDatabase();
-  await validateSeedData(crudRecords);
   await seedDatabase(crudRecords);
 
-  console.log("[SEED] Database seeding completed successfully!");
+  logger.log("Database seeding completed successfully!");
 }
 
 main()
@@ -125,8 +129,8 @@ main()
     await prisma.$disconnect();
   })
   .catch(async (error) => {
-    console.error("[SEED] Error during seeding process:");
-    console.error(error);
+    logger.error("Error during seeding process:");
+    logger.error(error);
     await prisma.$disconnect();
     process.exit(1);
   });
