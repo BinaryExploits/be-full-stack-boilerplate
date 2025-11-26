@@ -1,9 +1,6 @@
 import { ISeeder } from "./base.seeder";
 import { SeedLogger } from "./logger";
 
-/**
- * Orchestrator configuration
- */
 export interface SeederOrchestratorConfig {
   /**
    * List of seeder instances to run
@@ -29,10 +26,6 @@ export interface SeederOrchestratorConfig {
   loggerPrefix?: string;
 }
 
-/**
- * Generic seeding orchestrator that works with any database
- * Handles the complete seeding lifecycle: Load → Validate → Clean → Seed
- */
 export class SeederOrchestrator {
   private readonly seeders: ISeeder[];
   private readonly onConnect?: () => Promise<void>;
@@ -140,10 +133,6 @@ export class SeederOrchestrator {
   }
 }
 
-/**
- * Helper function to create and run a seeding orchestrator
- * Simplified API for common use cases
- */
 export async function runSeeders(
   config: SeederOrchestratorConfig,
 ): Promise<void> {

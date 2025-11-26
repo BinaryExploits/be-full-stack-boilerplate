@@ -4,10 +4,8 @@ Shared database seeding infrastructure for all database types (Prisma, Mongoose,
 
 ## Features
 
-- 🎨 **Beautiful Colored Logs** - Consistent, colorful output across all databases
 - 🔄 **Database Agnostic** - Works with Prisma, Mongoose, or any ORM
 - 📦 **Zero Code Duplication** - Write seeding logic once, use everywhere
-- 🎯 **Type Safe** - Full TypeScript support
 - 🚀 **Easy to Use** - Simple orchestrator handles all complexity
 - ✅ **Validation First** - Validates all data before any DB operations
 
@@ -238,24 +236,6 @@ Static logger class with colored output.
 ────────────────────────────────────────────────────────────
 ```
 
-## Benefits
-
-### Before (Duplicated Code)
-
-- ❌ Separate logger implementations for each database
-- ❌ Duplicated orchestration logic
-- ❌ Inconsistent log formatting
-- ❌ Manual maintenance of both implementations
-- ❌ Different error handling patterns
-
-### After (Shared Infrastructure)
-
-- ✅ Single logger implementation
-- ✅ Single orchestration logic
-- ✅ Consistent, beautiful logs
-- ✅ One place to maintain and improve
-- ✅ Consistent error handling
-
 ## Adding New Databases
 
 To add support for a new database type:
@@ -286,7 +266,3 @@ export abstract class TypeORMSeeder<T> extends SharedBaseSeeder<T> {
   }
 }
 ```
-
-## License
-
-Private package for internal use only.

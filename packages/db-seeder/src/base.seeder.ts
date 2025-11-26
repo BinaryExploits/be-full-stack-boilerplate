@@ -1,13 +1,10 @@
 import * as path from "node:path";
-import * as fs from "node:fs";
+import { readFile } from "node:fs/promises";
 import { SeedLogger } from "./logger";
 
-/**
- * Common interface that all seeders must implement
- */
 export interface ISeeder {
   readonly entityName: string;
-  readonly seedFile: string;
+  readonly seedDataFile: string;
 
   loadData(): Promise<void>;
   validate(): string[];
@@ -15,56 +12,33 @@ export interface ISeeder {
   seed(): Promise<void>;
 }
 
-/**
- * Abstract base class for database seeders
- * Database-agnostic - works with Prisma, Mongoose, or any other ORM
- */
-export abstract class BaseSeeder<T> implements ISeeder<T> {
+export abstract class BaseSeeder<T> implements ISeeder {
   abstract readonly entityName: string;
-  abstract readonly seedFile: string;
+  abstract readonly seedDataFile: string;
+  protected readonly seedDataDir: string;
 
   protected records: T[] = [];
-  protected logger = SeedLogger;
 
-  /**
-   * Constructor accepts the seed data directory path
-   * This allows different databases to have their own seed-data locations
-   */
-  protected constructor(protected readonly seedDataDir: string) {}
+  protected constructor(seedDataDir: string) {
+    this.seedDataDir = seedDataDir;
+  }
 
-  /**
-   * Loads data from JSON file
-   * Common implementation for all database types
-   */
-  loadData(): Promise<void> {
-    const absoluteFilePath: string = path.join(this.seedDataDir, this.seedFile);
+  async loadData(): Promise<void> {
+    const absoluteFilePath: string = path.join(
+      this.seedDataDir,
+      this.seedDataFile,
+    );
 
-    this.logger.log(`Loading data from ${this.seedFile}`, this.entityName);
-    const rawJsonContent: string = fs.readFileSync(absoluteFilePath, "utf-8");
+    SeedLogger.log(`Loading data from ${this.seedDataFile}`, this.entityName);
+    const rawJsonContent: string = await readFile(absoluteFilePath, "utf-8");
     this.records = JSON.parse(rawJsonContent) as T[];
-    this.logger.success(
+    SeedLogger.success(
       `✓ Loaded ${this.records.length} record(s)`,
       this.entityName,
     );
-
-    return Promise.resolve();
   }
 
-  /**
-   * Validate the loaded data
-   * Must be implemented by child classes with database-specific validation
-   */
   abstract validate(): string[];
-
-  /**
-   * Clean existing records from database
-   * Must be implemented by child classes with database-specific cleanup logic
-   */
   abstract clean(): Promise<void>;
-
-  /**
-   * Seed new records into database
-   * Must be implemented by child classes with database-specific insertion logic
-   */
   abstract seed(): Promise<void>;
 }

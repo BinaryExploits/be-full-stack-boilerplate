@@ -1,8 +1,3 @@
-/**
- * Centralized logger for database seeding operations
- * Supports multiple database types (Prisma, Mongoose, etc.)
- * Provides colored console output for better visibility
- */
 export class SeedLogger {
   private static readonly COLORS = {
     reset: "\x1b[0m",
@@ -15,9 +10,6 @@ export class SeedLogger {
     gray: "\x1b[90m",
   };
 
-  /**
-   * Set a custom prefix for the logger (e.g., "SEED_PRISMA", "SEED_MONGOOSE")
-   */
   private static prefix = "[DB_SEED]";
 
   static setPrefix(prefix: string): void {

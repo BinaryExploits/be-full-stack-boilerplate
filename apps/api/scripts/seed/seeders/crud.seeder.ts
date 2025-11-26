@@ -2,12 +2,12 @@ import * as mongoose from 'mongoose';
 import {
   CrudDocument,
   CrudSchema,
-} from '../../../src/database/mongoose/models/crud.model';
+} from '@/database/mongoose/models/crud.model';
 import { MongooseSeeder } from './mongoose.seeder';
 
 export class CrudSeeder extends MongooseSeeder<Partial<CrudDocument>> {
   readonly entityName = 'CRUD';
-  readonly seedFile = 'crud.json';
+  readonly seedDataFile = 'crud.json';
   readonly model: mongoose.Model<CrudDocument>;
 
   constructor() {
@@ -17,7 +17,7 @@ export class CrudSeeder extends MongooseSeeder<Partial<CrudDocument>> {
 
   validate(): string[] {
     if (this.records.length <= 0) {
-      throw new Error('No records to validate');
+      throw new Error(`No ${this.entityName} records to validate`);
     }
 
     const errors: string[] = [];

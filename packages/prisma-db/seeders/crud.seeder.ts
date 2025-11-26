@@ -1,13 +1,14 @@
 import { Crud } from "../generated/prisma";
 import { PrismaSeeder } from "./prisma.seeder";
+import { SeedLogger } from "@repo/db-seeder";
 
 export class CrudSeeder extends PrismaSeeder<Partial<Crud>> {
   readonly entityName = "CRUD";
-  readonly seedFile = "crud.json";
+  readonly seedDataFile = "crud.json";
 
   validate(): string[] {
     if (this.records.length <= 0) {
-      throw new Error("No records to validate");
+      throw new Error(`No ${this.entityName} records to validate`);
     }
 
     const errors: string[] = [];
@@ -22,7 +23,7 @@ export class CrudSeeder extends PrismaSeeder<Partial<Crud>> {
     }
 
     if (errors.length === 0) {
-      this.logger.success(
+      SeedLogger.success(
         `✓ Validated ${this.records.length} record(s)`,
         this.entityName,
       );
@@ -33,7 +34,7 @@ export class CrudSeeder extends PrismaSeeder<Partial<Crud>> {
 
   async clean(): Promise<void> {
     const deletedRecords = await this.prisma.crud.deleteMany();
-    this.logger.success(
+    SeedLogger.success(
       `✓ Cleaned ${deletedRecords.count} record(s)`,
       this.entityName,
     );
@@ -46,7 +47,7 @@ export class CrudSeeder extends PrismaSeeder<Partial<Crud>> {
       });
     }
 
-    this.logger.success(
+    SeedLogger.success(
       `✓ Seeded ${this.records.length} record(s)`,
       this.entityName,
     );
