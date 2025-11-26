@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": ".",
+    "module": "CommonJS"
+  },
+  "include": ["seed.ts", "seeders/**/*"],
+  "exclude": ["node_modules", "dist", "generated", "migrations"]
+}

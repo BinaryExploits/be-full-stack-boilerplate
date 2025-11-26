@@ -42,7 +42,7 @@ export class CrudSeeder extends PrismaSeeder<Partial<Crud>> {
   async seed(): Promise<void> {
     for (const record of this.records) {
       await this.prisma.crud.create({
-        data: { content: record.content! },
+        data: { content: record.content },
       });
     }
 

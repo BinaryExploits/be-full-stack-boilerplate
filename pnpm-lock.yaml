@@ -353,9 +353,21 @@ importers:
 
   packages/db-seeder:
     devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      eslint:
+        specifier: ^9.34.0
+        version: 9.38.0(jiti@2.6.1)
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+      typescript-eslint:
+        specifier: ^8.40.0
+        version: 8.46.1(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.2)
 
   packages/eslint-config:
     dependencies:
@@ -404,6 +416,21 @@ importers:
       '@repo/db-seeder':
         specifier: workspace:*
         version: link:../db-seeder
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../typescript-config
+      eslint:
+        specifier: ^9.34.0
+        version: 9.38.0(jiti@2.6.1)
+      typescript:
+        specifier: ^5.9.2
+        version: 5.9.2
+      typescript-eslint:
+        specifier: ^8.40.0
+        version: 8.46.1(eslint@9.38.0(jiti@2.6.1))(typescript@5.9.2)
 
   packages/trpc:
     dependencies:

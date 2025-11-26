@@ -9,9 +9,16 @@
   },
   "scripts": {
     "db:seed": "prisma db seed",
-    "db:migrate": "prisma migrate deploy && prisma db seed"
+    "db:migrate": "prisma migrate deploy && prisma db seed",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "devDependencies": {
-    "@repo/db-seeder": "workspace:*"
+    "@repo/db-seeder": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "eslint": "^9.34.0",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.40.0"
   }
 }

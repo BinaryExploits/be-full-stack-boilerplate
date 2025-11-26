@@ -10,9 +10,15 @@
     "./base": "./src/base.seeder.ts",
     "./orchestrator": "./src/orchestrator.ts"
   },
-  "scripts": {},
-  "dependencies": {},
+  "scripts": {
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*"
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "eslint": "^9.34.0",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.40.0"
   }
 }

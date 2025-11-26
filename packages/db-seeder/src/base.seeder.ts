@@ -5,7 +5,7 @@ import { SeedLogger } from "./logger";
 /**
  * Common interface that all seeders must implement
  */
-export interface ISeeder<T = any> {
+export interface ISeeder {
   readonly entityName: string;
   readonly seedFile: string;
 
@@ -36,7 +36,7 @@ export abstract class BaseSeeder<T> implements ISeeder<T> {
    * Loads data from JSON file
    * Common implementation for all database types
    */
-  async loadData(): Promise<void> {
+  loadData(): Promise<void> {
     const absoluteFilePath: string = path.join(this.seedDataDir, this.seedFile);
 
     this.logger.log(`Loading data from ${this.seedFile}`, this.entityName);
@@ -46,6 +46,8 @@ export abstract class BaseSeeder<T> implements ISeeder<T> {
       `✓ Loaded ${this.records.length} record(s)`,
       this.entityName,
     );
+
+    return Promise.resolve();
   }
 
   /**

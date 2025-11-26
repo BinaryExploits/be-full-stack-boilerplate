@@ -62,7 +62,7 @@ export class SeederOrchestrator {
 
     try {
       await this.loadAllData();
-      await this.validateAllData();
+      this.validateAllData();
       await this.cleanDatabase();
       await this.seedDatabase();
 
@@ -96,7 +96,7 @@ export class SeederOrchestrator {
    * Validate all seeder data
    * Collects all errors before throwing
    */
-  private async validateAllData(): Promise<void> {
+  private validateAllData(): void {
     SeedLogger.step(2, "Validating all seed data...");
     const validationErrors: string[] = [];
 
