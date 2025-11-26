@@ -1,7 +1,10 @@
 import * as path from 'node:path';
 import * as fs from 'node:fs';
 import * as mongoose from 'mongoose';
-import { CrudDocument, CrudSchema } from './models/crud.model';
+import {
+  CrudDocument,
+  CrudSchema,
+} from '../../src/database/mongoose/models/crud.model';
 
 const logger = {
   log: (message: unknown) => console.log(`[SEED_MONGOOSE]`, message),
