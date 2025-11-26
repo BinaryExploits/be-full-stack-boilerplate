@@ -1,6 +1,10 @@
 import { PrismaClient } from "./generated/prisma";
 import { CrudSeeder } from "./seeders/crud.seeder";
-import { runSeeders, SeederOrchestratorConfig } from "@repo/db-seeder";
+import {
+  runSeeders,
+  SeederOrchestratorConfig,
+  SeedLogger,
+} from "@repo/db-seeder";
 
 const prisma = new PrismaClient();
 const prismaSeederConfig: SeederOrchestratorConfig = {
@@ -8,6 +12,7 @@ const prismaSeederConfig: SeederOrchestratorConfig = {
   loggerPrefix: "[SEED_PRISMA]",
   onDisconnect: async () => {
     await prisma.$disconnect();
+    SeedLogger.log("Disconnected from PrismaClient");
   },
 };
 

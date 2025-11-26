@@ -4,6 +4,7 @@ import {
   CrudSchema,
 } from '@/database/mongoose/models/crud.model';
 import { MongooseSeeder } from './mongoose.seeder';
+import { SeedLogger } from '@repo/db-seeder';
 
 export class CrudSeeder extends MongooseSeeder<Partial<CrudDocument>> {
   readonly entityName = 'CRUD';
@@ -32,7 +33,7 @@ export class CrudSeeder extends MongooseSeeder<Partial<CrudDocument>> {
     }
 
     if (errors.length === 0) {
-      this.logger.success(
+      SeedLogger.success(
         `✓ Validated ${this.records.length} record(s)`,
         this.entityName,
       );
@@ -43,7 +44,7 @@ export class CrudSeeder extends MongooseSeeder<Partial<CrudDocument>> {
 
   async clean(): Promise<void> {
     const result = await this.model.deleteMany();
-    this.logger.success(
+    SeedLogger.success(
       `✓ Cleaned ${result.deletedCount} record(s)`,
       this.entityName,
     );
@@ -54,7 +55,7 @@ export class CrudSeeder extends MongooseSeeder<Partial<CrudDocument>> {
       await this.model.create({ content: record.content });
     }
 
-    this.logger.success(
+    SeedLogger.success(
       `✓ Seeded ${this.records.length} record(s)`,
       this.entityName,
     );
