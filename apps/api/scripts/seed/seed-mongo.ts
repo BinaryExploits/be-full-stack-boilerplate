@@ -1,126 +1,26 @@
-import * as path from 'node:path';
-import * as fs from 'node:fs';
 import * as mongoose from 'mongoose';
-import {
-  CrudDocument,
-  CrudSchema,
-} from '../../src/database/mongoose/models/crud.model';
+import { ISeeder, ValidationError } from './seeders/base.seeder';
+import { CrudSeeder } from './seeders/crud.seeder';
 
 const logger = {
   log: (message: unknown) => console.log(`[SEED_MONGOOSE]`, message),
   error: (message: unknown) => console.error(`[SEED_MONGOOSE]`, message),
 };
 
-const SEED_DATA_DIR = 'seed-data';
+// ============================================================================
+// Seeder Registry - Add new seeder instances here
+// ============================================================================
 
-const SEED_FILES = {
-  CRUD: 'crud.json',
-} as const;
+const SEEDERS: ISeeder[] = [
+  new CrudSeeder(),
+  // new UserSeeder(),
+  // new PostSeeder(),
+  // Add more seeders as needed...
+];
 
-function loadJsonSeedFile<T>(jsonFileName: string): T[] {
-  const absoluteFilePath: string = path.join(
-    __dirname,
-    SEED_DATA_DIR,
-    jsonFileName,
-  );
-  logger.log(`Loading data from ${absoluteFilePath}...`);
-
-  const rawJsonContent: string = fs.readFileSync(absoluteFilePath, 'utf-8');
-  return JSON.parse(rawJsonContent) as T[];
-}
-
-function validateCrudRecord(
-  record: Partial<CrudDocument>,
-  index: number,
-): string | null {
-  if (!record.content || record.content.trim().length === 0) {
-    return `Record at index ${index}: 'content' property is required and must be a non-empty string`;
-  }
-  return null;
-}
-
-function validateCrudRecords(crudRecords: Partial<CrudDocument>[]): string[] {
-  logger.log(`Validating ${crudRecords.length} CRUD record(s)...`);
-  const validationErrors: string[] = [];
-
-  for (let index = 0; index < crudRecords.length; index++) {
-    const error = validateCrudRecord(crudRecords[index], index);
-    if (error) {
-      validationErrors.push(error);
-    }
-  }
-
-  if (validationErrors.length > 0) {
-    logger.error(
-      `CRUD validation failed with ${validationErrors.length} error(s):`,
-    );
-    for (const error of validationErrors) {
-      logger.error(`✗ ${error}`);
-    }
-  } else {
-    logger.log(`CRUD validation successful`);
-  }
-
-  return validationErrors;
-}
-
-async function seedCrudRecords(
-  crudModel: mongoose.Model<CrudDocument>,
-  crudRecords: Partial<CrudDocument>[],
-): Promise<void> {
-  logger.log(`Seeding ${crudRecords.length} CRUD record(s)...`);
-
-  let createdCount = 0;
-  for (const crudRecord of crudRecords) {
-    await crudModel.create({ content: crudRecord.content });
-    createdCount++;
-    logger.log(
-      `✓ Created CRUD record ${createdCount}/${crudRecords.length}: "${crudRecord.content}"`,
-    );
-  }
-
-  logger.log(`Successfully seeded ${createdCount} CRUD record(s)`);
-}
-
-async function cleanCrudRecords(
-  crudModel: mongoose.Model<CrudDocument>,
-): Promise<void> {
-  logger.log('Cleaning CRUD records...');
-  const result = await crudModel.deleteMany({});
-  logger.log(`Deleted ${result.deletedCount} CRUD record(s)`);
-}
-
-async function cleanDatabase(
-  crudModel: mongoose.Model<CrudDocument>,
-): Promise<void> {
-  logger.log('Cleaning database...');
-  await cleanCrudRecords(crudModel);
-}
-
-function validateSeedData(crudRecords: Partial<CrudDocument>[]): void {
-  logger.log('Validating seed data...');
-
-  const validationErrors: string[] = [];
-
-  const crudErrors = validateCrudRecords(crudRecords);
-  validationErrors.push(...crudErrors);
-
-  if (validationErrors.length > 0) {
-    throw new Error(
-      `Validation failed with ${validationErrors.length} error(s)`,
-    );
-  }
-
-  logger.log(`Validation completed successfully`);
-}
-
-async function seedDatabase(
-  crudModel: mongoose.Model<CrudDocument>,
-  crudRecords: Partial<CrudDocument>[],
-): Promise<void> {
-  logger.log('Seeding database...');
-  await seedCrudRecords(crudModel, crudRecords);
-}
+// ============================================================================
+// Generic Orchestrator - No changes needed when adding new seeders
+// ============================================================================
 
 async function main() {
   logger.log('Starting database seeding process...');
@@ -134,15 +34,44 @@ async function main() {
   await mongoose.connect(mongoUri);
   logger.log(`Connected to MongoDB`);
 
-  const crudRecords: Partial<CrudDocument>[] = loadJsonSeedFile(
-    SEED_FILES.CRUD,
-  );
+  // Step 1: Load data for all seeders
+  logger.log('Loading data for all seeders...');
+  for (const seeder of SEEDERS) {
+    await seeder.loadData();
+  }
 
-  validateSeedData(crudRecords);
+  // Step 2: Validate all seeders (collect ALL errors before breaking flow)
+  logger.log('Validating all seed data...');
+  const allErrors: ValidationError[] = [];
 
-  const crudModel = mongoose.model<CrudDocument>(CrudDocument.name, CrudSchema);
-  await cleanDatabase(crudModel);
-  await seedDatabase(crudModel, crudRecords);
+  for (const seeder of SEEDERS) {
+    const errors = seeder.validate();
+    allErrors.push(...errors);
+  }
+
+  // Report all errors at once if any exist
+  if (allErrors.length > 0) {
+    logger.error(
+      `\n${'='.repeat(80)}\nValidation failed with ${allErrors.length} total error(s) across all seeders\n${'='.repeat(80)}`,
+    );
+    throw new Error(
+      `Validation failed with ${allErrors.length} error(s). Fix all errors above and try again.`,
+    );
+  }
+
+  logger.log('All validation completed successfully');
+
+  // Step 3: Clean all seeders
+  logger.log('Cleaning database...');
+  for (const seeder of SEEDERS) {
+    await seeder.clean();
+  }
+
+  // Step 4: Seed all seeders
+  logger.log('Seeding database...');
+  for (const seeder of SEEDERS) {
+    await seeder.seed();
+  }
 
   logger.log('Database seeding completed successfully!');
 }
