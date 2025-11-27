@@ -22,7 +22,7 @@
   },
   "dependencies": {
     "@andeanwide/nestjs-rollbar": "^1.0.0",
-    "@better-auth/expo": "^1.3.34",
+    "@better-auth/expo": "1.3.34",
     "@nestjs/common": "^11.0.1",
     "@nestjs/config": "^4.0.2",
     "@nestjs/core": "^11.0.1",
@@ -33,7 +33,7 @@
     "@repo/prisma-db": "workspace:*",
     "@repo/utils-core": "workspace:*",
     "@thallesp/nestjs-better-auth": "^2.1.0",
-    "better-auth": "^1.3.34",
+    "better-auth": "1.3.34",
     "mongoose": "^9.0.0",
     "nestjs-trpc": "^1.6.1",
     "reflect-metadata": "^0.2.2",
