@@ -15,7 +15,7 @@
     "lint:fix": "eslint . --fix"
   },
   "dependencies": {
-    "@better-auth/expo": "^1.3.34",
+    "@better-auth/expo": "1.3.34",
     "@expo/vector-icons": "^15.0.2",
     "@react-navigation/bottom-tabs": "^7.4.0",
     "@react-navigation/elements": "^2.6.3",
@@ -23,7 +23,7 @@
     "@repo/trpc": "workspace:*",
     "@repo/ui": "workspace:*",
     "@repo/utils-core": "workspace:*",
-    "better-auth": "^1.3.34",
+    "better-auth": "1.3.34",
     "expo": "~54.0.13",
     "expo-constants": "~18.0.9",
     "expo-font": "~14.0.9",
