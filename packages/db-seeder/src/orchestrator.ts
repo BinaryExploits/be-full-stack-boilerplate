@@ -118,7 +118,7 @@ export class SeederOrchestrator {
   private async cleanDatabase(): Promise<void> {
     SeedLogger.step(3, "Cleaning database...");
     for (const seeder of this.seeders) {
-      await seeder.clean();
+      await seeder.clean?.();
     }
   }
 

@@ -422,6 +422,9 @@ importers:
       '@repo/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
+      '@repo/utils-core':
+        specifier: workspace:*
+        version: link:../utils/core
       eslint:
         specifier: ^9.34.0
         version: 9.38.0(jiti@2.6.1)

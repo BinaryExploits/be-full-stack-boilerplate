@@ -5,6 +5,7 @@ import {
 } from '@/database/mongoose/models/crud.model';
 import { MongooseSeeder } from './mongoose.seeder';
 import { SeedLogger } from '@repo/db-seeder';
+import { StringExtensions } from '@repo/utils-core';
 
 export class CrudSeeder extends MongooseSeeder<Partial<CrudDocument>> {
   readonly entityName = 'CRUD';
@@ -25,7 +26,14 @@ export class CrudSeeder extends MongooseSeeder<Partial<CrudDocument>> {
 
     for (let index = 0; index < this.records.length; index++) {
       const record = this.records[index];
-      if (!record.content || record.content.trim().length === 0) {
+
+      if (!record._id) {
+        errors.push(
+          `${this.entityName} record at index ${index}: '_id' is required and must be non-empty`,
+        );
+      }
+
+      if (StringExtensions.IsNullOrEmpty(record.content)) {
         errors.push(
           `${this.entityName} record at index ${index}: 'content' is required and must be non-empty`,
         );
@@ -42,17 +50,19 @@ export class CrudSeeder extends MongooseSeeder<Partial<CrudDocument>> {
     return errors;
   }
 
-  async clean(): Promise<void> {
-    const result = await this.model.deleteMany();
-    SeedLogger.success(
-      `✓ Cleaned ${result.deletedCount} record(s)`,
-      this.entityName,
-    );
-  }
-
   async seed(): Promise<void> {
     for (const record of this.records) {
-      await this.model.create({ content: record.content });
+      await this.model.findOneAndUpdate(
+        {
+          _id: record._id,
+        },
+        {
+          content: record.content,
+        },
+        {
+          upsert: true,
+        },
+      );
     }
 
     SeedLogger.success(

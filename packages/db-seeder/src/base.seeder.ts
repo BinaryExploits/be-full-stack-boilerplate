@@ -8,7 +8,7 @@ export interface ISeeder {
 
   loadData(): Promise<void>;
   validate(): string[];
-  clean(): Promise<void>;
+  clean?(): Promise<void>;
   seed(): Promise<void>;
 }
 
@@ -39,6 +39,5 @@ export abstract class BaseSeeder<T> implements ISeeder {
   }
 
   abstract validate(): string[];
-  abstract clean(): Promise<void>;
   abstract seed(): Promise<void>;
 }
