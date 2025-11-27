@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../prisma/prisma.service';
+import { PrismaService } from '@/prisma/prisma.service';
 import { CrudRepository } from '../../interfaces/crud.repository';
 import {
-  CrudEntity,
   CreateCrudDto,
+  CrudEntity,
   UpdateCrudDto,
-} from '../../../schemas/crud.schema';
+} from '@/schemas/crud.schema';
 
 @Injectable()
 export class CrudPrismaRepository extends CrudRepository {
@@ -32,23 +32,15 @@ export class CrudPrismaRepository extends CrudRepository {
   }
 
   async update(id: string, data: UpdateCrudDto): Promise<CrudEntity | null> {
-    try {
-      return await this.prisma.crud.update({
-        where: { id },
-        data,
-      });
-    } catch {
-      return null;
-    }
+    return this.prisma.crud.update({
+      where: { id },
+      data,
+    });
   }
 
   async delete(id: string): Promise<CrudEntity | null> {
-    try {
-      return await this.prisma.crud.delete({
-        where: { id },
-      });
-    } catch {
-      return null;
-    }
+    return this.prisma.crud.delete({
+      where: { id },
+    });
   }
 }

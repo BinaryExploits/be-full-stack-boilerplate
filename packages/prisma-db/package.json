@@ -3,5 +3,23 @@
   "version": "1.0.0",
   "private": true,
   "main": "./generated/prisma/index.js",
-  "types": "./generated/prisma/index.d.ts"
+  "types": "./generated/prisma/index.d.ts",
+  "prisma": {
+    "seed": "ts-node --transpile-only --compiler-options {\"module\":\"CommonJS\"} ./seed.ts"
+  },
+  "scripts": {
+    "db:seed": "prisma db seed",
+    "db:migrate": "prisma migrate deploy && prisma db seed",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "devDependencies": {
+    "@repo/utils-core": "workspace:*",
+    "@repo/db-seeder": "workspace:*",
+    "@repo/eslint-config": "workspace:*",
+    "@repo/typescript-config": "workspace:*",
+    "eslint": "^9.34.0",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.40.0"
+  }
 }

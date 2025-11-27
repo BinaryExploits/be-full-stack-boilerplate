@@ -1,9 +1,9 @@
 import { BaseRepository } from './base.repository';
 import {
-  CrudEntity,
   CreateCrudDto,
+  CrudEntity,
   UpdateCrudDto,
-} from '../../schemas/crud.schema';
+} from '@/schemas/crud.schema';
 
 export abstract class CrudRepository
   implements BaseRepository<CrudEntity, CreateCrudDto, UpdateCrudDto>
