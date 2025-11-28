@@ -44,7 +44,9 @@ Once the repository is cloned, you can run an **automated setup script** from th
 
 ```bash
 npm run setup
-# or
+```
+or
+```bash
 node setup.js
 ```
 
