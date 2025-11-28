@@ -9,7 +9,8 @@
   "license": "AGPL-3.0-or-later",
   "scripts": {
     "setup": "node setup.js",
-    "dev:prep": "docker-compose -f apps/api/docker-compose.mongo.yml up -d && docker-compose -f apps/api/docker-compose.pg.yml up -d",
+    "docker:start": "docker-compose -f apps/api/docker-compose.mongo.yml up -d && docker-compose -f apps/api/docker-compose.pg.yml up -d",
+    "dev:prep": "pnpm run docker:start",
     "dev": "pnpm run dev:prep && turbo run dev --parallel",
     "dev:web": "pnpm --filter web dev",
     "dev:api": "pnpm --filter api dev",

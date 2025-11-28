@@ -1,17 +1,14 @@
 const { execSync } = require("child_process");
 const { existsSync, copyFileSync } = require("fs");
 
-// Track current step and step number for logging
 let currentStep = "";
 let stepNumber = 0;
 
-// Helper to run shell commands cross-platform
 function run(command, options = {}) {
   console.log(`\nRunning: ${command}`);
   execSync(command, { stdio: "inherit", shell: true, ...options });
 }
 
-// Helper to log steps using currentStep
 function logStep() {
   console.log("\n==============================");
   console.log(`Step ${++stepNumber}: ${currentStep}`);
