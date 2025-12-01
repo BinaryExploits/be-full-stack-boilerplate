@@ -33,12 +33,32 @@ Make sure the following are installed **before** setup:
 
 ## 🏗️ Setup Guide
 
+### 0. Prerequisites
+Before proceeding with the setup, ensure you have all the required prerequisites installed. 
+Missing any of these may cause the setup to fail or not work as expected.
+
 ### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/BinaryExploits/be-full-stack-boilerplate.git
 cd be-full-stack-boilerplate
 ```
+
+Once the repository is cloned, you can run an **automated setup script** from the root to prepare dependencies and the project:
+
+```bash
+npm run setup
+```
+or
+```bash
+node setup.js
+```
+
+This script will automatically perform all the steps mentioned below.
+
+⚠️ You may still need to manually update some values in your .env files as required.
+
+Alternatively, you can follow the steps mentioned below manually to set up the project.
 
 ---
 
