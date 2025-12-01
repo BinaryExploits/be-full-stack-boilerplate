@@ -18,7 +18,6 @@ function logStep() {
 try {
   currentStep = "Installing dependencies";
   logStep();
-  run("npm install -g pnpm");
   run("pnpm install");
 
   currentStep = "Setting up environment files";
@@ -71,7 +70,9 @@ try {
 
   currentStep = "Setup Complete";
   logStep();
-  console.log("All dependencies installed, Docker containers running, Prisma setup done.");
+  console.log(
+    "All dependencies installed, Docker containers running, Prisma setup done.",
+  );
   console.log("You can now run 'pnpm dev' from the root to start all apps.");
 } catch (error) {
   console.error(`\nSetup failed at step: ${currentStep}`);

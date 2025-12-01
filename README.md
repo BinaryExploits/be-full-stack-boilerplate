@@ -33,6 +33,10 @@ Make sure the following are installed **before** setup:
 
 ## 🏗️ Setup Guide
 
+### 0. Prerequisites
+Before proceeding with the setup, ensure you have all the required prerequisites installed. 
+Missing any of these may cause the setup to fail or not work as expected.
+
 ### 1. Clone the Repository
 
 ```bash
