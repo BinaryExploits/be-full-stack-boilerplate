@@ -22,7 +22,6 @@
     "strictBindCallApply": false,
     "noFallthroughCasesInSwitch": false,
     "paths": {
-      "@/*": ["src/*"],
       "@repo/utils-core": ["../../packages/utils/core/src/"]
     }
   }

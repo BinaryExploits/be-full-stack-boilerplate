@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import {
   CrudDocument,
   CrudSchema,
-} from '@/database/mongoose/models/crud.model';
+} from '../../../src/modules/crud/models/crud.model';
 import { MongooseSeeder } from './mongoose.seeder';
 import { SeedLogger } from '@repo/db-seeder';
 import { StringExtensions } from '@repo/utils-core';

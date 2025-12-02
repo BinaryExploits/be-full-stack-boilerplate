@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { TRPCMiddleware, MiddlewareOptions } from 'nestjs-trpc';
+import { MiddlewareOptions, TRPCMiddleware } from 'nestjs-trpc';
 import { TRPCError } from '@trpc/server';
-import { AppContextType } from '../app.context';
+import { AppContextType } from '../../app.context';
 import { AuthService } from './auth.service';
 import { fromNodeHeaders } from 'better-auth/node';
 

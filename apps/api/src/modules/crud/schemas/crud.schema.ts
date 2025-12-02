@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ZBaseRequest, ZBaseResponse } from './base.schema';
+import { ZBaseRequest, ZBaseResponse } from '../../../schemas/base.schema';
 
 export const ZCrudEntity = z.object({
   id: z.string(),

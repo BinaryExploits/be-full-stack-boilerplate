@@ -2,14 +2,15 @@ import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { TRPCModule } from 'nestjs-trpc';
-import { CrudModule } from './crud/crud.module';
+import { CrudModule } from './modules/crud/crud.module';
 import { AppContext } from './app.context';
 import { RollbarModule } from '@andeanwide/nestjs-rollbar';
-import { LoggerModule } from './utils/logger/logger.module';
-import { AuthModule } from './auth/auth.module';
-import { EmailModule } from './email/email.module';
+import { LoggerModule } from './modules/logger/logger.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { EmailModule } from './modules/email/email.module';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
-import { DatabaseModule } from './database/database.module';
+import { PrismaModule } from './modules/prisma/prisma.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
   imports: [
@@ -22,7 +23,8 @@ import { DatabaseModule } from './database/database.module';
       context: AppContext,
       errorFormatter: trpcErrorFormatter,
     }),
-    DatabaseModule.forRoot(),
+    PrismaModule,
+    MongooseModule.forRoot(process.env.DATABASE_URL_MONGODB!),
     AuthModule,
     RollbarModule.register({
       accessToken: process.env.ROLLBAR_ACCESS_TOKEN!,

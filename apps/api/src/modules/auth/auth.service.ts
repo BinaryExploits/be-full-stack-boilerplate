@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import type { Auth } from 'better-auth';
 import { EmailService } from '../email/email.service';
-import { BetterAuthLogger } from '../utils/logger/logger-better-auth';
+import { BetterAuthLogger } from '../logger/logger-better-auth';
 import { createBetterAuth } from './auth';
 
 @Injectable()

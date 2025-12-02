@@ -1,7 +1,6 @@
 import { Input, Mutation, Query, Router, UseMiddlewares } from 'nestjs-trpc';
 import { CrudService } from './crud.service';
-import * as CrudSchema from '../schemas/crud.schema';
-
+import * as CrudSchema from './schemas/crud.schema';
 import {
   ZCrudCreateRequest,
   ZCrudCreateResponse,
@@ -13,7 +12,7 @@ import {
   ZCrudFindOneResponse,
   ZCrudUpdateRequest,
   ZCrudUpdateResponse,
-} from '../schemas/crud.schema';
+} from './schemas/crud.schema';
 
 import { AuthMiddleware } from '../auth/auth.middleware';
 

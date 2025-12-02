@@ -118,8 +118,6 @@ docker-compose up -d
 
 This starts both PostgreSQL and MongoDB containers.
 
-**Choose your database provider by setting `DB_PROVIDER` in `apps/api/.env`:**
-
 #### If using PostgreSQL (with Prisma)
 
 Setup Prisma:
@@ -207,7 +205,6 @@ This command runs all apps (API, Web, and Mobile) concurrently using Turborepo.
 
 * Keep Docker running while developing backend/API.
 * Use `pnpm` consistently — **do not use npm or yarn**.
-* Set `DB_PROVIDER` env variable (`postgresql` or `mongodb`) before starting the API.
 * Better Auth requires proper environment variables for OAuth providers.
 
 ---
