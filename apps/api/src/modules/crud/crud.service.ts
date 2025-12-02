@@ -1,10 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CrudRepository } from '../database/interfaces/crud.repository';
+import { CrudRepository } from './repositories/crud.repository';
 import {
-  CrudEntity,
   CreateCrudDto,
+  CrudEntity,
   UpdateCrudDto,
-} from '../schemas/crud.schema';
+} from './schemas/crud.schema';
 
 @Injectable()
 export class CrudService {
