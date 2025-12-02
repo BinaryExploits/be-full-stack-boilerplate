@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '@/prisma/prisma.service';
+import { PrismaService } from '../../../prisma/prisma.service';
 import { CrudRepository } from '../../interfaces/crud.repository';
 import {
   CreateCrudDto,
   CrudEntity,
   UpdateCrudDto,
-} from '@/schemas/crud.schema';
+} from '../../../schemas/crud.schema';
 
 @Injectable()
 export class CrudPrismaRepository extends CrudRepository {

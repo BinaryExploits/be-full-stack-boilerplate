@@ -3,11 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CrudDocument } from '../models/crud.model';
 import { CrudRepository } from '../../interfaces/crud.repository';
-import {
-  CreateCrudDto,
-  CrudEntity,
-  UpdateCrudDto,
-} from '@/schemas/crud.schema';
+import { CreateCrudDto, CrudEntity, UpdateCrudDto, } from '../../../schemas/crud.schema';
 
 @Injectable()
 export class CrudMongooseRepository extends CrudRepository {
