@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../prisma/prisma.service';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { PrismaTransactionAdapter } from '../../prisma';
 import {
   CreateCrudDto,
   CrudEntity,
@@ -9,13 +10,13 @@ import {
 @Injectable()
 export class CrudRepository {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly txHost: TransactionHost<PrismaTransactionAdapter>,
     // @InjectModel(CrudDocument.name)
     // private readonly crudModel: Model<CrudDocument>,
   ) {}
 
   async find(): Promise<CrudEntity[]> {
-    return this.prisma.crud.findMany({
+    return this.txHost.tx.crud.findMany({
       orderBy: { createdAt: 'desc' },
     });
 
@@ -24,7 +25,7 @@ export class CrudRepository {
   }
 
   async findOne(id: string): Promise<CrudEntity | null> {
-    return this.prisma.crud.findUnique({
+    return this.txHost.tx.crud.findUnique({
       where: { id },
     });
 
@@ -33,7 +34,8 @@ export class CrudRepository {
   }
 
   async create(data: CreateCrudDto): Promise<CrudEntity> {
-    return this.prisma.crud.create({
+    // Uses transaction from CLS context via TransactionHost
+    return this.txHost.tx.crud.create({
       data,
     });
 
@@ -42,7 +44,7 @@ export class CrudRepository {
   }
 
   async update(id: string, data: UpdateCrudDto): Promise<CrudEntity | null> {
-    return this.prisma.crud.update({
+    return this.txHost.tx.crud.update({
       where: { id },
       data,
     });
@@ -54,7 +56,7 @@ export class CrudRepository {
   }
 
   async delete(id: string): Promise<CrudEntity | null> {
-    return this.prisma.crud.delete({
+    return this.txHost.tx.crud.delete({
       where: { id },
     });
 

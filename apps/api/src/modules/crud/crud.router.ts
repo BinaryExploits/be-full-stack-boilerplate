@@ -16,6 +16,7 @@ import {
 
 import { AuthMiddleware } from '../auth/auth.middleware';
 
+// Transactions handled at service level (not middleware)
 @Router({ alias: 'crud' })
 export class CrudRouter {
   constructor(private readonly crudService: CrudService) {}
@@ -28,6 +29,7 @@ export class CrudRouter {
   async createCrud(
     @Input() req: CrudSchema.TCrudCreateRequest,
   ): Promise<CrudSchema.TCrudCreateResponse> {
+    // Transaction handled at service level
     const created = await this.crudService.createCrud(req);
     return {
       success: created != null,
