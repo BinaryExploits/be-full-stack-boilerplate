@@ -88,7 +88,7 @@ export class CrudRepository {
   }
 
   async create(data: CreateCrudDto): Promise<CrudEntity> {
-    const doc = new CrudDocument(data);
+    const doc = new this.crudModel(data);
     await doc.save({ session: this.mongoTxHost.tx });
     return this.toEntity(doc);
   }
