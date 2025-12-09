@@ -10,11 +10,12 @@ import { AuthModule } from './modules/auth/auth.module';
 import { EmailModule } from './modules/email/email.module';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
 import { PrismaModule } from './modules/prisma/prisma.module';
-import { MongooseModule } from '@nestjs/mongoose';
+import { PrismaService } from './modules/prisma/prisma.service';
+import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
 import { ClsModule } from 'nestjs-cls';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
+import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
-import { PrismaService } from './modules/prisma/prisma.service';
 
 @Module({
   imports: [
@@ -37,15 +38,27 @@ import { PrismaService } from './modules/prisma/prisma.service';
         generateId: true, // Generate request ID
         // Fix: Use proper type for tRPC compatibility
         idGenerator: (req) =>
-          (req.headers as any)['x-request-id'] ?? crypto.randomUUID(),
+          req.headers['x-request-id'] ?? crypto.randomUUID(),
       },
       plugins: [
         new ClsPluginTransactional({
+          connectionName: 'MONGOOSE_CONNECTION',
+          imports: [
+            // module in which the Connection instance is provided
+            MongooseModule,
+          ],
+          adapter: new TransactionalAdapterMongoose({
+            // the injection token of the mongoose Connection
+            mongooseConnectionToken: getConnectionToken(),
+          }),
+        }),
+        new ClsPluginTransactional({
+          connectionName: 'PRISMA_CONNECTION',
           imports: [PrismaModule],
           adapter: new TransactionalAdapterPrisma({
             prismaInjectionToken: PrismaService,
           }),
-          enableTransactionProxy: true, // Allows direct service injection
+          enableTransactionProxy: true,
         }),
       ],
     }),
