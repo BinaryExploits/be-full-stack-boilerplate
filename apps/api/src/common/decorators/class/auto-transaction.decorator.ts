@@ -1,11 +1,7 @@
 import 'reflect-metadata';
 import { Transactional } from '@nestjs-cls/transactional';
-import { NO_TRANSACTION_KEY } from '../../constants';
+import { NO_TRANSACTION_KEY } from '../constants';
 
-/**
- * Class decorator that automatically applies @Transactional to all methods,
- * except those marked with @NoTransaction.
- */
 export function AutoTransaction(): ClassDecorator {
   return (target) => {
     const proto = target.prototype as Record<string, unknown>;

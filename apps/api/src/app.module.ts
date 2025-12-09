@@ -34,11 +34,7 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
     ClsModule.forRoot({
       global: true,
       middleware: {
-        mount: true, // Mount CLS middleware globally
-        generateId: true, // Generate request ID
-        // Fix: Use proper type for tRPC compatibility
-        idGenerator: (req) =>
-          req.headers['x-request-id'] ?? crypto.randomUUID(),
+        mount: true,
       },
       plugins: [
         new ClsPluginTransactional({
@@ -53,7 +49,7 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
           }),
         }),
         new ClsPluginTransactional({
-          connectionName: 'PRISMA_CONNECTION',
+          connectionName: PrismaModule.name,
           imports: [PrismaModule],
           adapter: new TransactionalAdapterPrisma({
             prismaInjectionToken: PrismaService,

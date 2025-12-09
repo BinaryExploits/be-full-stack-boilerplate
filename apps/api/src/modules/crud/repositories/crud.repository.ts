@@ -8,7 +8,10 @@ import {
   CrudEntity,
   UpdateCrudDto,
 } from '../schemas/crud.schema';
-import { PrismaTransactionAdapter } from '../../prisma/prisma.module';
+import {
+  PrismaModule,
+  PrismaTransactionAdapter,
+} from '../../prisma/prisma.module';
 
 @Injectable()
 export class CrudRepository {
@@ -17,7 +20,7 @@ export class CrudRepository {
   // ======================
 
   constructor(
-    @InjectTransactionHost('PRISMA_CONNECTION')
+    @InjectTransactionHost(PrismaModule.name)
     private readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
   ) {}
 
