@@ -38,7 +38,7 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
       },
       plugins: [
         new ClsPluginTransactional({
-          connectionName: 'MONGOOSE_CONNECTION',
+          connectionName: MongooseModule.name,
           imports: [
             // module in which the Connection instance is provided
             MongooseModule,

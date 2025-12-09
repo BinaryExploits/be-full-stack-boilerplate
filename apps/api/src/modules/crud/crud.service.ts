@@ -8,13 +8,13 @@ import {
 // import { AutoTransaction } from '../../common/decorators/class/auto-transaction.decorator';
 // import { NoTransaction } from '../../common/decorators/method/no-transaction.decorator';
 import { Transactional } from '@nestjs-cls/transactional';
-import { PrismaModule } from '../prisma/prisma.module';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Injectable()
 export class CrudService {
   constructor(private readonly crudRepository: CrudRepository) {}
 
-  @Transactional(PrismaModule.name)
+  @Transactional(MongooseModule.name)
   async runInTransaction<T>(fn: () => Promise<T>): Promise<T> {
     return await fn();
   }
@@ -44,14 +44,14 @@ export class CrudService {
     return crud;
   }
 
-  @Transactional(PrismaModule.name)
+  @Transactional(MongooseModule.name)
   async update(id: string, data: UpdateCrudDto): Promise<CrudEntity | null> {
     const updated = await this.crudRepository.update(id, data);
     if (!updated) throw new NotFoundException(`Crud with id ${id} not found`);
     return updated;
   }
 
-  @Transactional(PrismaModule.name)
+  @Transactional(MongooseModule.name)
   async delete(id: string): Promise<CrudEntity | null> {
     const deleted = await this.crudRepository.delete(id);
     if (!deleted) throw new NotFoundException(`Crud with id ${id} not found`);
