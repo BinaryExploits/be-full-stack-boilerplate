@@ -1,5 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CrudRepository } from './repositories/crud.repository';
 import {
   CreateCrudDto,
   CrudEntity,
@@ -8,11 +7,12 @@ import {
 import { NoTransaction } from '../../decorators/method/no-transaction.decorator';
 import { Transactional } from '../../decorators/class/transactional.decorator';
 import { MongooseModule } from '@nestjs/mongoose';
+import { CrudMongoRepository } from './repositories/mongoose/crud.mongo.repository';
 
 @Injectable()
 @Transactional(MongooseModule.name)
 export class CrudService {
-  constructor(private readonly crudRepository: CrudRepository) {}
+  constructor(private readonly crudRepository: CrudMongoRepository) {}
 
   async createCrud(data: CreateCrudDto): Promise<CrudEntity> {
     const created = await this.crudRepository.create(data);
@@ -28,7 +28,7 @@ export class CrudService {
 
   @NoTransaction()
   async findOne(id: string): Promise<CrudEntity> {
-    const crud = await this.crudRepository.findOne(id);
+    const crud = await this.crudRepository.findOneById(id);
     if (!crud) throw new NotFoundException(`Crud with id ${id} not found`);
     return crud;
   }
@@ -40,7 +40,7 @@ export class CrudService {
   }
 
   async delete(id: string): Promise<CrudEntity | null> {
-    const deleted = await this.crudRepository.delete(id);
+    const deleted = await this.crudRepository.deleteById(id);
     if (!deleted) throw new NotFoundException(`Crud with id ${id} not found`);
     console.log(deleted);
     throw new Error('Simulated delete error to test transaction rollback');

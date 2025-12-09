@@ -11,9 +11,10 @@ const appRouter = t.router({
       timestamp: z.number().optional(),
     }).merge(z.object({
       id: z.string(),
-      content: z.string().min(1).max(1000),
       createdAt: z.date(),
       updatedAt: z.date(),
+    }).extend({
+      content: z.string().min(1).max(1000),
     }).pick({
       content: true,
     }))).output(z.object({
@@ -34,9 +35,10 @@ const appRouter = t.router({
     }).extend({
       cruds: z.array(z.object({
         id: z.string(),
-        content: z.string().min(1).max(1000),
         createdAt: z.date(),
         updatedAt: z.date(),
+      }).extend({
+        content: z.string().min(1).max(1000),
       })),
       total: z.number().int().nonnegative(),
       limit: z.number().int().positive(),
@@ -49,9 +51,10 @@ const appRouter = t.router({
       id: z.string(),
     })).output(z.object({
       id: z.string(),
-      content: z.string().min(1).max(1000),
       createdAt: z.date(),
       updatedAt: z.date(),
+    }).extend({
+      content: z.string().min(1).max(1000),
     }).nullable()).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     updateCrud: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
@@ -60,9 +63,10 @@ const appRouter = t.router({
       id: z.string(),
       data: z.object({
         id: z.string(),
-        content: z.string().min(1).max(1000),
         createdAt: z.date(),
         updatedAt: z.date(),
+      }).extend({
+        content: z.string().min(1).max(1000),
       }).pick({
         content: true,
       }).refine((data) => Object.keys(data).length > 0, {
@@ -74,9 +78,10 @@ const appRouter = t.router({
     }).extend({
       data: z.object({
         id: z.string(),
-        content: z.string().min(1).max(1000),
         createdAt: z.date(),
         updatedAt: z.date(),
+      }).extend({
+        content: z.string().min(1).max(1000),
       }).optional(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     deleteCrud: publicProcedure.input(z.object({

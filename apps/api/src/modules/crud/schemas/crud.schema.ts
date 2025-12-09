@@ -1,11 +1,12 @@
 import { z } from 'zod';
-import { ZBaseRequest, ZBaseResponse } from '../../../schemas/base.schema';
+import {
+  BaseEntity,
+  ZBaseRequest,
+  ZBaseResponse,
+} from '../../../schemas/base.schema';
 
-export const ZCrudEntity = z.object({
-  id: z.string(),
+export const ZCrudEntity = BaseEntity.extend({
   content: z.string().min(1).max(1000),
-  createdAt: z.date(),
-  updatedAt: z.date(),
 });
 
 export const ZCreateCrudDto = ZCrudEntity.pick({
