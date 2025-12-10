@@ -36,7 +36,7 @@ export class CrudService {
   }
 
   async delete(id: string): Promise<Crud | null> {
-    const deleted = await this.crudRepository.deleteById(id);
+    const deleted = await this.crudRepository.findByIdAndDelete(id);
     if (!deleted) throw new NotFoundException(`Crud with id ${id} not found`);
     console.log(deleted);
     // throw new Error('Simulated delete error to test transaction rollback');

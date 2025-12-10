@@ -31,19 +31,19 @@ export abstract class BaseRepositoryMongo<
   async create(entity: Partial<TDbEntity>): Promise<TDomainEntity> {
     const doc = new this.model(entity);
     await doc.save({ session: this.mongoTxHost.tx });
-    return this.toDomainEntity(doc);
+    return this.toDomainEntity(doc.toObject());
   }
 
   async createMany(
     entities: Partial<TDbEntity>[],
     options?: InsertManyOptions,
   ): Promise<TDomainEntity[]> {
-    const docs = (await this.model.insertMany(entities, {
+    const docs = await this.model.insertMany(entities, {
       ...options,
       session: this.mongoTxHost.tx,
-    })) as unknown as TDbEntity[];
+    });
 
-    return docs.map((doc) => this.toDomainEntity(doc));
+    return docs.map((doc) => this.toDomainEntity(doc.toObject()));
   }
 
   async find(
@@ -53,7 +53,8 @@ export abstract class BaseRepositoryMongo<
   ): Promise<TDomainEntity[]> {
     const docs = await this.model
       .find(filter, projection, options)
-      .session(this.mongoTxHost.tx);
+      .session(this.mongoTxHost.tx)
+      .lean();
 
     return docs.map((doc) => this.toDomainEntity(doc));
   }
@@ -65,7 +66,8 @@ export abstract class BaseRepositoryMongo<
   ): Promise<TDomainEntity | null> {
     const doc = await this.model
       .findById(id, projection, options)
-      .session(this.mongoTxHost.tx);
+      .session(this.mongoTxHost.tx)
+      .lean();
 
     return doc ? this.toDomainEntity(doc) : null;
   }
@@ -77,16 +79,17 @@ export abstract class BaseRepositoryMongo<
   ): Promise<TDomainEntity | null> {
     const doc = await this.model
       .findOne(filter, projection, options)
-      .session(this.mongoTxHost.tx);
+      .session(this.mongoTxHost.tx)
+      .lean();
 
-    return this.toDomainEntity(doc as unknown as TDbEntity);
+    return doc ? this.toDomainEntity(doc) : null;
   }
 
   async updateOneById(
     id: string,
     update: UpdateQuery<TDbEntity>,
   ): Promise<boolean> {
-    return this.updateOne({ id }, update);
+    return this.updateOne({ _id: id }, update);
   }
 
   async updateOne(
@@ -97,7 +100,7 @@ export abstract class BaseRepositoryMongo<
       .updateOne(filter, update)
       .session(this.mongoTxHost.tx);
 
-    return updateResult.acknowledged;
+    return updateResult.modifiedCount > 0;
   }
 
   async updateMany(
@@ -108,7 +111,7 @@ export abstract class BaseRepositoryMongo<
       .updateMany(filter, update)
       .session(this.mongoTxHost.tx);
 
-    return updateResult.acknowledged;
+    return updateResult.modifiedCount > 0;
   }
 
   async findByIdAndUpdate(
@@ -117,8 +120,9 @@ export abstract class BaseRepositoryMongo<
     options?: QueryOptions<TDbEntity>,
   ): Promise<TDomainEntity | null> {
     const doc = await this.model
-      .findByIdAndUpdate(id, update, options)
-      .session(this.mongoTxHost.tx);
+      .findByIdAndUpdate(id, update, { new: true, ...options })
+      .session(this.mongoTxHost.tx)
+      .lean();
 
     return doc ? this.toDomainEntity(doc) : null;
   }
@@ -129,14 +133,15 @@ export abstract class BaseRepositoryMongo<
     options?: QueryOptions<TDbEntity>,
   ): Promise<TDomainEntity | null> {
     const doc = await this.model
-      .findOneAndUpdate(filter, update, options)
-      .session(this.mongoTxHost.tx);
+      .findOneAndUpdate(filter, update, { new: true, ...options })
+      .session(this.mongoTxHost.tx)
+      .lean();
 
     return doc ? this.toDomainEntity(doc) : null;
   }
 
   async deleteOneById(id: string): Promise<boolean> {
-    return this.deleteOne({ id });
+    return this.deleteOne({ _id: id });
   }
 
   async deleteOne(filter: QueryFilter<TDbEntity>): Promise<boolean> {
@@ -144,7 +149,7 @@ export abstract class BaseRepositoryMongo<
       .deleteOne(filter)
       .session(this.mongoTxHost.tx);
 
-    return deleteResult.acknowledged;
+    return deleteResult.deletedCount > 0;
   }
 
   async deleteMany(filter: QueryFilter<TDbEntity>): Promise<boolean> {
@@ -152,13 +157,14 @@ export abstract class BaseRepositoryMongo<
       .deleteMany(filter)
       .session(this.mongoTxHost.tx);
 
-    return deleteResult.acknowledged;
+    return deleteResult.deletedCount > 0;
   }
 
   async findByIdAndDelete(id: string): Promise<TDomainEntity | null> {
     const deletedDoc = await this.model
       .findByIdAndDelete(id)
-      .session(this.mongoTxHost.tx);
+      .session(this.mongoTxHost.tx)
+      .lean();
 
     return deletedDoc ? this.toDomainEntity(deletedDoc) : null;
   }
@@ -168,7 +174,8 @@ export abstract class BaseRepositoryMongo<
   ): Promise<TDomainEntity | null> {
     const deletedDoc = await this.model
       .findOneAndDelete(filter)
-      .session(this.mongoTxHost.tx);
+      .session(this.mongoTxHost.tx)
+      .lean();
 
     return deletedDoc ? this.toDomainEntity(deletedDoc) : null;
   }
