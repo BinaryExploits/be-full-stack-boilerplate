@@ -56,6 +56,8 @@ export abstract class BaseRepositoryMongo<
       .session(this.mongoTxHost.tx)
       .lean();
 
+    console.log(docs);
+
     return docs.map((doc) => this.toDomainEntity(doc));
   }
 
