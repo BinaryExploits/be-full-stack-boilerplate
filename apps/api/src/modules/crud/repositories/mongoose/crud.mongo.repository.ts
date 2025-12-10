@@ -1,14 +1,16 @@
+import { Injectable } from '@nestjs/common';
 import { InjectModel, MongooseModule } from '@nestjs/mongoose';
-import { BaseRepositoryMongo } from '../../../../repositories/mongoose/interfaces/base.abstract.repository';
-import { CrudEntity } from '../../entities/crud.entity';
 import { Model } from 'mongoose';
 import {
   InjectTransactionHost,
   TransactionHost,
 } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
+import { BaseRepositoryMongo } from '../../../../repositories/mongoose/interfaces/base.abstract.repository';
+import { CrudEntity } from './entities/crud.entity';
 import { Crud } from '../../schemas/crud.schema';
 
+@Injectable()
 export class CrudMongoRepository extends BaseRepositoryMongo<Crud, CrudEntity> {
   constructor(
     @InjectModel(CrudEntity.name)

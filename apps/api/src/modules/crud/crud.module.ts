@@ -1,7 +1,10 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PrismaModule } from '../prisma/prisma.module';
-import { CrudEntity, CrudSchema } from './entities/crud.entity';
+import {
+  CrudEntity,
+  CrudSchema,
+} from './repositories/mongoose/entities/crud.entity';
 import { CrudService } from './crud.service';
 import { CrudRouter } from './crud.router';
 import { CrudMongoRepository } from './repositories/mongoose/crud.mongo.repository';

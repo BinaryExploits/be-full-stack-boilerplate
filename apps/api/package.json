@@ -18,7 +18,9 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "db:seed:mongo": "dotenvx run -- ts-node -r tsconfig-paths/register scripts/seed/seed-mongoose.ts",
     "db:seed:prisma": "cd ../../packages/prisma-db && pnpm run db:seed",
-    "db:seed:all": "pnpm run db:seed:prisma && pnpm run db:seed:mongo"
+    "db:seed:all": "pnpm run db:seed:prisma && pnpm run db:seed:mongo",
+    "generate:repo:prisma": "ts-node -r tsconfig-paths/register scripts/prisma/generate-repository.ts",
+    "generate:repo:mongo": "ts-node -r tsconfig-paths/register scripts/mongoose/generate-repository.ts"
   },
   "dependencies": {
     "@andeanwide/nestjs-rollbar": "^1.0.0",

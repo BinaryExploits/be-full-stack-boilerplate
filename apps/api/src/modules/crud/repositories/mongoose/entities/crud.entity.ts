@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { MongooseEntity } from '../../../repositories/mongoose/base.mongo.entity';
-import { HydratedDocument } from 'mongoose';
+import { MongooseEntity } from '../../../../../repositories/mongoose/base.mongo.entity';
 
 @Schema({ collection: 'crud', timestamps: true })
 export class CrudEntity extends MongooseEntity {
@@ -8,5 +7,4 @@ export class CrudEntity extends MongooseEntity {
   content: string;
 }
 
-export type CrudDocument = HydratedDocument<CrudEntity>;
 export const CrudSchema = SchemaFactory.createForClass(CrudEntity);
