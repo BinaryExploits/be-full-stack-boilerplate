@@ -24,13 +24,13 @@ export class CrudService {
 
   @NoTransaction()
   async findOne(id: string): Promise<Crud> {
-    const crud = await this.crudRepository.findOneById(id);
+    const crud = await this.crudRepository.findById(id);
     if (!crud) throw new NotFoundException(`Crud with id ${id} not found`);
     return crud;
   }
 
   async update(id: string, data: Partial<Crud>): Promise<Crud | null> {
-    const updated = await this.crudRepository.update(id, data);
+    const updated = await this.crudRepository.findByIdAndUpdate(id, data);
     if (!updated) throw new NotFoundException(`Crud with id ${id} not found`);
     return updated;
   }

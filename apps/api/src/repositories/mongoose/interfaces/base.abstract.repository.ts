@@ -1,5 +1,12 @@
 import { MongooseRepositoryInterface } from './base.interface.repository';
-import { Document, InsertManyOptions, Model } from 'mongoose';
+import {
+  InsertManyOptions,
+  Model,
+  ProjectionType,
+  QueryFilter,
+  QueryOptions,
+  UpdateQuery,
+} from 'mongoose';
 import { Entity } from '../../../schemas/base.schema';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
@@ -8,14 +15,13 @@ import { MongooseEntity } from '../base.mongo.entity';
 export abstract class BaseRepositoryMongo<
   TDomainEntity extends Entity,
   TDbEntity extends MongooseEntity,
-  TDbDoc extends Document,
 > implements MongooseRepositoryInterface<TDomainEntity, TDbEntity>
 {
-  protected readonly model: Model<TDbDoc>;
+  protected readonly model: Model<TDbEntity>;
   protected readonly mongoTxHost: TransactionHost<TransactionalAdapterMongoose>;
 
   protected constructor(
-    model: Model<TDbDoc>,
+    model: Model<TDbEntity>,
     mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
   ) {
     this.model = model;
@@ -37,17 +43,45 @@ export abstract class BaseRepositoryMongo<
       session: this.mongoTxHost.tx,
     });
 
+    return docs.map((doc) => this.toDomainEntity(doc as unknown as TDbEntity));
+  }
+
+  async find(
+    filter?: QueryFilter<TDbEntity>,
+    projection?: ProjectionType<TDbEntity>,
+    options?: QueryOptions<TDbEntity>,
+  ): Promise<TDomainEntity[]> {
+    const docs = await this.model
+      .find(filter, projection, options)
+      .session(this.mongoTxHost.tx)
+      .lean();
+
     return docs.map((doc) => this.toDomainEntity(doc));
   }
 
-  async find(): Promise<TDomainEntity[]> {
-    const docs = await this.model.find().session(this.mongoTxHost.tx);
-    return docs.map((doc) => this.toDomainEntity(doc));
-  }
+  async findById(
+    id: string,
+    projection?: ProjectionType<TDbEntity>,
+    options?: QueryOptions<TDbEntity>,
+  ): Promise<TDomainEntity | null> {
+    const doc = await this.model
+      .findById(id, projection, options)
+      .session(this.mongoTxHost.tx)
+      .lean();
 
-  async findOneById(id: string): Promise<TDomainEntity | null> {
-    const doc = await this.model.findById(id).session(this.mongoTxHost.tx);
     return doc ? this.toDomainEntity(doc) : null;
+  }
+
+  async findOne(
+    filter?: QueryFilter<TDbEntity>,
+    projection?: ProjectionType<TDbEntity>,
+    options?: QueryOptions<TDbEntity>,
+  ): Promise<TDomainEntity | null> {
+    const doc = await this.model
+      .findOne(filter, projection, options)
+      .session(this.mongoTxHost.tx);
+
+    return this.toDomainEntity(doc as unknown as TDbEntity);
   }
 
   async deleteById(id: string): Promise<TDomainEntity | null> {
@@ -57,15 +91,104 @@ export abstract class BaseRepositoryMongo<
     return deletedDoc ? this.toDomainEntity(deletedDoc) : null;
   }
 
-  async update(
+  async updateOneById(
     id: string,
-    update: Partial<TDbEntity>,
-  ): Promise<TDomainEntity | null> {
-    const updatedDoc = await this.model
-      .findByIdAndUpdate(id, { updateOne: update }, { new: true })
+    update: UpdateQuery<TDbEntity>,
+  ): Promise<boolean> {
+    const updateResult = await this.model
+      .updateOne({ id }, update)
       .session(this.mongoTxHost.tx);
-    return updatedDoc ? this.toDomainEntity(updatedDoc) : null;
+
+    return updateResult.acknowledged;
   }
 
-  protected abstract toDomainEntity(tDbDoc: TDbDoc): TDomainEntity;
+  async updateOne(
+    filter: QueryFilter<TDbEntity>,
+    update: UpdateQuery<TDbEntity>,
+  ): Promise<boolean> {
+    const updateResult = await this.model
+      .updateOne(filter, update)
+      .session(this.mongoTxHost.tx);
+
+    return updateResult.acknowledged;
+  }
+
+  async updateMany(
+    filter: QueryFilter<TDbEntity>,
+    update: UpdateQuery<TDbEntity>,
+  ): Promise<boolean> {
+    const updateResult = await this.model
+      .updateMany(filter, update)
+      .session(this.mongoTxHost.tx);
+
+    return updateResult.acknowledged;
+  }
+
+  async findByIdAndUpdate(
+    id: string,
+    update: UpdateQuery<TDbEntity>,
+    options?: QueryOptions<TDbEntity>,
+  ): Promise<TDomainEntity | null> {
+    const doc = await this.model
+      .findByIdAndUpdate(id, update, options)
+      .session(this.mongoTxHost.tx)
+      .lean();
+
+    return doc ? this.toDomainEntity(doc) : null;
+  }
+
+  async findOneAndUpdate(
+    filter: QueryFilter<TDbEntity>,
+    update: UpdateQuery<TDbEntity>,
+    options?: QueryOptions<TDbEntity>,
+  ): Promise<TDomainEntity | null> {
+    const doc = await this.model
+      .findByIdAndUpdate(filter, update, options)
+      .session(this.mongoTxHost.tx)
+      .lean();
+
+    return doc ? this.toDomainEntity(doc) : null;
+  }
+
+  async deleteOneById(id: string): Promise<boolean> {
+    return this.deleteOne({ id });
+  }
+
+  async deleteOne(filter: QueryFilter<TDbEntity>): Promise<boolean> {
+    const deleteResult = await this.model
+      .deleteOne(filter)
+      .session(this.mongoTxHost.tx);
+
+    return deleteResult.acknowledged;
+  }
+
+  async deleteMany(filter: QueryFilter<TDbEntity>): Promise<boolean> {
+    const deleteResult = await this.model
+      .deleteMany(filter)
+      .session(this.mongoTxHost.tx);
+
+    return deleteResult.acknowledged;
+  }
+
+  async findByIdAndDelete(id: string): Promise<TDomainEntity | null> {
+    const deletedDoc = await this.model
+      .findByIdAndDelete(id)
+      .session(this.mongoTxHost.tx)
+      .lean();
+
+    return deletedDoc ? this.toDomainEntity(deletedDoc) : null;
+  }
+
+  async findOneAndDelete(
+    filter: QueryFilter<TDbEntity>,
+  ): Promise<TDomainEntity | null> {
+    const deletedDoc = await this.model
+      .findOneAndDelete(filter)
+      .session(this.mongoTxHost.tx)
+      .lean();
+
+    return deletedDoc ? this.toDomainEntity(deletedDoc) : null;
+  }
+
+  protected abstract toDomainEntity(tDbEntity: TDbEntity): TDomainEntity;
 }
