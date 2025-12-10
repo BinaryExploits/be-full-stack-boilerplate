@@ -1,8 +1,9 @@
 import * as mongoose from 'mongoose';
 import {
   CrudDocument,
+  CrudEntity,
   CrudSchema,
-} from '../../../src/modules/crud/models/crud.model';
+} from '../../../src/modules/crud/entities/crud.entity';
 import { MongooseSeeder } from './mongoose.seeder';
 import { SeedLogger } from '@repo/db-seeder';
 import { StringExtensions } from '@repo/utils-core';
@@ -14,7 +15,7 @@ export class CrudSeeder extends MongooseSeeder<Partial<CrudDocument>> {
 
   constructor() {
     super();
-    this.model = mongoose.model<CrudDocument>(CrudDocument.name, CrudSchema);
+    this.model = mongoose.model<CrudDocument>(CrudEntity.name, CrudSchema);
   }
 
   validate(): string[] {

@@ -5,15 +5,15 @@ import {
   ZBaseResponse,
 } from '../../../schemas/base.schema';
 
-export const ZCrudEntity = BaseEntity.extend({
+export const ZCrud = BaseEntity.extend({
   content: z.string().min(1).max(1000),
 });
 
-export const ZCreateCrudDto = ZCrudEntity.pick({
+export const ZCreateCrudDto = ZCrud.pick({
   content: true,
 });
 
-export const ZUpdateCrudDto = ZCrudEntity.pick({
+export const ZUpdateCrudDto = ZCrud.pick({
   content: true,
 });
 
@@ -27,7 +27,7 @@ export const ZCrudFindOneRequest = ZBaseRequest.extend({
   id: z.string(),
 });
 
-export const ZCrudFindOneResponse = ZCrudEntity.nullable();
+export const ZCrudFindOneResponse = ZCrud.nullable();
 
 export const ZCrudFindAllRequest = ZBaseRequest.extend({
   limit: z.number().int().positive().max(100).default(10).optional(),
@@ -35,7 +35,7 @@ export const ZCrudFindAllRequest = ZBaseRequest.extend({
 });
 
 export const ZCrudFindAllResponse = ZBaseResponse.extend({
-  cruds: z.array(ZCrudEntity),
+  cruds: z.array(ZCrud),
   total: z.number().int().nonnegative(),
   limit: z.number().int().positive(),
   offset: z.number().int().nonnegative(),
@@ -49,7 +49,7 @@ export const ZCrudUpdateRequest = ZBaseRequest.extend({
 });
 
 export const ZCrudUpdateResponse = ZBaseResponse.extend({
-  data: ZCrudEntity.optional(),
+  data: ZCrud.optional(),
 });
 
 export const ZCrudDeleteRequest = ZBaseRequest.extend({
@@ -58,7 +58,7 @@ export const ZCrudDeleteRequest = ZBaseRequest.extend({
 
 export const ZCrudDeleteResponse = ZBaseResponse;
 
-export type CrudEntity = z.infer<typeof ZCrudEntity>;
+export type Crud = z.infer<typeof ZCrud>;
 export type CreateCrudDto = z.infer<typeof ZCreateCrudDto>;
 export type UpdateCrudDto = z.infer<typeof ZUpdateCrudDto>;
 

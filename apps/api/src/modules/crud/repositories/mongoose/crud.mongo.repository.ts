@@ -1,20 +1,20 @@
 import { InjectModel, MongooseModule } from '@nestjs/mongoose';
 import { BaseRepositoryMongo } from '../../../../repositories/mongoose/interfaces/base.abstract.repository';
-import { CrudDocument } from '../../models/crud.model';
-import { CrudEntity } from '../../schemas/crud.schema';
+import { CrudDocument, CrudEntity } from '../../entities/crud.entity';
 import { Model } from 'mongoose';
 import {
   InjectTransactionHost,
   TransactionHost,
 } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
+import { Crud } from '../../schemas/crud.schema';
 
 export class CrudMongoRepository extends BaseRepositoryMongo<
   CrudDocument,
-  CrudEntity
+  Crud
 > {
   constructor(
-    @InjectModel(CrudDocument.name)
+    @InjectModel(CrudEntity.name)
     crudModel: Model<CrudDocument>,
     @InjectTransactionHost(MongooseModule.name)
     mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
@@ -22,12 +22,12 @@ export class CrudMongoRepository extends BaseRepositoryMongo<
     super(crudModel, mongoTxHost);
   }
 
-  protected toDomainEntity(dbEntity: CrudDocument): CrudEntity {
+  protected toDomainEntity(dbDoc: CrudDocument): Crud {
     return {
-      id: dbEntity._id.toString(),
-      content: dbEntity.content.toString(),
-      createdAt: dbEntity.createdAt,
-      updatedAt: dbEntity.updatedAt,
+      id: dbDoc._id.toString(),
+      content: dbDoc.content.toString(),
+      createdAt: dbDoc.createdAt,
+      updatedAt: dbDoc.updatedAt,
     };
   }
 }

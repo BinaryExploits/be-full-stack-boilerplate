@@ -1,20 +1,21 @@
-import { MongoDbEntity } from '../base.mongo.entity';
 import { MongooseRepositoryInterface } from './base.interface.repository';
-import { Model } from 'mongoose';
+import { Document, InsertManyOptions, Model } from 'mongoose';
 import { Entity } from '../../../schemas/base.schema';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
+import { MongooseEntity } from '../base.mongo.entity';
 
 export abstract class BaseRepositoryMongo<
-  TDbEntity extends MongoDbEntity,
   TDomainEntity extends Entity,
-> implements MongooseRepositoryInterface<TDbEntity, TDomainEntity>
+  TDbEntity extends MongooseEntity,
+  TDbDoc extends Document,
+> implements MongooseRepositoryInterface<TDomainEntity, TDbEntity>
 {
-  protected readonly model: Model<TDbEntity>;
+  protected readonly model: Model<TDbDoc>;
   protected readonly mongoTxHost: TransactionHost<TransactionalAdapterMongoose>;
 
   protected constructor(
-    model: Model<TDbEntity>,
+    model: Model<TDbDoc>,
     mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
   ) {
     this.model = model;
@@ -25,6 +26,18 @@ export abstract class BaseRepositoryMongo<
     const doc = new this.model(entity);
     await doc.save({ session: this.mongoTxHost.tx });
     return this.toDomainEntity(doc);
+  }
+
+  async createMany(
+    entities: Partial<TDbEntity>[],
+    options?: InsertManyOptions,
+  ): Promise<TDomainEntity[]> {
+    const docs = await this.model.insertMany(entities, {
+      ...options,
+      session: this.mongoTxHost.tx,
+    });
+
+    return docs.map((doc) => this.toDomainEntity(doc));
   }
 
   async find(): Promise<TDomainEntity[]> {
@@ -49,10 +62,10 @@ export abstract class BaseRepositoryMongo<
     update: Partial<TDbEntity>,
   ): Promise<TDomainEntity | null> {
     const updatedDoc = await this.model
-      .findByIdAndUpdate(id, update, { new: true })
+      .findByIdAndUpdate(id, { updateOne: update }, { new: true })
       .session(this.mongoTxHost.tx);
     return updatedDoc ? this.toDomainEntity(updatedDoc) : null;
   }
 
-  protected abstract toDomainEntity(dbEntity: TDbEntity): TDomainEntity;
+  protected abstract toDomainEntity(tDbDoc: TDbDoc): TDomainEntity;
 }

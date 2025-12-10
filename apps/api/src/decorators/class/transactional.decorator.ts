@@ -1,7 +1,7 @@
 import 'reflect-metadata';
 import { Transactional as ClsTransactional } from '@nestjs-cls/transactional';
 import { NO_TRANSACTION_KEY } from '../constants';
-import { writeFileSync, mkdirSync } from 'fs';
+import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
 // Logger utility for transaction validation
@@ -39,7 +39,7 @@ class TransactionalLogger {
       encoding: 'utf-8',
     });
 
-    console.log(`[${timestamp}] [${className}] ${message}`);
+    // console.log(`[${timestamp}] [${className}] ${message}`);
   }
 
   getProcessDir(): string {

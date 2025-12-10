@@ -52,67 +52,63 @@
 //   }
 // }
 
-import { InjectModel, MongooseModule } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { CrudDocument } from '../models/crud.model';
-import {
-  CreateCrudDto,
-  CrudEntity,
-  UpdateCrudDto,
-} from '../schemas/crud.schema';
-import {
-  InjectTransactionHost,
-  TransactionHost,
-} from '@nestjs-cls/transactional';
-import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
-
-export class CrudRepository {
-  constructor(
-    @InjectModel(CrudDocument.name)
-    private readonly crudModel: Model<CrudDocument>,
-    @InjectTransactionHost(MongooseModule.name)
-    private readonly mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
-  ) {}
-
-  async find(): Promise<CrudEntity[]> {
-    const docs = await this.crudModel
-      .find()
-      .sort({ createdAt: -1 })
-      .session(this.mongoTxHost.tx);
-    return docs.map((doc) => this.toEntity(doc));
-  }
-
-  async findOne(id: string): Promise<CrudEntity | null> {
-    const doc = await this.crudModel.findById(id).session(this.mongoTxHost.tx);
-    return doc ? this.toEntity(doc) : null;
-  }
-
-  async create(data: CreateCrudDto): Promise<CrudEntity> {
-    const doc = new this.crudModel(data);
-    await doc.save({ session: this.mongoTxHost.tx });
-    return this.toEntity(doc);
-  }
-
-  async update(id: string, data: UpdateCrudDto): Promise<CrudEntity | null> {
-    const doc = await this.crudModel
-      .findByIdAndUpdate(id, data, { new: true })
-      .session(this.mongoTxHost.tx);
-    return doc ? this.toEntity(doc) : null;
-  }
-
-  async delete(id: string): Promise<CrudEntity | null> {
-    const doc = await this.crudModel
-      .findByIdAndDelete(id)
-      .session(this.mongoTxHost.tx);
-    return doc ? this.toEntity(doc) : null;
-  }
-
-  private toEntity(doc: CrudDocument): CrudEntity {
-    return {
-      id: doc._id.toString(),
-      content: doc.content,
-      createdAt: doc.createdAt,
-      updatedAt: doc.updatedAt,
-    };
-  }
-}
+// import { InjectModel, MongooseModule } from '@nestjs/mongoose';
+// import { Model } from 'mongoose';
+// import { CrudDocument, CrudEntity } from '../entities/crud.entity';
+// import { CreateCrudDto, Crud, UpdateCrudDto } from '../schemas/crud.schema';
+// import {
+//   InjectTransactionHost,
+//   TransactionHost,
+// } from '@nestjs-cls/transactional';
+// import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
+//
+// export class CrudRepository {
+//   constructor(
+//     @InjectModel(CrudEntity.name)
+//     private readonly crudModel: Model<CrudDocument>,
+//     @InjectTransactionHost(MongooseModule.name)
+//     private readonly mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
+//   ) {}
+//
+//   async find(): Promise<Crud[]> {
+//     const docs = await this.crudModel
+//       .find()
+//       .sort({ createdAt: -1 })
+//       .session(this.mongoTxHost.tx);
+//     return docs.map((doc) => this.toEntity(doc));
+//   }
+//
+//   async findOne(id: string): Promise<Crud | null> {
+//     const doc = await this.crudModel.findById(id).session(this.mongoTxHost.tx);
+//     return doc ? this.toEntity(doc) : null;
+//   }
+//
+//   async create(data: CreateCrudDto): Promise<Crud> {
+//     const doc = new this.crudModel(data);
+//     await doc.save({ session: this.mongoTxHost.tx });
+//     return this.toEntity(doc);
+//   }
+//
+//   async update(id: string, data: UpdateCrudDto): Promise<Crud | null> {
+//     const doc = await this.crudModel
+//       .findByIdAndUpdate(id, data, { new: true })
+//       .session(this.mongoTxHost.tx);
+//     return doc ? this.toEntity(doc) : null;
+//   }
+//
+//   async delete(id: string): Promise<Crud | null> {
+//     const doc = await this.crudModel
+//       .findByIdAndDelete(id)
+//       .session(this.mongoTxHost.tx);
+//     return doc ? this.toEntity(doc) : null;
+//   }
+//
+//   private toEntity(doc: CrudDocument): Crud {
+//     return {
+//       id: doc._id.toString(),
+//       content: doc.content,
+//       createdAt: doc.createdAt,
+//       updatedAt: doc.updatedAt,
+//     };
+//   }
+// }

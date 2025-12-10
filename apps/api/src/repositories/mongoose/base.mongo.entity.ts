@@ -1,11 +1,6 @@
-import { Document } from 'mongoose';
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop } from '@nestjs/mongoose';
 
-@Schema({ timestamps: true })
-export class MongoDbEntity extends Document {
-  @Prop()
-  createdAt: Date;
-
-  @Prop()
-  updatedAt: Date;
+export class MongooseEntity {
+  @Prop() createdAt: Date;
+  @Prop() updatedAt: Date;
 }
