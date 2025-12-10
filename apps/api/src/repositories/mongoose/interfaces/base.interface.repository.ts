@@ -57,6 +57,4 @@ export interface MongooseRepositoryInterface<
   findOneAndDelete(
     filter: QueryFilter<TDbEntity>,
   ): Promise<TDomainEntity | null>;
-
-  deleteById(id: string): Promise<TDomainEntity | null>;
 }
