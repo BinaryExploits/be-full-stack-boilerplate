@@ -53,10 +53,7 @@ export abstract class BaseRepositoryMongo<
   ): Promise<TDomainEntity[]> {
     const docs = await this.model
       .find(filter, projection, options)
-      .session(this.mongoTxHost.tx)
-      .lean();
-
-    console.log(docs);
+      .session(this.mongoTxHost.tx);
 
     return docs.map((doc) => this.toDomainEntity(doc));
   }
@@ -68,8 +65,7 @@ export abstract class BaseRepositoryMongo<
   ): Promise<TDomainEntity | null> {
     const doc = await this.model
       .findById(id, projection, options)
-      .session(this.mongoTxHost.tx)
-      .lean();
+      .session(this.mongoTxHost.tx);
 
     return doc ? this.toDomainEntity(doc) : null;
   }
@@ -133,8 +129,7 @@ export abstract class BaseRepositoryMongo<
   ): Promise<TDomainEntity | null> {
     const doc = await this.model
       .findByIdAndUpdate(id, update, options)
-      .session(this.mongoTxHost.tx)
-      .lean();
+      .session(this.mongoTxHost.tx);
 
     return doc ? this.toDomainEntity(doc) : null;
   }
@@ -146,8 +141,7 @@ export abstract class BaseRepositoryMongo<
   ): Promise<TDomainEntity | null> {
     const doc = await this.model
       .findByIdAndUpdate(filter, update, options)
-      .session(this.mongoTxHost.tx)
-      .lean();
+      .session(this.mongoTxHost.tx);
 
     return doc ? this.toDomainEntity(doc) : null;
   }
@@ -175,8 +169,7 @@ export abstract class BaseRepositoryMongo<
   async findByIdAndDelete(id: string): Promise<TDomainEntity | null> {
     const deletedDoc = await this.model
       .findByIdAndDelete(id)
-      .session(this.mongoTxHost.tx)
-      .lean();
+      .session(this.mongoTxHost.tx);
 
     return deletedDoc ? this.toDomainEntity(deletedDoc) : null;
   }
@@ -186,8 +179,7 @@ export abstract class BaseRepositoryMongo<
   ): Promise<TDomainEntity | null> {
     const deletedDoc = await this.model
       .findOneAndDelete(filter)
-      .session(this.mongoTxHost.tx)
-      .lean();
+      .session(this.mongoTxHost.tx);
 
     return deletedDoc ? this.toDomainEntity(deletedDoc) : null;
   }

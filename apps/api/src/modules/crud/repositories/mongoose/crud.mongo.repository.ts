@@ -21,7 +21,7 @@ export class CrudMongoRepository extends BaseRepositoryMongo<Crud, CrudEntity> {
 
   protected toDomainEntity(dbEntity: CrudEntity): Crud {
     return {
-      id: dbEntity._id?.toString() || '',
+      id: dbEntity.id,
       content: dbEntity.content,
       createdAt: dbEntity.createdAt,
       updatedAt: dbEntity.updatedAt,
