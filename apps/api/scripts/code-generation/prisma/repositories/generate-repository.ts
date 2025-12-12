@@ -9,6 +9,7 @@ export class RepositoryGenerator {
   private readonly entityName: string;
   private readonly entityNameCapitalized: string;
   private readonly outputDir: string;
+  private readonly templatesDir: string;
 
   constructor(config: GeneratorConfig) {
     this.entityName = config.entityName.toLowerCase();
@@ -20,6 +21,7 @@ export class RepositoryGenerator {
       this.entityName,
       'repositories/prisma',
     );
+    this.templatesDir = path.join(__dirname, 'templates');
   }
 
   generate(): void {
@@ -36,7 +38,7 @@ export class RepositoryGenerator {
   }
 
   private generateInterface(): void {
-    const content = this.getInterfaceTemplate();
+    const content = this.loadTemplate('interface.template.txt');
     const filePath = path.join(
       this.outputDir,
       `${this.entityName}.prisma-repository.interface.ts`,
@@ -45,7 +47,7 @@ export class RepositoryGenerator {
   }
 
   private generateRepository(): void {
-    const content = this.getRepositoryTemplate();
+    const content = this.loadTemplate('repository.template.txt');
     const filePath = path.join(
       this.outputDir,
       `${this.entityName}.prisma-repository.ts`,
@@ -53,135 +55,18 @@ export class RepositoryGenerator {
     fs.writeFileSync(filePath, content, 'utf-8');
   }
 
-  private getInterfaceTemplate(): string {
-    return `import { Prisma } from '@repo/prisma-db';
+  private loadTemplate(templateName: string): string {
+    const templatePath = path.join(this.templatesDir, templateName);
+    let template = fs.readFileSync(templatePath, 'utf-8');
 
-export interface I${this.entityNameCapitalized}PrismaRepository {
-  create(
-    args: Prisma.${this.entityNameCapitalized}CreateArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}CreateArgs>>;
-  createMany(args: Prisma.${this.entityNameCapitalized}CreateManyArgs): Promise<Prisma.BatchPayload>;
+    // Replace placeholders
+    template = template.replace(
+      /{{ENTITY_NAME_CAPITALIZED}}/g,
+      this.entityNameCapitalized,
+    );
+    template = template.replace(/{{ENTITY_NAME_LOWER}}/g, this.entityName);
 
-  findFirst(
-    args?: Prisma.${this.entityNameCapitalized}FindFirstArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindFirstArgs> | null>;
-  findUnique(
-    args: Prisma.${this.entityNameCapitalized}FindUniqueArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindUniqueArgs> | null>;
-  findMany(
-    args?: Prisma.${this.entityNameCapitalized}FindManyArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindManyArgs>[]>;
-
-  update(
-    args: Prisma.${this.entityNameCapitalized}UpdateArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}UpdateArgs>>;
-  updateMany(args: Prisma.${this.entityNameCapitalized}UpdateManyArgs): Promise<Prisma.BatchPayload>;
-  upsert(
-    args: Prisma.${this.entityNameCapitalized}UpsertArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}UpsertArgs>>;
-
-  delete(
-    args: Prisma.${this.entityNameCapitalized}DeleteArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}DeleteArgs>>;
-  deleteMany(args?: Prisma.${this.entityNameCapitalized}DeleteManyArgs): Promise<Prisma.BatchPayload>;
-
-  count(args?: Prisma.${this.entityNameCapitalized}CountArgs): Promise<number>;
-  aggregate(
-    args: Prisma.${this.entityNameCapitalized}AggregateArgs,
-  ): Promise<Prisma.Get${this.entityNameCapitalized}AggregateType<Prisma.${this.entityNameCapitalized}AggregateArgs>>;
-}
-`;
-  }
-
-  private getRepositoryTemplate(): string {
-    return `import { Injectable } from '@nestjs/common';
-import {
-  TransactionHost,
-  InjectTransactionHost,
-} from '@nestjs-cls/transactional';
-import { Prisma } from '@repo/prisma-db';
-import { I${this.entityNameCapitalized}PrismaRepository } from './${this.entityName}.prisma-repository.interface';
-import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
-import { AppConstants } from '../../../../constants/app.constants';
-
-@Injectable()
-export class ${this.entityNameCapitalized}PrismaRepository implements I${this.entityNameCapitalized}PrismaRepository {
-  constructor(
-    @InjectTransactionHost(AppConstants.DB_CONNECTIONS.PRISMA)
-    protected readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
-  ) {}
-
-  protected get delegate(): Prisma.${this.entityNameCapitalized}Delegate {
-    return this.prismaTxHost.tx.${this.entityName};
-  }
-
-  create(
-    args: Prisma.${this.entityNameCapitalized}CreateArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}CreateArgs>> {
-    return this.delegate.create(args);
-  }
-
-  createMany(args: Prisma.${this.entityNameCapitalized}CreateManyArgs): Promise<Prisma.BatchPayload> {
-    return this.delegate.createMany(args);
-  }
-
-  findFirst(
-    args?: Prisma.${this.entityNameCapitalized}FindFirstArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindFirstArgs> | null> {
-    return this.delegate.findFirst(args);
-  }
-
-  findUnique(
-    args: Prisma.${this.entityNameCapitalized}FindUniqueArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindUniqueArgs> | null> {
-    return this.delegate.findUnique(args);
-  }
-
-  findMany(
-    args?: Prisma.${this.entityNameCapitalized}FindManyArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindManyArgs>[]> {
-    return this.delegate.findMany(args);
-  }
-
-  update(
-    args: Prisma.${this.entityNameCapitalized}UpdateArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}UpdateArgs>> {
-    return this.delegate.update(args);
-  }
-
-  updateMany(args: Prisma.${this.entityNameCapitalized}UpdateManyArgs): Promise<Prisma.BatchPayload> {
-    return this.delegate.updateMany(args);
-  }
-
-  upsert(
-    args: Prisma.${this.entityNameCapitalized}UpsertArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}UpsertArgs>> {
-    return this.delegate.upsert(args);
-  }
-
-  delete(
-    args: Prisma.${this.entityNameCapitalized}DeleteArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}DeleteArgs>> {
-    return this.delegate.delete(args);
-  }
-
-  deleteMany(args?: Prisma.${this.entityNameCapitalized}DeleteManyArgs): Promise<Prisma.BatchPayload> {
-    return this.delegate.deleteMany(args);
-  }
-
-  count(args?: Prisma.${this.entityNameCapitalized}CountArgs): Promise<number> {
-    return this.delegate.count(args);
-  }
-
-  aggregate(
-    args: Prisma.${this.entityNameCapitalized}AggregateArgs,
-  ): Promise<Prisma.Get${this.entityNameCapitalized}AggregateType<Prisma.${this.entityNameCapitalized}AggregateArgs>> {
-    return this.delegate.aggregate(args);
-  }
-}
-
-export type { I${this.entityNameCapitalized}PrismaRepository };
-`;
+    return template;
   }
 }
 

@@ -9,6 +9,7 @@ export class RepositoryGenerator {
   private readonly entityName: string;
   private readonly entityNameCapitalized: string;
   private readonly outputDir: string;
+  private readonly templatesDir: string;
 
   constructor(config: GeneratorConfig) {
     this.entityName = config.entityName.toLowerCase();
@@ -20,6 +21,7 @@ export class RepositoryGenerator {
       this.entityName,
       'repositories/mongoose',
     );
+    this.templatesDir = path.join(__dirname, 'templates');
   }
 
   generate(): void {
@@ -36,7 +38,7 @@ export class RepositoryGenerator {
   }
 
   private generateEntity(): void {
-    const content = this.getEntityTemplate();
+    const content = this.loadTemplate('entity.template.txt');
     const filePath = path.join(
       this.outputDir,
       `${this.entityName}.mongoose-entity.ts`,
@@ -45,7 +47,7 @@ export class RepositoryGenerator {
   }
 
   private generateRepository(): void {
-    const content = this.getRepositoryTemplate();
+    const content = this.loadTemplate('repository.template.txt');
     const filePath = path.join(
       this.outputDir,
       `${this.entityName}.mongoose-repository.ts`,
@@ -53,61 +55,18 @@ export class RepositoryGenerator {
     fs.writeFileSync(filePath, content, 'utf-8');
   }
 
-  private getEntityTemplate(): string {
-    return `import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { MongooseBaseEntity } from '../../../../repositories/mongoose/mongoose.base-entity';
+  private loadTemplate(templateName: string): string {
+    const templatePath = path.join(this.templatesDir, templateName);
+    let template = fs.readFileSync(templatePath, 'utf-8');
 
-@Schema({ collection: '${this.entityName}', timestamps: true })
-export class ${this.entityNameCapitalized}MongooseEntity extends MongooseBaseEntity {}
+    // Replace placeholders
+    template = template.replace(
+      /{{ENTITY_NAME_CAPITALIZED}}/g,
+      this.entityNameCapitalized,
+    );
+    template = template.replace(/{{ENTITY_NAME_LOWER}}/g, this.entityName);
 
-export const ${this.entityNameCapitalized}MongooseSchema = SchemaFactory.createForClass(${this.entityNameCapitalized}MongooseEntity);
-`;
-  }
-
-  private getRepositoryTemplate(): string {
-    return `import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import {
-  InjectTransactionHost,
-  TransactionHost,
-} from '@nestjs-cls/transactional';
-import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
-import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
-import { IMongooseRepository } from '../../../../repositories/mongoose/mongoose.repository.interface';
-import { ${this.entityNameCapitalized}MongooseEntity } from './${this.entityName}.mongoose-entity';
-import { ${this.entityNameCapitalized} } from '../../schemas/${this.entityName}.schema';
-import { AppConstants } from '../../../../constants/app.constants';
-
-@Injectable()
-export class ${this.entityNameCapitalized}MongooseRepository extends MongooseBaseRepository<
-  ${this.entityNameCapitalized},
-  ${this.entityNameCapitalized}MongooseEntity
-> {
-  constructor(
-    @InjectModel(${this.entityNameCapitalized}MongooseEntity.name)
-    ${this.entityName}Model: Model<${this.entityNameCapitalized}MongooseEntity>,
-    @InjectTransactionHost(AppConstants.DB_CONNECTIONS.MONGOOSE)
-    mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
-  ) {
-    super(${this.entityName}Model, mongoTxHost);
-  }
-
-  protected toDomainEntity(dbEntity: ${this.entityNameCapitalized}MongooseEntity): ${this.entityNameCapitalized} {
-    throw new Error('Method not implemented.');
-
-    // Complete Conversion Below
-    // return {
-    //   id: dbEntity._id?.toString() ?? '',
-    // };
-  }
-}
-
-export type I${this.entityNameCapitalized}MongooseRepository = IMongooseRepository<
-  ${this.entityNameCapitalized},
-  ${this.entityNameCapitalized}MongooseEntity
->;
-`;
+    return template;
   }
 }
 
