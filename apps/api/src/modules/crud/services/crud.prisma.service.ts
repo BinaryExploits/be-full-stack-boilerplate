@@ -4,6 +4,7 @@ import { NoTransaction } from '../../../decorators/method/no-transaction.decorat
 import { Transactional } from '../../../decorators/class/transactional.decorator';
 import { AppConstants } from '../../../constants/app.constants';
 import { ICrudPrismaRepository } from '../repositories/prisma/crud.prisma-repository';
+import { Logger } from '@repo/utils-core';
 
 @Injectable()
 @Transactional(AppConstants.DB_CONNECTIONS.PRISMA)
@@ -19,38 +20,21 @@ export class CrudPrismaService {
         content: data.content!,
       },
     });
-    console.log('[Prisma] Created:', created);
-    return {
-      id: created.id,
-      content: created.content,
-      createdAt: created.createdAt,
-      updatedAt: created.updatedAt,
-    };
+
+    Logger.instance.info('[Prisma] Created:', created);
+    return created;
   }
 
   @NoTransaction()
   async findAll(): Promise<Crud[]> {
-    const results = await this.crudRepository.findMany();
-    return results.map((item) => ({
-      id: item.id,
-      content: item.content,
-      createdAt: item.createdAt,
-      updatedAt: item.updatedAt,
-    }));
+    return await this.crudRepository.findMany();
   }
 
   @NoTransaction()
-  async findOne(id: string): Promise<Crud> {
-    const crud = await this.crudRepository.findUnique({
+  async findOne(id: string): Promise<Crud | null> {
+    return this.crudRepository.findUnique({
       where: { id },
     });
-    if (!crud) throw new NotFoundException(`Crud with id ${id} not found`);
-    return {
-      id: crud.id,
-      content: crud.content,
-      createdAt: crud.createdAt,
-      updatedAt: crud.updatedAt,
-    };
   }
 
   async update(id: string, data: Partial<Crud>): Promise<Crud | null> {
@@ -59,25 +43,16 @@ export class CrudPrismaService {
       data: { content: data.content },
     });
     if (!updated) throw new NotFoundException(`Crud with id ${id} not found`);
-    return {
-      id: updated.id,
-      content: updated.content,
-      createdAt: updated.createdAt,
-      updatedAt: updated.updatedAt,
-    };
+    return updated;
   }
 
   async delete(id: string): Promise<Crud | null> {
     const deleted = await this.crudRepository.delete({
       where: { id },
     });
+
     if (!deleted) throw new NotFoundException(`Crud with id ${id} not found`);
-    console.log('[Prisma] Deleted:', deleted);
-    return {
-      id: deleted.id,
-      content: deleted.content,
-      createdAt: deleted.createdAt,
-      updatedAt: deleted.updatedAt,
-    };
+    Logger.instance.info('[Prisma] Deleted:', deleted);
+    return deleted;
   }
 }

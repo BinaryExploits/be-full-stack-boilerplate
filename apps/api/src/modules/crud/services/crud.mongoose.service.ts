@@ -1,9 +1,15 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Inject,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { Crud } from '../schemas/crud.schema';
 import { NoTransaction } from '../../../decorators/method/no-transaction.decorator';
 import { Transactional } from '../../../decorators/class/transactional.decorator';
 import { AppConstants } from '../../../constants/app.constants';
 import { ICrudMongooseRepository } from '../repositories/mongoose/crud.mongoose-repository';
+import { Logger, StringExtensions } from '@repo/utils-core';
 
 @Injectable()
 @Transactional(AppConstants.DB_CONNECTIONS.MONGOOSE)
@@ -14,10 +20,16 @@ export class CrudMongooseService {
   ) {}
 
   async createCrud(data: Partial<Crud>): Promise<Crud> {
+    if (StringExtensions.IsNullOrEmpty(data.content)) {
+      throw new BadRequestException('Content is Empty');
+    }
+
     const created = await this.crudRepository.create({
-      content: data.content!,
+      content: data.content,
     });
-    console.log('[Mongoose] Created:', created);
+
+    Logger.instance.info('[Mongoose] Created:', created);
+
     return created;
   }
 
@@ -44,7 +56,7 @@ export class CrudMongooseService {
   async delete(id: string): Promise<Crud | null> {
     const deleted = await this.crudRepository.findByIdAndDelete(id);
     if (!deleted) throw new NotFoundException(`Crud with id ${id} not found`);
-    console.log('[Mongoose] Deleted:', deleted);
+    Logger.instance.info('[Mongoose] Deleted:', deleted);
     return deleted;
   }
 }
