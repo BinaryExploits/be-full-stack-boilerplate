@@ -1,6 +1,6 @@
 import { Prisma } from '@repo/prisma-db';
 
-export interface CrudRepositoryInterface {
+export interface ICrudPrismaRepository {
   create(
     args: Prisma.CrudCreateArgs,
   ): Promise<Prisma.CrudGetPayload<Prisma.CrudCreateArgs>>;

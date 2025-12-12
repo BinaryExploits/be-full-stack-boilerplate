@@ -28,8 +28,7 @@ export class RepositoryGenerator {
     }
 
     this.generateInterface();
-    this.generateAbstractClass();
-    this.generateImplementation();
+    this.generateRepository();
 
     console.log(
       `✅ Generated repository for ${this.entityNameCapitalized} in ${this.outputDir}`,
@@ -40,25 +39,16 @@ export class RepositoryGenerator {
     const content = this.getInterfaceTemplate();
     const filePath = path.join(
       this.outputDir,
-      `${this.entityName}.repository.interface.ts`,
+      `${this.entityName}.prisma-repository.interface.ts`,
     );
     fs.writeFileSync(filePath, content, 'utf-8');
   }
 
-  private generateAbstractClass(): void {
-    const content = this.getAbstractClassTemplate();
+  private generateRepository(): void {
+    const content = this.getRepositoryTemplate();
     const filePath = path.join(
       this.outputDir,
-      `${this.entityName}.repository.abstract.ts`,
-    );
-    fs.writeFileSync(filePath, content, 'utf-8');
-  }
-
-  private generateImplementation(): void {
-    const content = this.getImplementationTemplate();
-    const filePath = path.join(
-      this.outputDir,
-      `${this.entityName}.repository.ts`,
+      `${this.entityName}.prisma-repository.ts`,
     );
     fs.writeFileSync(filePath, content, 'utf-8');
   }
@@ -66,7 +56,7 @@ export class RepositoryGenerator {
   private getInterfaceTemplate(): string {
     return `import { Prisma } from '@repo/prisma-db';
 
-export interface ${this.entityNameCapitalized}RepositoryInterface {
+export interface I${this.entityNameCapitalized}PrismaRepository {
   create(
     args: Prisma.${this.entityNameCapitalized}CreateArgs,
   ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}CreateArgs>>;
@@ -103,22 +93,18 @@ export interface ${this.entityNameCapitalized}RepositoryInterface {
 `;
   }
 
-  private getAbstractClassTemplate(): string {
-    return `import { TransactionHost } from '@nestjs-cls/transactional';
+  private getRepositoryTemplate(): string {
+    return `import { Injectable } from '@nestjs/common';
+import { TransactionHost } from '@nestjs-cls/transactional';
 import { Prisma } from '@repo/prisma-db';
-import { ${this.entityNameCapitalized}RepositoryInterface } from './${this.entityName}.repository.interface';
+import { I${this.entityNameCapitalized}PrismaRepository } from './${this.entityName}.prisma-repository.interface';
 import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
 
-export abstract class ${this.entityNameCapitalized}RepositoryAbstract
-  implements ${this.entityNameCapitalized}RepositoryInterface
-{
-  protected readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>;
-
-  protected constructor(
-    prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
-  ) {
-    this.prismaTxHost = prismaTxHost;
-  }
+@Injectable()
+export class ${this.entityNameCapitalized}PrismaRepository implements I${this.entityNameCapitalized}PrismaRepository {
+  constructor(
+    protected readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
+  ) {}
 
   protected get delegate(): Prisma.${this.entityNameCapitalized}Delegate {
     return this.prismaTxHost.tx.${this.entityName};
@@ -186,21 +172,6 @@ export abstract class ${this.entityNameCapitalized}RepositoryAbstract
     args: Prisma.${this.entityNameCapitalized}AggregateArgs,
   ): Promise<Prisma.Get${this.entityNameCapitalized}AggregateType<Prisma.${this.entityNameCapitalized}AggregateArgs>> {
     return this.delegate.aggregate(args);
-  }
-}
-`;
-  }
-
-  private getImplementationTemplate(): string {
-    return `import { Injectable } from '@nestjs/common';
-import { TransactionHost } from '@nestjs-cls/transactional';
-import { ${this.entityNameCapitalized}RepositoryAbstract } from './${this.entityName}.repository.abstract';
-import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
-
-@Injectable()
-export class ${this.entityNameCapitalized}Repository extends ${this.entityNameCapitalized}RepositoryAbstract {
-  constructor(prismaTxHost: TransactionHost<PrismaTransactionAdapter>) {
-    super(prismaTxHost);
   }
 }
 `;

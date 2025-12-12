@@ -3,12 +3,12 @@ import { Crud } from './schemas/crud.schema';
 import { NoTransaction } from '../../decorators/method/no-transaction.decorator';
 import { Transactional } from '../../decorators/class/transactional.decorator';
 import { MongooseModule } from '@nestjs/mongoose';
-import { CrudMongoRepository } from './repositories/mongoose/crud.mongo.repository';
+import { CrudMongooseRepository } from './repositories/mongoose/crud.mongoose-repository';
 
 @Injectable()
 @Transactional(MongooseModule.name)
 export class CrudService {
-  constructor(private readonly crudRepository: CrudMongoRepository) {}
+  constructor(private readonly crudRepository: CrudMongooseRepository) {}
 
   async createCrud(data: Partial<Crud>): Promise<Crud> {
     const created = await this.crudRepository.create(data);

@@ -5,12 +5,12 @@ import {
   QueryOptions,
   UpdateQuery,
 } from 'mongoose';
-import { MongooseEntity } from '../base.mongo.entity';
-import { Entity } from '../../../schemas/base.schema';
+import { MongooseBaseEntity } from './mongoose.base-entity';
+import { Entity } from '../../schemas/base.schema';
 
-export interface MongooseRepositoryInterface<
+export interface IMongooseRepository<
   TDomainEntity extends Entity,
-  TDbEntity extends MongooseEntity,
+  TDbEntity extends MongooseBaseEntity,
 > {
   create(entity: Partial<TDbEntity>): Promise<TDomainEntity>;
   createMany(

@@ -2,19 +2,21 @@ import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PrismaModule } from '../prisma/prisma.module';
 import {
-  CrudEntity,
-  CrudSchema,
-} from './repositories/mongoose/entities/crud.entity';
+  CrudMongooseEntity,
+  CrudMongooseSchema,
+} from './repositories/mongoose/crud.mongoose-entity';
 import { CrudService } from './crud.service';
 import { CrudRouter } from './crud.router';
-import { CrudMongoRepository } from './repositories/mongoose/crud.mongo.repository';
+import { CrudMongooseRepository } from './repositories/mongoose/crud.mongoose-repository';
 
 @Module({
   imports: [
     PrismaModule,
-    MongooseModule.forFeature([{ name: CrudEntity.name, schema: CrudSchema }]),
+    MongooseModule.forFeature([
+      { name: CrudMongooseEntity.name, schema: CrudMongooseSchema },
+    ]),
   ],
-  providers: [CrudMongoRepository, CrudService, CrudRouter],
-  exports: [CrudMongoRepository, CrudService],
+  providers: [CrudMongooseRepository, CrudService, CrudRouter],
+  exports: [CrudMongooseRepository, CrudService],
 })
 export class CrudModule {}

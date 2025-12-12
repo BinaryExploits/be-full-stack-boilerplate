@@ -1,18 +1,14 @@
+import { Injectable } from '@nestjs/common';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { Prisma } from '@repo/prisma-db';
-import { CrudRepositoryInterface } from './crud.repository.interface';
+import { ICrudPrismaRepository } from './crud.prisma-repository.interface';
 import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
 
-export abstract class CrudRepositoryAbstract
-  implements CrudRepositoryInterface
-{
-  protected readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>;
-
-  protected constructor(
-    prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
-  ) {
-    this.prismaTxHost = prismaTxHost;
-  }
+@Injectable()
+export class CrudPrismaRepository implements ICrudPrismaRepository {
+  constructor(
+    protected readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
+  ) {}
 
   protected get delegate(): Prisma.CrudDelegate {
     return this.prismaTxHost.tx.crud;

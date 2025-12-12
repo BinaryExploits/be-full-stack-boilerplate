@@ -1,4 +1,4 @@
-import { MongooseRepositoryInterface } from './base.interface.repository';
+import { IMongooseRepository } from './mongoose.repository.interface';
 import {
   InsertManyOptions,
   Model,
@@ -7,15 +7,15 @@ import {
   QueryOptions,
   UpdateQuery,
 } from 'mongoose';
-import { Entity } from '../../../schemas/base.schema';
+import { Entity } from '../../schemas/base.schema';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
-import { MongooseEntity } from '../base.mongo.entity';
+import { MongooseBaseEntity } from './mongoose.base-entity';
 
-export abstract class BaseRepositoryMongo<
+export abstract class MongooseBaseRepository<
   TDomainEntity extends Entity,
-  TDbEntity extends MongooseEntity,
-> implements MongooseRepositoryInterface<TDomainEntity, TDbEntity>
+  TDbEntity extends MongooseBaseEntity,
+> implements IMongooseRepository<TDomainEntity, TDbEntity>
 {
   protected readonly model: Model<TDbEntity>;
   protected readonly mongoTxHost: TransactionHost<TransactionalAdapterMongoose>;
