@@ -10,9 +10,13 @@ import { Transactional } from '../../../decorators/class/transactional.decorator
 import { ServerConstants } from '../../../constants/server.constants';
 import { ICrudMongooseRepository } from '../repositories/mongoose/crud.mongoose-repository';
 import { Logger, StringExtensions } from '@repo/utils-core';
+import { Propagation } from '@nestjs-cls/transactional';
 
 @Injectable()
-@Transactional(ServerConstants.TransactionConnectionNames.Mongoose)
+@Transactional(
+  ServerConstants.TransactionConnectionNames.Mongoose,
+  Propagation.Required,
+)
 export class CrudMongooseService {
   constructor(
     @Inject(ServerConstants.Repositories.MongooseCrudInterface)

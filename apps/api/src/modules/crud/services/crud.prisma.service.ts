@@ -5,9 +5,13 @@ import { Transactional } from '../../../decorators/class/transactional.decorator
 import { ServerConstants } from '../../../constants/server.constants';
 import { ICrudPrismaRepository } from '../repositories/prisma/crud.prisma-repository';
 import { Logger } from '@repo/utils-core';
+import { Propagation } from '@nestjs-cls/transactional';
 
 @Injectable()
-@Transactional(ServerConstants.TransactionConnectionNames.Prisma)
+@Transactional(
+  ServerConstants.TransactionConnectionNames.Prisma,
+  Propagation.Required,
+)
 export class CrudPrismaService {
   constructor(
     @Inject(ServerConstants.Repositories.PrismaCrudInterface)

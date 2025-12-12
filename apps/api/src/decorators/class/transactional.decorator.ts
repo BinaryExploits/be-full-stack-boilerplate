@@ -1,8 +1,18 @@
 import 'reflect-metadata';
-import { Transactional as ClsTransactional } from '@nestjs-cls/transactional';
+import {
+  Transactional as ClsTransactional,
+  Propagation,
+  type TransactionalAdapter,
+} from '@nestjs-cls/transactional';
 import { NO_TRANSACTION_KEY } from '../constants';
 import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
+
+// Type helper to extract transaction options from adapter
+type TOptionsFromAdapter<TAdapter> =
+  TAdapter extends TransactionalAdapter<any, any, infer TOptions>
+    ? TOptions
+    : never;
 
 class TransactionalLogger {
   private readonly processDir: string;
@@ -17,9 +27,9 @@ class TransactionalLogger {
     this.processDir = join(baseLogDir, processId);
     mkdirSync(this.processDir, { recursive: true });
 
-    this.log('session', 'Transaction validation session started');
-    this.log('session', `Process ID: ${processId}`);
-    this.log('session', `Log directory: ${this.processDir}`);
+    this.log('Session', 'Transaction validation session started');
+    this.log('Session', `Process ID: ${processId}`);
+    this.log('Session', `Log directory: ${this.processDir}`);
   }
 
   log(className: string, message: string): void {
@@ -145,7 +155,132 @@ function validatePropertyDefinition(
   }
 }
 
-export function Transactional(connectionName?: string): ClassDecorator {
+/**
+ * Helper function to check if a parameter is a Propagation enum value
+ */
+function paramIsPropagationMode(param: unknown): param is Propagation {
+  return (
+    typeof param === 'string' &&
+    Object.values(Propagation).includes(param as Propagation)
+  );
+}
+
+/**
+ * Helper function to detect and parse the parameters passed to @Transactional
+ */
+function detectTransactionalParameters<TAdapter>(
+  firstParam?: string | Propagation | TOptionsFromAdapter<TAdapter>,
+  secondParam?: Propagation | TOptionsFromAdapter<TAdapter>,
+  thirdParam?: TOptionsFromAdapter<TAdapter>,
+): {
+  connectionName?: string;
+  propagation?: Propagation;
+  options?: TOptionsFromAdapter<TAdapter>;
+} {
+  let connectionName: string | undefined;
+  let propagation: Propagation | undefined;
+  let options: TOptionsFromAdapter<TAdapter> | undefined;
+
+  if (thirdParam !== undefined) {
+    // Three arguments: connectionName, propagation, options
+    connectionName = firstParam as string;
+    propagation = secondParam as Propagation;
+    options = thirdParam;
+  } else if (secondParam !== undefined) {
+    // Two arguments
+    if (typeof firstParam === 'string') {
+      // connectionName is first, second is either propagation or options
+      connectionName = firstParam;
+      if (paramIsPropagationMode(secondParam)) {
+        propagation = secondParam;
+      } else {
+        options = secondParam as TOptionsFromAdapter<TAdapter>;
+      }
+    } else if (paramIsPropagationMode(firstParam)) {
+      // propagation is first, options is second
+      propagation = firstParam;
+      options = secondParam as TOptionsFromAdapter<TAdapter>;
+    }
+  } else if (firstParam !== undefined) {
+    // One argument: could be connectionName, propagation, or options
+    if (typeof firstParam === 'string') {
+      connectionName = firstParam;
+    } else if (paramIsPropagationMode(firstParam)) {
+      propagation = firstParam;
+    } else {
+      options = firstParam;
+    }
+  }
+
+  return { connectionName, propagation, options };
+}
+
+/**
+ * Run the decorated class methods in a transaction.
+ *
+ * @param options Transaction options depending on the adapter.
+ */
+export function Transactional<TAdapter = any>(
+  options?: TOptionsFromAdapter<TAdapter>,
+): ClassDecorator;
+/**
+ * Run the decorated class methods in a transaction.
+ *
+ * @param propagation The propagation mode to use, @see{Propagation}.
+ */
+export function Transactional(propagation?: Propagation): ClassDecorator;
+/**
+ * Run the decorated class methods in a transaction.
+ *
+ * @param connectionName The name of the connection to use.
+ */
+export function Transactional(connectionName?: string): ClassDecorator;
+/**
+ * Run the decorated class methods in a transaction.
+ *
+ * @param connectionName The name of the connection to use.
+ * @param options Transaction options depending on the adapter.
+ */
+export function Transactional<TAdapter = any>(
+  connectionName: string,
+  options?: TOptionsFromAdapter<TAdapter>,
+): ClassDecorator;
+/**
+ * Run the decorated class methods in a transaction.
+ *
+ * @param connectionName The name of the connection to use.
+ * @param propagation The propagation mode to use, @see{Propagation}.
+ */
+export function Transactional(
+  connectionName: string,
+  propagation?: Propagation,
+): ClassDecorator;
+/**
+ * Run the decorated class methods in a transaction.
+ *
+ * @param propagation The propagation mode to use, @see{Propagation}.
+ * @param options Transaction options depending on the adapter.
+ */
+export function Transactional<TAdapter = any>(
+  propagation: Propagation,
+  options?: TOptionsFromAdapter<TAdapter>,
+): ClassDecorator;
+/**
+ * Run the decorated class methods in a transaction.
+ * @param connectionName The name of the connection to use.
+ * @param propagation The propagation mode to use, @see{Propagation}.
+ * @param options Transaction options depending on the adapter.
+ */
+export function Transactional<TAdapter = any>(
+  connectionName: string,
+  propagation: Propagation,
+  options?: TOptionsFromAdapter<TAdapter>,
+): ClassDecorator;
+export function Transactional<TAdapter = any>(
+  firstParam?: string | Propagation | TOptionsFromAdapter<TAdapter>,
+  secondParam?: Propagation | TOptionsFromAdapter<TAdapter>,
+  thirdParam?: TOptionsFromAdapter<TAdapter>,
+): ClassDecorator {
   return (target) => {
     const className = target.name;
     const proto = target.prototype as Record<string, unknown>;
@@ -156,6 +291,26 @@ export function Transactional(connectionName?: string): ClassDecorator {
         `@Transactional failed on ${className}: Target has no prototype`,
       );
     }
+
+    // Detect and log which parameters were provided
+    const detectedParams = detectTransactionalParameters(
+      firstParam,
+      secondParam,
+      thirdParam,
+    );
+    logger.log(className, `@Transactional decorator configuration:`);
+    logger.log(
+      className,
+      `  - Connection: ${detectedParams.connectionName || 'default'}`,
+    );
+    logger.log(
+      className,
+      `  - Propagation: ${detectedParams.propagation || 'REQUIRED (default)'}`,
+    );
+    logger.log(
+      className,
+      `  - Options: ${detectedParams.options ? JSON.stringify(detectedParams.options) : 'none'}`,
+    );
 
     const methodsProcessed: string[] = [];
     const methodsSkipped: string[] = [];
@@ -192,9 +347,32 @@ export function Transactional(connectionName?: string): ClassDecorator {
         | ((...args: unknown[]) => unknown)
         | undefined;
 
-      // Apply the @Transactional decorator
+      // Apply the @Transactional decorator with the appropriate parameters
       // Note: ClsTransactional ALWAYS mutates the descriptor in place and returns void
-      ClsTransactional(connectionName)(proto, name, descriptor);
+      if (thirdParam !== undefined) {
+        // Three arguments: connectionName, propagation, options
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        (ClsTransactional as any)(firstParam, secondParam, thirdParam)(
+          proto,
+          name,
+          descriptor,
+        );
+      } else if (secondParam !== undefined) {
+        // Two arguments: could be connectionName + options/propagation, or propagation + options
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        (ClsTransactional as any)(firstParam, secondParam)(
+          proto,
+          name,
+          descriptor,
+        );
+      } else if (firstParam !== undefined) {
+        // One argument: could be connectionName, propagation, or options
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+        (ClsTransactional as any)(firstParam)(proto, name, descriptor);
+      } else {
+        // No arguments
+        ClsTransactional()(proto, name, descriptor);
+      }
 
       // Validate that the decorator was applied correctly
       // The descriptor has been mutated in place, so we validate it directly
