@@ -10,7 +10,7 @@ import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoo
 import { CrudMongooseEntity } from './crud.mongoose-entity';
 import { Crud } from '../../schemas/crud.schema';
 import { IMongooseRepository } from '../../../../repositories/mongoose/mongoose.repository.interface';
-import { AppConstants } from '../../../../constants/app.constants';
+import { ServerConstants } from '../../../../constants/server.constants';
 
 @Injectable()
 export class CrudMongooseRepository extends MongooseBaseRepository<
@@ -20,7 +20,7 @@ export class CrudMongooseRepository extends MongooseBaseRepository<
   constructor(
     @InjectModel(CrudMongooseEntity.name)
     crudModel: Model<CrudMongooseEntity>,
-    @InjectTransactionHost(AppConstants.DB_CONNECTIONS.MONGOOSE)
+    @InjectTransactionHost(ServerConstants.TransactionConnectionNames.Mongoose)
     mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
   ) {
     super(crudModel, mongoTxHost);

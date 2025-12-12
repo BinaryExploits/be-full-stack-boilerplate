@@ -6,10 +6,10 @@ import {
   UpdateQuery,
 } from 'mongoose';
 import { MongooseBaseEntity } from './mongoose.base-entity';
-import { Entity } from '../../schemas/base.schema';
+import { BaseEntity } from '../../schemas/base.schema';
 
 export interface IMongooseRepository<
-  TDomainEntity extends Entity,
+  TDomainEntity extends BaseEntity,
   TDbEntity extends MongooseBaseEntity,
 > {
   create(entity: Partial<TDbEntity>): Promise<TDomainEntity>;

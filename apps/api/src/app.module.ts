@@ -16,7 +16,7 @@ import { ClsModule } from 'nestjs-cls';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
-import { AppConstants } from './constants/app.constants';
+import { ServerConstants } from './constants/server.constants';
 
 @Module({
   imports: [
@@ -31,7 +31,6 @@ import { AppConstants } from './constants/app.constants';
     }),
     PrismaModule,
     MongooseModule.forRoot(process.env.DATABASE_URL_MONGODB!),
-    // Add ClsModule with Transactional Plugin
     ClsModule.forRoot({
       global: true,
       middleware: {
@@ -39,18 +38,14 @@ import { AppConstants } from './constants/app.constants';
       },
       plugins: [
         new ClsPluginTransactional({
-          connectionName: AppConstants.DB_CONNECTIONS.MONGOOSE,
-          imports: [
-            // module in which the Connection instance is provided
-            MongooseModule,
-          ],
+          connectionName: ServerConstants.TransactionConnectionNames.Mongoose,
+          imports: [MongooseModule],
           adapter: new TransactionalAdapterMongoose({
-            // the injection token of the mongoose Connection
             mongooseConnectionToken: getConnectionToken(),
           }),
         }),
         new ClsPluginTransactional({
-          connectionName: AppConstants.DB_CONNECTIONS.PRISMA,
+          connectionName: ServerConstants.TransactionConnectionNames.Prisma,
           imports: [PrismaModule],
           adapter: new TransactionalAdapterPrisma({
             prismaInjectionToken: PrismaService,

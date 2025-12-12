@@ -7,13 +7,13 @@ import {
   QueryOptions,
   UpdateQuery,
 } from 'mongoose';
-import { Entity } from '../../schemas/base.schema';
+import { BaseEntity } from '../../schemas/base.schema';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { MongooseBaseEntity } from './mongoose.base-entity';
 
 export abstract class MongooseBaseRepository<
-  TDomainEntity extends Entity,
+  TDomainEntity extends BaseEntity,
   TDbEntity extends MongooseBaseEntity,
 > implements IMongooseRepository<TDomainEntity, TDbEntity>
 {

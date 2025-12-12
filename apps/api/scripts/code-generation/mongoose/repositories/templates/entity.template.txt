@@ -4,4 +4,5 @@ import { MongooseBaseEntity } from '../../../../repositories/mongoose/mongoose.b
 @Schema({ collection: '{{ENTITY_NAME_LOWER}}', timestamps: true })
 export class {{ENTITY_NAME_CAPITALIZED}}MongooseEntity extends MongooseBaseEntity {}
 
-export const {{ENTITY_NAME_CAPITALIZED}}MongooseSchema = SchemaFactory.createForClass({{ENTITY_NAME_CAPITALIZED}}MongooseEntity);
+export const {{ENTITY_NAME_CAPITALIZED}}MongooseSchema =
+  SchemaFactory.createForClass({{ENTITY_NAME_CAPITALIZED}}MongooseEntity);

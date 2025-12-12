@@ -6,12 +6,12 @@ import {
 import { Prisma } from '@repo/prisma-db';
 import { ICrudPrismaRepository } from './crud.prisma-repository.interface';
 import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
-import { AppConstants } from '../../../../constants/app.constants';
+import { ServerConstants } from '../../../../constants/server.constants';
 
 @Injectable()
 export class CrudPrismaRepository implements ICrudPrismaRepository {
   constructor(
-    @InjectTransactionHost(AppConstants.DB_CONNECTIONS.PRISMA)
+    @InjectTransactionHost(ServerConstants.TransactionConnectionNames.Prisma)
     protected readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
   ) {}
 

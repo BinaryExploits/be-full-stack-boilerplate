@@ -25,10 +25,14 @@ function CrudPanel({ dbType }: { dbType: DbType }) {
   const buttonColors = isMongoose
     ? "from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
     : "from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700";
-  const hoverColor = isMongoose ? "hover:text-green-400" : "hover:text-blue-400";
+  const hoverColor = isMongoose
+    ? "hover:text-green-400"
+    : "hover:text-blue-400";
 
   // Queries - dynamically choose endpoint
-  const crudList = trpc.crud[isMongoose ? "findAllMongo" : "findAllPrisma"].useQuery(
+  const crudList = trpc.crud[
+    isMongoose ? "findAllMongo" : "findAllPrisma"
+  ].useQuery(
     {},
     {
       refetchOnWindowFocus: false,
@@ -36,20 +40,31 @@ function CrudPanel({ dbType }: { dbType: DbType }) {
   );
 
   // Mutations
-  const createCrud = trpc.crud[isMongoose ? "createCrudMongo" : "createCrudPrisma"].useMutation({
+  const createCrud = trpc.crud[
+    isMongoose ? "createCrudMongo" : "createCrudPrisma"
+  ].useMutation({
     onSuccess: () => {
-      void utils.crud[isMongoose ? "findAllMongo" : "findAllPrisma"].invalidate();
+      void utils.crud[
+        isMongoose ? "findAllMongo" : "findAllPrisma"
+      ].invalidate();
       setContent("");
     },
   });
 
-  const deleteCrud = trpc.crud[isMongoose ? "deleteCrudMongo" : "deleteCrudPrisma"].useMutation({
-    onSuccess: () => utils.crud[isMongoose ? "findAllMongo" : "findAllPrisma"].invalidate(),
+  const deleteCrud = trpc.crud[
+    isMongoose ? "deleteCrudMongo" : "deleteCrudPrisma"
+  ].useMutation({
+    onSuccess: () =>
+      utils.crud[isMongoose ? "findAllMongo" : "findAllPrisma"].invalidate(),
   });
 
-  const updateCrud = trpc.crud[isMongoose ? "updateCrudMongo" : "updateCrudPrisma"].useMutation({
+  const updateCrud = trpc.crud[
+    isMongoose ? "updateCrudMongo" : "updateCrudPrisma"
+  ].useMutation({
     onSuccess: () => {
-      void utils.crud[isMongoose ? "findAllMongo" : "findAllPrisma"].invalidate();
+      void utils.crud[
+        isMongoose ? "findAllMongo" : "findAllPrisma"
+      ].invalidate();
       setEditingId(null);
       setEditingContent("");
     },
@@ -190,11 +205,6 @@ function CrudPanel({ dbType }: { dbType: DbType }) {
             onChange={(e) => setContent(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleCreate()}
             disabled={createCrud.isPending}
-            style={{
-              focusRing: isMongoose
-                ? "focus:ring-green-400"
-                : "focus:ring-blue-400",
-            }}
           />
           <button
             onClick={handleCreate}
@@ -252,10 +262,11 @@ export default function CrudDemo() {
             Dual Database CRUD Demo
           </h1>
           <p className="text-slate-400 text-lg">
-            Side-by-side comparison of Mongoose (MongoDB) and Prisma (PostgreSQL)
+            Side-by-side comparison of Mongoose (MongoDB) and Prisma
+            (PostgreSQL)
           </p>
           <p className="text-slate-500 text-sm mt-2">
-            NextJs (TailwindCSS) • NestJs • TRPC • Transactions
+            NextJs (TailwindCSS) • NestJs • tRPC • Transactions
           </p>
         </div>
 

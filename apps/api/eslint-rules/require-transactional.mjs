@@ -16,7 +16,6 @@ export const requireTransactional = {
     return {
       ClassDeclaration(node) {
         const className = node.id?.name || '';
-        // Only check classes ending with 'Service'
         if (!className.endsWith('Service')) return;
 
         const decorators = node.decorators || [];

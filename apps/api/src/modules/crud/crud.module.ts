@@ -10,7 +10,7 @@ import { CrudMongooseRepository } from './repositories/mongoose/crud.mongoose-re
 import { CrudPrismaRepository } from './repositories/prisma/crud.prisma-repository';
 import { CrudMongooseService } from './services/crud.mongoose.service';
 import { CrudPrismaService } from './services/crud.prisma.service';
-import { AppConstants } from '../../constants/app.constants';
+import { ServerConstants } from '../../constants/server.constants';
 
 @Module({
   imports: [
@@ -21,22 +21,17 @@ import { AppConstants } from '../../constants/app.constants';
   ],
   providers: [
     {
-      provide: AppConstants.REPOSITORIES.CRUD_MONGOOSE,
+      provide: ServerConstants.Repositories.MongooseCrudInterface,
       useClass: CrudMongooseRepository,
     },
     {
-      provide: AppConstants.REPOSITORIES.CRUD_PRISMA,
+      provide: ServerConstants.Repositories.PrismaCrudInterface,
       useClass: CrudPrismaRepository,
     },
     CrudMongooseService,
     CrudPrismaService,
     CrudRouter,
   ],
-  exports: [
-    AppConstants.REPOSITORIES.CRUD_MONGOOSE,
-    AppConstants.REPOSITORIES.CRUD_PRISMA,
-    CrudMongooseService,
-    CrudPrismaService,
-  ],
+  exports: [CrudMongooseService, CrudPrismaService],
 })
 export class CrudModule {}

@@ -7,15 +7,15 @@ import {
 import { Crud } from '../schemas/crud.schema';
 import { NoTransaction } from '../../../decorators/method/no-transaction.decorator';
 import { Transactional } from '../../../decorators/class/transactional.decorator';
-import { AppConstants } from '../../../constants/app.constants';
+import { ServerConstants } from '../../../constants/server.constants';
 import { ICrudMongooseRepository } from '../repositories/mongoose/crud.mongoose-repository';
 import { Logger, StringExtensions } from '@repo/utils-core';
 
 @Injectable()
-@Transactional(AppConstants.DB_CONNECTIONS.MONGOOSE)
+@Transactional(ServerConstants.TransactionConnectionNames.Mongoose)
 export class CrudMongooseService {
   constructor(
-    @Inject(AppConstants.REPOSITORIES.CRUD_MONGOOSE)
+    @Inject(ServerConstants.Repositories.MongooseCrudInterface)
     private readonly crudRepository: ICrudMongooseRepository,
   ) {}
 
@@ -28,17 +28,17 @@ export class CrudMongooseService {
       content: data.content,
     });
 
-    Logger.instance.info('[Mongoose] Created:', created);
+    Logger.instance.debug('[Mongoose] Created:', created);
 
     return created;
   }
 
-  @NoTransaction()
+  @NoTransaction('No Reason, Testing if skipping transaction works')
   async findAll(): Promise<Crud[]> {
     return this.crudRepository.find();
   }
 
-  @NoTransaction()
+  @NoTransaction('dont care if transaction is broken')
   async findOne(id: string): Promise<Crud> {
     const crud = await this.crudRepository.findById(id);
     if (!crud) throw new NotFoundException(`Crud with id ${id} not found`);
@@ -56,7 +56,7 @@ export class CrudMongooseService {
   async delete(id: string): Promise<Crud | null> {
     const deleted = await this.crudRepository.findByIdAndDelete(id);
     if (!deleted) throw new NotFoundException(`Crud with id ${id} not found`);
-    Logger.instance.info('[Mongoose] Deleted:', deleted);
+    Logger.instance.debug('[Mongoose] Deleted:', deleted);
     return deleted;
   }
 }
