@@ -1,31 +1,34 @@
 name: app-mongo-db
 services:
   mongodb:
-    image: mongodb/mongodb-community-server:latest
+    image: bitnami/mongodb:latest
     container_name: ${MONGODB_CONTAINER_NAME}
     restart: unless-stopped
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USER}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_NAME: rs0
+      MONGODB_REPLICA_SET_KEY: ${MONGODB_REPLICA_SET_KEY}
+      MONGODB_ROOT_USER: ${MONGODB_USER}
+      MONGODB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_ADVERTISED_HOSTNAME: mongodb
     ports:
       - "${MONGODB_PORT}:27017"
     volumes:
-      - mongodb_data:/data/db
+      - mongodb_data:/bitnami/mongodb
     healthcheck:
-      test: mongosh -u ${MONGODB_USER} -p ${MONGODB_PASSWORD} --authenticationDatabase admin --quiet --eval "db.runCommand('ping').ok"
+      test: >
+        bash -c "mongosh -u ${MONGODB_USER} -p ${MONGODB_PASSWORD} --authenticationDatabase admin --quiet --eval 'rs.status().ok' | grep 1"
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 20s
+      retries: 30
+      start_period: 10s
 
   mongo-express:
     image: mongo-express:latest
     container_name: ${MONGO_EXPRESS_CONTAINER_NAME}
     restart: unless-stopped
     environment:
-      ME_CONFIG_MONGODB_SERVER: mongodb
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_USER}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_PASSWORD}
+      ME_CONFIG_MONGODB_URL: "mongodb://${MONGODB_USER}:${MONGODB_PASSWORD}@mongodb:27017/?authSource=admin&replicaSet=rs0"
       ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_EXPRESS_USER}
       ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_EXPRESS_PASSWORD}
     ports:

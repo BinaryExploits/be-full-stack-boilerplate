@@ -1,15 +1,16 @@
+/* eslint-disable custom/require-transactional */
 import { Injectable } from '@nestjs/common';
 import {
-  Logger,
   COMPANY_NAME,
+  Logger,
   PRODUCT_NAME,
   SUPPORT_EMAIL,
 } from '@repo/utils-core';
 import { Resend } from 'resend';
 import {
   EmailTemplateName,
-  SendEmailArgs,
   RenderedEmail,
+  SendEmailArgs,
 } from './types/email.types';
 import { renderEmail } from './email.renderer';
 

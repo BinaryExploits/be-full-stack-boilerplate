@@ -1,0 +1,42 @@
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import {
+  InjectTransactionHost,
+  TransactionHost,
+} from '@nestjs-cls/transactional';
+import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
+import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
+import { IMongooseRepository } from '../../../../repositories/mongoose/mongoose.repository.interface';
+import { {{ENTITY_NAME_CAPITALIZED}}MongooseEntity } from './{{ENTITY_NAME_LOWER}}.mongoose-entity';
+import { {{ENTITY_NAME_CAPITALIZED}} } from '../../schemas/{{ENTITY_NAME_LOWER}}.schema';
+import { AppConstants } from '../../../../constants/app.constants';
+
+@Injectable()
+export class {{ENTITY_NAME_CAPITALIZED}}MongooseRepository extends MongooseBaseRepository<
+  {{ENTITY_NAME_CAPITALIZED}},
+  {{ENTITY_NAME_CAPITALIZED}}MongooseEntity
+> {
+  constructor(
+    @InjectModel({{ENTITY_NAME_CAPITALIZED}}MongooseEntity.name)
+    {{ENTITY_NAME_LOWER}}Model: Model<{{ENTITY_NAME_CAPITALIZED}}MongooseEntity>,
+    @InjectTransactionHost(AppConstants.DB_CONNECTIONS.MONGOOSE)
+    mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
+  ) {
+    super({{ENTITY_NAME_LOWER}}Model, mongoTxHost);
+  }
+
+  protected toDomainEntity(dbEntity: {{ENTITY_NAME_CAPITALIZED}}MongooseEntity): {{ENTITY_NAME_CAPITALIZED}} {
+    throw new Error('Method not implemented.');
+
+    // Complete Conversion Below
+    // return {
+    //   id: dbEntity._id?.toString() ?? '',
+    // };
+  }
+}
+
+export type I{{ENTITY_NAME_CAPITALIZED}}MongooseRepository = IMongooseRepository<
+  {{ENTITY_NAME_CAPITALIZED}},
+  {{ENTITY_NAME_CAPITALIZED}}MongooseEntity
+>;

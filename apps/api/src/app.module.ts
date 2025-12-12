@@ -10,7 +10,13 @@ import { AuthModule } from './modules/auth/auth.module';
 import { EmailModule } from './modules/email/email.module';
 import { trpcErrorFormatter } from './trpc/trpc-error-formatter';
 import { PrismaModule } from './modules/prisma/prisma.module';
-import { MongooseModule } from '@nestjs/mongoose';
+import { PrismaService } from './modules/prisma/prisma.service';
+import { getConnectionToken, MongooseModule } from '@nestjs/mongoose';
+import { ClsModule } from 'nestjs-cls';
+import { ClsPluginTransactional } from '@nestjs-cls/transactional';
+import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
+import { ServerConstants } from './constants/server.constants';
 
 @Module({
   imports: [
@@ -25,6 +31,29 @@ import { MongooseModule } from '@nestjs/mongoose';
     }),
     PrismaModule,
     MongooseModule.forRoot(process.env.DATABASE_URL_MONGODB!),
+    ClsModule.forRoot({
+      global: true,
+      middleware: {
+        mount: true,
+      },
+      plugins: [
+        new ClsPluginTransactional({
+          connectionName: ServerConstants.TransactionConnectionNames.Mongoose,
+          imports: [MongooseModule],
+          adapter: new TransactionalAdapterMongoose({
+            mongooseConnectionToken: getConnectionToken(),
+          }),
+        }),
+        new ClsPluginTransactional({
+          connectionName: ServerConstants.TransactionConnectionNames.Prisma,
+          imports: [PrismaModule],
+          adapter: new TransactionalAdapterPrisma({
+            prismaInjectionToken: PrismaService,
+          }),
+          enableTransactionProxy: true,
+        }),
+      ],
+    }),
     AuthModule,
     RollbarModule.register({
       accessToken: process.env.ROLLBAR_ACCESS_TOKEN!,
