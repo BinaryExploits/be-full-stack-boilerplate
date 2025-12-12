@@ -70,22 +70,14 @@ export interface ${this.entityNameCapitalized}RepositoryInterface {
   create(
     args: Prisma.${this.entityNameCapitalized}CreateArgs,
   ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}CreateArgs>>;
-  createMany(
-    args: Prisma.${this.entityNameCapitalized}CreateManyArgs,
-  ): Promise<Prisma.BatchPayload>;
+  createMany(args: Prisma.${this.entityNameCapitalized}CreateManyArgs): Promise<Prisma.BatchPayload>;
 
   findFirst(
     args?: Prisma.${this.entityNameCapitalized}FindFirstArgs,
   ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindFirstArgs> | null>;
-  findFirstOrThrow(
-    args?: Prisma.${this.entityNameCapitalized}FindFirstArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindFirstArgs>>;
   findUnique(
     args: Prisma.${this.entityNameCapitalized}FindUniqueArgs,
   ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindUniqueArgs> | null>;
-  findUniqueOrThrow(
-    args: Prisma.${this.entityNameCapitalized}FindUniqueArgs,
-  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindUniqueArgs>>;
   findMany(
     args?: Prisma.${this.entityNameCapitalized}FindManyArgs,
   ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindManyArgs>[]>;
@@ -93,9 +85,7 @@ export interface ${this.entityNameCapitalized}RepositoryInterface {
   update(
     args: Prisma.${this.entityNameCapitalized}UpdateArgs,
   ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}UpdateArgs>>;
-  updateMany(
-    args: Prisma.${this.entityNameCapitalized}UpdateManyArgs,
-  ): Promise<Prisma.BatchPayload>;
+  updateMany(args: Prisma.${this.entityNameCapitalized}UpdateManyArgs): Promise<Prisma.BatchPayload>;
   upsert(
     args: Prisma.${this.entityNameCapitalized}UpsertArgs,
   ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}UpsertArgs>>;
@@ -103,13 +93,9 @@ export interface ${this.entityNameCapitalized}RepositoryInterface {
   delete(
     args: Prisma.${this.entityNameCapitalized}DeleteArgs,
   ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}DeleteArgs>>;
-  deleteMany(
-    args?: Prisma.${this.entityNameCapitalized}DeleteManyArgs,
-  ): Promise<Prisma.BatchPayload>;
+  deleteMany(args?: Prisma.${this.entityNameCapitalized}DeleteManyArgs): Promise<Prisma.BatchPayload>;
 
-  count(
-    args?: Prisma.${this.entityNameCapitalized}CountArgs,
-  ): Promise<number>;
+  count(args?: Prisma.${this.entityNameCapitalized}CountArgs): Promise<number>;
   aggregate(
     args: Prisma.${this.entityNameCapitalized}AggregateArgs,
   ): Promise<Prisma.Get${this.entityNameCapitalized}AggregateType<Prisma.${this.entityNameCapitalized}AggregateArgs>>;
@@ -134,63 +120,71 @@ export abstract class ${this.entityNameCapitalized}RepositoryAbstract
     this.prismaTxHost = prismaTxHost;
   }
 
-  protected get delegate() {
+  protected get delegate(): Prisma.${this.entityNameCapitalized}Delegate {
     return this.prismaTxHost.tx.${this.entityName};
   }
 
-  create(args: Prisma.${this.entityNameCapitalized}CreateArgs) {
+  create(
+    args: Prisma.${this.entityNameCapitalized}CreateArgs,
+  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}CreateArgs>> {
     return this.delegate.create(args);
   }
 
-  createMany(args: Prisma.${this.entityNameCapitalized}CreateManyArgs) {
+  createMany(args: Prisma.${this.entityNameCapitalized}CreateManyArgs): Promise<Prisma.BatchPayload> {
     return this.delegate.createMany(args);
   }
 
-  findFirst(args?: Prisma.${this.entityNameCapitalized}FindFirstArgs) {
+  findFirst(
+    args?: Prisma.${this.entityNameCapitalized}FindFirstArgs,
+  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindFirstArgs> | null> {
     return this.delegate.findFirst(args);
   }
 
-  findFirstOrThrow(args?: Prisma.${this.entityNameCapitalized}FindFirstArgs) {
-    return this.delegate.findFirstOrThrow(args);
-  }
-
-  findUnique(args: Prisma.${this.entityNameCapitalized}FindUniqueArgs) {
+  findUnique(
+    args: Prisma.${this.entityNameCapitalized}FindUniqueArgs,
+  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindUniqueArgs> | null> {
     return this.delegate.findUnique(args);
   }
 
-  findUniqueOrThrow(args: Prisma.${this.entityNameCapitalized}FindUniqueArgs) {
-    return this.delegate.findUniqueOrThrow(args);
-  }
-
-  findMany(args?: Prisma.${this.entityNameCapitalized}FindManyArgs) {
+  findMany(
+    args?: Prisma.${this.entityNameCapitalized}FindManyArgs,
+  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}FindManyArgs>[]> {
     return this.delegate.findMany(args);
   }
 
-  update(args: Prisma.${this.entityNameCapitalized}UpdateArgs) {
+  update(
+    args: Prisma.${this.entityNameCapitalized}UpdateArgs,
+  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}UpdateArgs>> {
     return this.delegate.update(args);
   }
 
-  updateMany(args: Prisma.${this.entityNameCapitalized}UpdateManyArgs) {
+  updateMany(args: Prisma.${this.entityNameCapitalized}UpdateManyArgs): Promise<Prisma.BatchPayload> {
     return this.delegate.updateMany(args);
   }
 
-  upsert(args: Prisma.${this.entityNameCapitalized}UpsertArgs) {
+  upsert(
+    args: Prisma.${this.entityNameCapitalized}UpsertArgs,
+  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}UpsertArgs>> {
     return this.delegate.upsert(args);
   }
 
-  delete(args: Prisma.${this.entityNameCapitalized}DeleteArgs) {
+  delete(
+    args: Prisma.${this.entityNameCapitalized}DeleteArgs,
+  ): Promise<Prisma.${this.entityNameCapitalized}GetPayload<Prisma.${this.entityNameCapitalized}DeleteArgs>> {
     return this.delegate.delete(args);
   }
 
-  deleteMany(args?: Prisma.${this.entityNameCapitalized}DeleteManyArgs) {
+  deleteMany(args?: Prisma.${this.entityNameCapitalized}DeleteManyArgs): Promise<Prisma.BatchPayload> {
     return this.delegate.deleteMany(args);
   }
 
-  count(args?: Prisma.${this.entityNameCapitalized}CountArgs) {
+  count(args?: Prisma.${this.entityNameCapitalized}CountArgs): Promise<number> {
     return this.delegate.count(args);
   }
 
-  aggregate(args: Prisma.${this.entityNameCapitalized}AggregateArgs) {
+  aggregate(
+    args: Prisma.${this.entityNameCapitalized}AggregateArgs,
+  ): Promise<Prisma.Get${this.entityNameCapitalized}AggregateType<Prisma.${this.entityNameCapitalized}AggregateArgs>> {
     return this.delegate.aggregate(args);
   }
 }

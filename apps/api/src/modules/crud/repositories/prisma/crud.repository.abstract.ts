@@ -14,63 +14,71 @@ export abstract class CrudRepositoryAbstract
     this.prismaTxHost = prismaTxHost;
   }
 
-  protected get delegate() {
+  protected get delegate(): Prisma.CrudDelegate {
     return this.prismaTxHost.tx.crud;
   }
 
-  create(args: Prisma.CrudCreateArgs) {
+  create(
+    args: Prisma.CrudCreateArgs,
+  ): Promise<Prisma.CrudGetPayload<Prisma.CrudCreateArgs>> {
     return this.delegate.create(args);
   }
 
-  createMany(args: Prisma.CrudCreateManyArgs) {
+  createMany(args: Prisma.CrudCreateManyArgs): Promise<Prisma.BatchPayload> {
     return this.delegate.createMany(args);
   }
 
-  findFirst(args?: Prisma.CrudFindFirstArgs) {
+  findFirst(
+    args?: Prisma.CrudFindFirstArgs,
+  ): Promise<Prisma.CrudGetPayload<Prisma.CrudFindFirstArgs> | null> {
     return this.delegate.findFirst(args);
   }
 
-  findFirstOrThrow(args?: Prisma.CrudFindFirstArgs) {
-    return this.delegate.findFirstOrThrow(args);
-  }
-
-  findUnique(args: Prisma.CrudFindUniqueArgs) {
+  findUnique(
+    args: Prisma.CrudFindUniqueArgs,
+  ): Promise<Prisma.CrudGetPayload<Prisma.CrudFindUniqueArgs> | null> {
     return this.delegate.findUnique(args);
   }
 
-  findUniqueOrThrow(args: Prisma.CrudFindUniqueArgs) {
-    return this.delegate.findUniqueOrThrow(args);
-  }
-
-  findMany(args?: Prisma.CrudFindManyArgs) {
+  findMany(
+    args?: Prisma.CrudFindManyArgs,
+  ): Promise<Prisma.CrudGetPayload<Prisma.CrudFindManyArgs>[]> {
     return this.delegate.findMany(args);
   }
 
-  update(args: Prisma.CrudUpdateArgs) {
+  update(
+    args: Prisma.CrudUpdateArgs,
+  ): Promise<Prisma.CrudGetPayload<Prisma.CrudUpdateArgs>> {
     return this.delegate.update(args);
   }
 
-  updateMany(args: Prisma.CrudUpdateManyArgs) {
+  updateMany(args: Prisma.CrudUpdateManyArgs): Promise<Prisma.BatchPayload> {
     return this.delegate.updateMany(args);
   }
 
-  upsert(args: Prisma.CrudUpsertArgs) {
+  upsert(
+    args: Prisma.CrudUpsertArgs,
+  ): Promise<Prisma.CrudGetPayload<Prisma.CrudUpsertArgs>> {
     return this.delegate.upsert(args);
   }
 
-  delete(args: Prisma.CrudDeleteArgs) {
+  delete(
+    args: Prisma.CrudDeleteArgs,
+  ): Promise<Prisma.CrudGetPayload<Prisma.CrudDeleteArgs>> {
     return this.delegate.delete(args);
   }
 
-  deleteMany(args?: Prisma.CrudDeleteManyArgs) {
+  deleteMany(args?: Prisma.CrudDeleteManyArgs): Promise<Prisma.BatchPayload> {
     return this.delegate.deleteMany(args);
   }
 
-  count(args?: Prisma.CrudCountArgs) {
+  count(args?: Prisma.CrudCountArgs): Promise<number> {
     return this.delegate.count(args);
   }
 
-  aggregate(args: Prisma.CrudAggregateArgs) {
+  aggregate(
+    args: Prisma.CrudAggregateArgs,
+  ): Promise<Prisma.GetCrudAggregateType<Prisma.CrudAggregateArgs>> {
     return this.delegate.aggregate(args);
   }
 }

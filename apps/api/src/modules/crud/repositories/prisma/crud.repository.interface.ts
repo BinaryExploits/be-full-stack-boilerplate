@@ -9,15 +9,9 @@ export interface CrudRepositoryInterface {
   findFirst(
     args?: Prisma.CrudFindFirstArgs,
   ): Promise<Prisma.CrudGetPayload<Prisma.CrudFindFirstArgs> | null>;
-  findFirstOrThrow(
-    args?: Prisma.CrudFindFirstArgs,
-  ): Promise<Prisma.CrudGetPayload<Prisma.CrudFindFirstArgs>>;
   findUnique(
     args: Prisma.CrudFindUniqueArgs,
   ): Promise<Prisma.CrudGetPayload<Prisma.CrudFindUniqueArgs> | null>;
-  findUniqueOrThrow(
-    args: Prisma.CrudFindUniqueArgs,
-  ): Promise<Prisma.CrudGetPayload<Prisma.CrudFindUniqueArgs>>;
   findMany(
     args?: Prisma.CrudFindManyArgs,
   ): Promise<Prisma.CrudGetPayload<Prisma.CrudFindManyArgs>[]>;
