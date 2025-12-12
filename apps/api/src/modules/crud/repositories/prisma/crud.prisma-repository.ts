@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import {
-  InjectTransactionHost,
   TransactionHost,
+  InjectTransactionHost,
 } from '@nestjs-cls/transactional';
 import { Prisma } from '@repo/prisma-db';
 import { ICrudPrismaRepository } from './crud.prisma-repository.interface';

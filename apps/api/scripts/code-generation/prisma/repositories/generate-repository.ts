@@ -95,7 +95,10 @@ export interface I${this.entityNameCapitalized}PrismaRepository {
 
   private getRepositoryTemplate(): string {
     return `import { Injectable } from '@nestjs/common';
-import { TransactionHost, InjectTransactionHost } from '@nestjs-cls/transactional';
+import {
+  TransactionHost,
+  InjectTransactionHost,
+} from '@nestjs-cls/transactional';
 import { Prisma } from '@repo/prisma-db';
 import { I${this.entityNameCapitalized}PrismaRepository } from './${this.entityName}.prisma-repository.interface';
 import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
