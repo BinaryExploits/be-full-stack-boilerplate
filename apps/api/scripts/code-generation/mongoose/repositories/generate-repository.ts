@@ -16,7 +16,7 @@ export class RepositoryGenerator {
       this.entityName.charAt(0).toUpperCase() + this.entityName.slice(1);
     this.outputDir = path.join(
       __dirname,
-      '../../src/modules',
+      '../../../../src/modules',
       this.entityName,
       'repositories/mongoose',
     );
@@ -66,7 +66,7 @@ export const ${this.entityNameCapitalized}MongooseSchema = SchemaFactory.createF
 
   private getRepositoryTemplate(): string {
     return `import { Injectable } from '@nestjs/common';
-import { InjectModel, MongooseModule } from '@nestjs/mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
   InjectTransactionHost,
@@ -77,6 +77,7 @@ import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoo
 import { IMongooseRepository } from '../../../../repositories/mongoose/mongoose.repository.interface';
 import { ${this.entityNameCapitalized}MongooseEntity } from './${this.entityName}.mongoose-entity';
 import { ${this.entityNameCapitalized} } from '../../schemas/${this.entityName}.schema';
+import { AppConstants } from '../../../../constants/app.constants';
 
 @Injectable()
 export class ${this.entityNameCapitalized}MongooseRepository extends MongooseBaseRepository<
@@ -86,7 +87,7 @@ export class ${this.entityNameCapitalized}MongooseRepository extends MongooseBas
   constructor(
     @InjectModel(${this.entityNameCapitalized}MongooseEntity.name)
     ${this.entityName}Model: Model<${this.entityNameCapitalized}MongooseEntity>,
-    @InjectTransactionHost(MongooseModule.name)
+    @InjectTransactionHost(AppConstants.DB_CONNECTIONS.MONGOOSE)
     mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
   ) {
     super(${this.entityName}Model, mongoTxHost);

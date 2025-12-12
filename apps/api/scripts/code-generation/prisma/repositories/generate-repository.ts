@@ -16,7 +16,7 @@ export class RepositoryGenerator {
       this.entityName.charAt(0).toUpperCase() + this.entityName.slice(1);
     this.outputDir = path.join(
       __dirname,
-      '../../src/modules',
+      '../../../../src/modules',
       this.entityName,
       'repositories/prisma',
     );
@@ -95,14 +95,16 @@ export interface I${this.entityNameCapitalized}PrismaRepository {
 
   private getRepositoryTemplate(): string {
     return `import { Injectable } from '@nestjs/common';
-import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionHost, InjectTransactionHost } from '@nestjs-cls/transactional';
 import { Prisma } from '@repo/prisma-db';
 import { I${this.entityNameCapitalized}PrismaRepository } from './${this.entityName}.prisma-repository.interface';
 import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
+import { AppConstants } from '../../../../constants/app.constants';
 
 @Injectable()
 export class ${this.entityNameCapitalized}PrismaRepository implements I${this.entityNameCapitalized}PrismaRepository {
   constructor(
+    @InjectTransactionHost(AppConstants.DB_CONNECTIONS.PRISMA)
     protected readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
   ) {}
 

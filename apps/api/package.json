@@ -19,8 +19,8 @@
     "db:seed:mongo": "dotenvx run -- ts-node -r tsconfig-paths/register scripts/seed/seed-mongoose.ts",
     "db:seed:prisma": "cd ../../packages/prisma-db && pnpm run db:seed",
     "db:seed:all": "pnpm run db:seed:prisma && pnpm run db:seed:mongo",
-    "generate:repo:prisma": "ts-node -r tsconfig-paths/register scripts/prisma/generate-repository.ts",
-    "generate:repo:mongo": "ts-node -r tsconfig-paths/register scripts/mongoose/generate-repository.ts"
+    "generate:repo:prisma": "ts-node -r tsconfig-paths/register scripts/code-generation/prisma/repositories/generate-repository.ts",
+    "generate:repo:mongo": "ts-node -r tsconfig-paths/register scripts/code-generation/mongoose/repositories/generate-repository.ts"
   },
   "dependencies": {
     "@andeanwide/nestjs-rollbar": "^1.0.0",
