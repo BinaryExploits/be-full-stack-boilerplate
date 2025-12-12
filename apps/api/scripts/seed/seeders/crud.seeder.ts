@@ -1,18 +1,23 @@
 import * as mongoose from 'mongoose';
 import {
-  CrudEntity,
-  CrudSchema,
-} from '../../../src/modules/crud/repositories/mongoose/entities/crud.entity';
+  CrudMongooseEntity,
+  CrudMongooseSchema,
+} from '../../../src/modules/crud/repositories/mongoose/crud.mongoose-entity';
 import { MongooseSeeder } from './mongoose.seeder';
 import { SeedLogger } from '@repo/db-seeder';
 import { StringExtensions } from '@repo/utils-core';
 
-export class CrudSeeder extends MongooseSeeder<Partial<CrudEntity>> {
+export class CrudSeeder extends MongooseSeeder<Partial<CrudMongooseEntity>> {
   readonly entityName = 'CRUD';
   readonly seedDataFile = 'crud.json';
 
   constructor() {
-    super(mongoose.model<CrudEntity>(CrudEntity.name, CrudSchema));
+    super(
+      mongoose.model<CrudMongooseEntity>(
+        CrudMongooseEntity.name,
+        CrudMongooseSchema,
+      ),
+    );
   }
 
   validate(): string[] {

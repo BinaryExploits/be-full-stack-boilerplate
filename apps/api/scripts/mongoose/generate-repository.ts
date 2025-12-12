@@ -74,6 +74,7 @@ import {
 } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
+import { IMongooseRepository } from '../../../../repositories/mongoose/mongoose.repository.interface';
 import { ${this.entityNameCapitalized}MongooseEntity } from './${this.entityName}.mongoose-entity';
 import { ${this.entityNameCapitalized} } from '../../schemas/${this.entityName}.schema';
 
@@ -100,6 +101,11 @@ export class ${this.entityNameCapitalized}MongooseRepository extends MongooseBas
     // };
   }
 }
+
+export type I${this.entityNameCapitalized}MongooseRepository = IMongooseRepository<
+  ${this.entityNameCapitalized},
+  ${this.entityNameCapitalized}MongooseEntity
+>;
 `;
   }
 }

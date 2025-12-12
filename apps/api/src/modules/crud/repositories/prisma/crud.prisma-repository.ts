@@ -1,12 +1,17 @@
 import { Injectable } from '@nestjs/common';
-import { TransactionHost } from '@nestjs-cls/transactional';
+import {
+  InjectTransactionHost,
+  TransactionHost,
+} from '@nestjs-cls/transactional';
 import { Prisma } from '@repo/prisma-db';
 import { ICrudPrismaRepository } from './crud.prisma-repository.interface';
 import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
+import { AppConstants } from '../../../../constants/app.constants';
 
 @Injectable()
 export class CrudPrismaRepository implements ICrudPrismaRepository {
   constructor(
+    @InjectTransactionHost(AppConstants.DB_CONNECTIONS.PRISMA)
     protected readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
   ) {}
 
@@ -78,3 +83,5 @@ export class CrudPrismaRepository implements ICrudPrismaRepository {
     return this.delegate.aggregate(args);
   }
 }
+
+export type { ICrudPrismaRepository };

@@ -16,6 +16,7 @@ import { ClsModule } from 'nestjs-cls';
 import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
+import { AppConstants } from './constants/app.constants';
 
 @Module({
   imports: [
@@ -38,7 +39,7 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
       },
       plugins: [
         new ClsPluginTransactional({
-          connectionName: MongooseModule.name,
+          connectionName: AppConstants.DB_CONNECTIONS.MONGOOSE,
           imports: [
             // module in which the Connection instance is provided
             MongooseModule,
@@ -49,7 +50,7 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
           }),
         }),
         new ClsPluginTransactional({
-          connectionName: PrismaModule.name,
+          connectionName: AppConstants.DB_CONNECTIONS.PRISMA,
           imports: [PrismaModule],
           adapter: new TransactionalAdapterPrisma({
             prismaInjectionToken: PrismaService,

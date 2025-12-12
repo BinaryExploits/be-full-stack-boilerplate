@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel, MongooseModule } from '@nestjs/mongoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
   InjectTransactionHost,
@@ -9,6 +9,8 @@ import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-
 import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
 import { CrudMongooseEntity } from './crud.mongoose-entity';
 import { Crud } from '../../schemas/crud.schema';
+import { IMongooseRepository } from '../../../../repositories/mongoose/mongoose.repository.interface';
+import { AppConstants } from '../../../../constants/app.constants';
 
 @Injectable()
 export class CrudMongooseRepository extends MongooseBaseRepository<
@@ -18,7 +20,7 @@ export class CrudMongooseRepository extends MongooseBaseRepository<
   constructor(
     @InjectModel(CrudMongooseEntity.name)
     crudModel: Model<CrudMongooseEntity>,
-    @InjectTransactionHost(MongooseModule.name)
+    @InjectTransactionHost(AppConstants.DB_CONNECTIONS.MONGOOSE)
     mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
   ) {
     super(crudModel, mongoTxHost);
@@ -33,3 +35,8 @@ export class CrudMongooseRepository extends MongooseBaseRepository<
     };
   }
 }
+
+export type ICrudMongooseRepository = IMongooseRepository<
+  Crud,
+  CrudMongooseEntity
+>;

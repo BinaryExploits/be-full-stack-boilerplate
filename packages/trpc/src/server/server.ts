@@ -6,7 +6,7 @@ const publicProcedure = t.procedure;
 
 const appRouter = t.router({
   crud: t.router({
-    createCrud: publicProcedure.input(z.object({
+    createCrudMongo: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
     }).merge(z.object({
@@ -23,7 +23,7 @@ const appRouter = t.router({
     }).extend({
       id: z.string(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    findAll: publicProcedure.input(z.object({
+    findAllMongo: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
     }).extend({
@@ -44,7 +44,7 @@ const appRouter = t.router({
       limit: z.number().int().positive(),
       offset: z.number().int().nonnegative(),
     })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    findOneCrud: publicProcedure.input(z.object({
+    findOneCrudMongo: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
     }).extend({
@@ -56,7 +56,7 @@ const appRouter = t.router({
     }).extend({
       content: z.string().min(1).max(1000),
     }).nullable()).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    updateCrud: publicProcedure.input(z.object({
+    updateCrudMongo: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
     }).extend({
@@ -84,7 +84,94 @@ const appRouter = t.router({
         content: z.string().min(1).max(1000),
       }).optional(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    deleteCrud: publicProcedure.input(z.object({
+    deleteCrudMongo: publicProcedure.input(z.object({
+      requestId: z.string().uuid().optional(),
+      timestamp: z.number().optional(),
+    }).extend({
+      id: z.string(),
+    })).output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    createCrudPrisma: publicProcedure.input(z.object({
+      requestId: z.string().uuid().optional(),
+      timestamp: z.number().optional(),
+    }).merge(z.object({
+      id: z.string(),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+    }).extend({
+      content: z.string().min(1).max(1000),
+    }).pick({
+      content: true,
+    }))).output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      id: z.string(),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    findAllPrisma: publicProcedure.input(z.object({
+      requestId: z.string().uuid().optional(),
+      timestamp: z.number().optional(),
+    }).extend({
+      limit: z.number().int().positive().max(100).default(10).optional(),
+      offset: z.number().int().nonnegative().default(0).optional(),
+    })).output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      cruds: z.array(z.object({
+        id: z.string(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      }).extend({
+        content: z.string().min(1).max(1000),
+      })),
+      total: z.number().int().nonnegative(),
+      limit: z.number().int().positive(),
+      offset: z.number().int().nonnegative(),
+    })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    findOneCrudPrisma: publicProcedure.input(z.object({
+      requestId: z.string().uuid().optional(),
+      timestamp: z.number().optional(),
+    }).extend({
+      id: z.string(),
+    })).output(z.object({
+      id: z.string(),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+    }).extend({
+      content: z.string().min(1).max(1000),
+    }).nullable()).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    updateCrudPrisma: publicProcedure.input(z.object({
+      requestId: z.string().uuid().optional(),
+      timestamp: z.number().optional(),
+    }).extend({
+      id: z.string(),
+      data: z.object({
+        id: z.string(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      }).extend({
+        content: z.string().min(1).max(1000),
+      }).pick({
+        content: true,
+      }).refine((data) => Object.keys(data).length > 0, {
+        message: 'At least one field must be provided for update',
+      }),
+    })).output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      data: z.object({
+        id: z.string(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      }).extend({
+        content: z.string().min(1).max(1000),
+      }).optional(),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    deleteCrudPrisma: publicProcedure.input(z.object({
       requestId: z.string().uuid().optional(),
       timestamp: z.number().optional(),
     }).extend({

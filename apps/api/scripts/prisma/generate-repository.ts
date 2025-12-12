@@ -174,6 +174,8 @@ export class ${this.entityNameCapitalized}PrismaRepository implements I${this.en
     return this.delegate.aggregate(args);
   }
 }
+
+export type { I${this.entityNameCapitalized}PrismaRepository };
 `;
   }
 }

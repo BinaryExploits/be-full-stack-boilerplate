@@ -5,9 +5,12 @@ import {
   CrudMongooseEntity,
   CrudMongooseSchema,
 } from './repositories/mongoose/crud.mongoose-entity';
-import { CrudService } from './crud.service';
 import { CrudRouter } from './crud.router';
 import { CrudMongooseRepository } from './repositories/mongoose/crud.mongoose-repository';
+import { CrudPrismaRepository } from './repositories/prisma/crud.prisma-repository';
+import { CrudMongooseService } from './services/crud.mongoose.service';
+import { CrudPrismaService } from './services/crud.prisma.service';
+import { AppConstants } from '../../constants/app.constants';
 
 @Module({
   imports: [
@@ -16,7 +19,24 @@ import { CrudMongooseRepository } from './repositories/mongoose/crud.mongoose-re
       { name: CrudMongooseEntity.name, schema: CrudMongooseSchema },
     ]),
   ],
-  providers: [CrudMongooseRepository, CrudService, CrudRouter],
-  exports: [CrudMongooseRepository, CrudService],
+  providers: [
+    {
+      provide: AppConstants.REPOSITORIES.CRUD_MONGOOSE,
+      useClass: CrudMongooseRepository,
+    },
+    {
+      provide: AppConstants.REPOSITORIES.CRUD_PRISMA,
+      useClass: CrudPrismaRepository,
+    },
+    CrudMongooseService,
+    CrudPrismaService,
+    CrudRouter,
+  ],
+  exports: [
+    AppConstants.REPOSITORIES.CRUD_MONGOOSE,
+    AppConstants.REPOSITORIES.CRUD_PRISMA,
+    CrudMongooseService,
+    CrudPrismaService,
+  ],
 })
 export class CrudModule {}
