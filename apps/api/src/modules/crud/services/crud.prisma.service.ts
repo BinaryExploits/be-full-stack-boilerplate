@@ -1,14 +1,14 @@
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { Crud } from '../schemas/crud.schema';
 import { NoTransaction } from '../../../decorators/method/no-transaction.decorator';
-import { Transactional } from '../../../decorators/class/transactional.decorator';
+import { AutoTransaction } from '../../../decorators/class/transactional.decorator';
 import { ServerConstants } from '../../../constants/server.constants';
 import { ICrudPrismaRepository } from '../repositories/prisma/crud.prisma-repository.interface';
 import { Logger } from '@repo/utils-core';
 import { Propagation } from '@nestjs-cls/transactional';
 
 @Injectable()
-@Transactional(
+@AutoTransaction(
   ServerConstants.TransactionConnectionNames.Prisma,
   Propagation.Required,
 )
