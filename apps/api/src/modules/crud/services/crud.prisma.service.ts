@@ -3,7 +3,7 @@ import { Crud } from '../schemas/crud.schema';
 import { NoTransaction } from '../../../decorators/method/no-transaction.decorator';
 import { Transactional } from '../../../decorators/class/transactional.decorator';
 import { ServerConstants } from '../../../constants/server.constants';
-import { ICrudPrismaRepository } from '../repositories/prisma/crud.prisma-repository';
+import { ICrudPrismaRepository } from '../repositories/prisma/crud.prisma-repository.interface';
 import { Logger } from '@repo/utils-core';
 import { Propagation } from '@nestjs-cls/transactional';
 

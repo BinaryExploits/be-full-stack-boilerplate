@@ -30,6 +30,7 @@ export class RepositoryGenerator {
     }
 
     this.generateEntity();
+    this.generateInterface();
     this.generateRepository();
 
     console.log(
@@ -42,6 +43,15 @@ export class RepositoryGenerator {
     const filePath = path.join(
       this.outputDir,
       `${this.entityName}.mongoose-entity.ts`,
+    );
+    fs.writeFileSync(filePath, content, 'utf-8');
+  }
+
+  private generateInterface(): void {
+    const content = this.loadTemplate('interface.template.txt');
+    const filePath = path.join(
+      this.outputDir,
+      `${this.entityName}.mongoose-repository.interface.ts`,
     );
     fs.writeFileSync(filePath, content, 'utf-8');
   }

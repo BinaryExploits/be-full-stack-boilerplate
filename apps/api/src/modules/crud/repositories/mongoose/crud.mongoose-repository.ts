@@ -9,14 +9,14 @@ import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-
 import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
 import { CrudMongooseEntity } from './crud.mongoose-entity';
 import { Crud } from '../../schemas/crud.schema';
-import { IMongooseRepository } from '../../../../repositories/mongoose/mongoose.repository.interface';
+import { ICrudMongooseRepository } from './crud.mongoose-repository.interface';
 import { ServerConstants } from '../../../../constants/server.constants';
 
 @Injectable()
-export class CrudMongooseRepository extends MongooseBaseRepository<
-  Crud,
-  CrudMongooseEntity
-> {
+export class CrudMongooseRepository
+  extends MongooseBaseRepository<Crud, CrudMongooseEntity>
+  implements ICrudMongooseRepository
+{
   constructor(
     @InjectModel(CrudMongooseEntity.name)
     crudModel: Model<CrudMongooseEntity>,
@@ -35,8 +35,3 @@ export class CrudMongooseRepository extends MongooseBaseRepository<
     };
   }
 }
-
-export type ICrudMongooseRepository = IMongooseRepository<
-  Crud,
-  CrudMongooseEntity
->;

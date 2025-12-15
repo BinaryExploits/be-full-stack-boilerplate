@@ -6,12 +6,12 @@ import {
 import { Prisma } from '@repo/prisma-db';
 import { I{{ENTITY_NAME_CAPITALIZED}}PrismaRepository } from './{{ENTITY_NAME_LOWER}}.prisma-repository.interface';
 import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
-import { AppConstants } from '../../../../constants/app.constants';
+import { ServerConstants } from '../../../../constants/server.constants';
 
 @Injectable()
 export class {{ENTITY_NAME_CAPITALIZED}}PrismaRepository implements I{{ENTITY_NAME_CAPITALIZED}}PrismaRepository {
   constructor(
-    @InjectTransactionHost(AppConstants.DB_CONNECTIONS.PRISMA)
+    @InjectTransactionHost(ServerConstants.TransactionConnectionNames.Prisma)
     protected readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
   ) {}
 
@@ -83,5 +83,3 @@ export class {{ENTITY_NAME_CAPITALIZED}}PrismaRepository implements I{{ENTITY_NA
     return this.delegate.aggregate(args);
   }
 }
-
-export type { I{{ENTITY_NAME_CAPITALIZED}}PrismaRepository };

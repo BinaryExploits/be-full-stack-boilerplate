@@ -1,0 +1,6 @@
+import { IMongooseRepository } from '../../../../repositories/mongoose/mongoose.repository.interface';
+import { {{ENTITY_NAME_CAPITALIZED}} } from '../../schemas/{{ENTITY_NAME_LOWER}}.schema';
+import { {{ENTITY_NAME_CAPITALIZED}}MongooseEntity } from './{{ENTITY_NAME_LOWER}}.mongoose-entity';
+
+export interface I{{ENTITY_NAME_CAPITALIZED}}MongooseRepository
+  extends IMongooseRepository<{{ENTITY_NAME_CAPITALIZED}}, {{ENTITY_NAME_CAPITALIZED}}MongooseEntity> {}

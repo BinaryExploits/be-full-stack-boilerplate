@@ -83,5 +83,3 @@ export class CrudPrismaRepository implements ICrudPrismaRepository {
     return this.delegate.aggregate(args);
   }
 }
-
-export type { ICrudPrismaRepository };
