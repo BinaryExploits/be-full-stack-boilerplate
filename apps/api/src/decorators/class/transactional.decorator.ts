@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import {
-  Transactional as ClsTransactional,
+  Transactional,
   Propagation,
   type TransactionalAdapter,
 } from '@nestjs-cls/transactional';
@@ -54,8 +54,8 @@ class TransactionalLogger {
 const logger = new TransactionalLogger();
 
 /**
- * Validates that a descriptor was successfully modified by the @Transactional decorator
- * ClsTransactional mutates the descriptor in place by replacing descriptor.value with a Proxy.
+ * Validates that a descriptor was successfully modified by the @AutoTransaction decorator
+ * Transactional mutates the descriptor in place by replacing descriptor.value with a Proxy.
  * We validate that the mutation occurred by comparing the original function reference.
  */
 function validateTransactionalApplication(
@@ -66,7 +66,7 @@ function validateTransactionalApplication(
 ): PropertyDescriptor {
   if (!mutatedDescriptor.value && !mutatedDescriptor.get) {
     throw new Error(
-      `@Transactional failed to apply on ${className}.${methodName}: ` +
+      `@AutoTransaction failed to apply on ${className}.${methodName}: ` +
         `Descriptor has no value or getter after decoration`,
     );
   }
@@ -76,7 +76,7 @@ function validateTransactionalApplication(
     typeof mutatedDescriptor.value !== 'function'
   ) {
     throw new Error(
-      `@Transactional failed to apply on ${className}.${methodName}: ` +
+      `@AutoTransaction failed to apply on ${className}.${methodName}: ` +
         `Descriptor value is not a function (got ${typeof mutatedDescriptor.value})`,
     );
   }
@@ -97,7 +97,7 @@ function validateTransactionalApplication(
     originalFunction === finalFunction
   ) {
     throw new Error(
-      `@Transactional have not been been applied on ${className}.${methodName}: ` +
+      `@AutoTransaction have not been been applied on ${className}.${methodName}: ` +
         `Function reference unchanged or function(s) undefined.` +
         `Original: ${originalFunction?.name}, Final: ${finalFunction?.name}`,
     );
@@ -115,7 +115,7 @@ function validateTransactionalApplication(
     originalDescriptor.writable === true
   ) {
     throw new Error(
-      `@Transactional failed to apply on ${className}.${methodName}: ` +
+      `@AutoTransaction failed to apply on ${className}.${methodName}: ` +
         `Method became non-writable after decoration`,
     );
   }
@@ -135,21 +135,21 @@ function validatePropertyDefinition(
 
   if (!finalDescriptor) {
     throw new Error(
-      `@Transactional failed to apply on ${className}.${methodName}: ` +
+      `@AutoTransaction failed to apply on ${className}.${methodName}: ` +
         `Property descriptor not found after Object.defineProperty`,
     );
   }
 
   if (!finalDescriptor.value && !finalDescriptor.get) {
     throw new Error(
-      `@Transactional failed to apply on ${className}.${methodName}: ` +
+      `@AutoTransaction failed to apply on ${className}.${methodName}: ` +
         `Final property has no value or getter`,
     );
   }
 
   if (finalDescriptor.value && typeof finalDescriptor.value !== 'function') {
     throw new Error(
-      `@Transactional failed to apply on ${className}.${methodName}: ` +
+      `@AutoTransaction failed to apply on ${className}.${methodName}: ` +
         `Final property value is not a function (got ${typeof finalDescriptor.value})`,
     );
   }
@@ -166,7 +166,7 @@ function paramIsPropagationMode(param: unknown): param is Propagation {
 }
 
 /**
- * Helper function to detect and parse the parameters passed to @Transactional
+ * Helper function to detect and parse the parameters passed to @AutoTransaction
  */
 function detectTransactionalParameters<TAdapter>(
   firstParam?: string | Propagation | TOptionsFromAdapter<TAdapter>,
@@ -182,14 +182,11 @@ function detectTransactionalParameters<TAdapter>(
   let options: TOptionsFromAdapter<TAdapter> | undefined;
 
   if (thirdParam !== undefined) {
-    // Three arguments: connectionName, propagation, options
     connectionName = firstParam as string;
     propagation = secondParam as Propagation;
     options = thirdParam;
   } else if (secondParam !== undefined) {
-    // Two arguments
     if (typeof firstParam === 'string') {
-      // connectionName is first, second is either propagation or options
       connectionName = firstParam;
       if (paramIsPropagationMode(secondParam)) {
         propagation = secondParam;
@@ -197,12 +194,10 @@ function detectTransactionalParameters<TAdapter>(
         options = secondParam as TOptionsFromAdapter<TAdapter>;
       }
     } else if (paramIsPropagationMode(firstParam)) {
-      // propagation is first, options is second
       propagation = firstParam;
       options = secondParam as TOptionsFromAdapter<TAdapter>;
     }
   } else if (firstParam !== undefined) {
-    // One argument: could be connectionName, propagation, or options
     if (typeof firstParam === 'string') {
       connectionName = firstParam;
     } else if (paramIsPropagationMode(firstParam)) {
@@ -220,7 +215,7 @@ function detectTransactionalParameters<TAdapter>(
  *
  * @param options Transaction options depending on the adapter.
  */
-export function Transactional<TAdapter = any>(
+export function AutoTransaction<TAdapter = any>(
   options?: TOptionsFromAdapter<TAdapter>,
 ): ClassDecorator;
 /**
@@ -228,20 +223,20 @@ export function Transactional<TAdapter = any>(
  *
  * @param propagation The propagation mode to use, @see{Propagation}.
  */
-export function Transactional(propagation?: Propagation): ClassDecorator;
+export function AutoTransaction(propagation?: Propagation): ClassDecorator;
 /**
  * Run the decorated class methods in a transaction.
  *
  * @param connectionName The name of the connection to use.
  */
-export function Transactional(connectionName?: string): ClassDecorator;
+export function AutoTransaction(connectionName?: string): ClassDecorator;
 /**
  * Run the decorated class methods in a transaction.
  *
  * @param connectionName The name of the connection to use.
  * @param options Transaction options depending on the adapter.
  */
-export function Transactional<TAdapter = any>(
+export function AutoTransaction<TAdapter = any>(
   connectionName: string,
   options?: TOptionsFromAdapter<TAdapter>,
 ): ClassDecorator;
@@ -251,7 +246,7 @@ export function Transactional<TAdapter = any>(
  * @param connectionName The name of the connection to use.
  * @param propagation The propagation mode to use, @see{Propagation}.
  */
-export function Transactional(
+export function AutoTransaction(
   connectionName: string,
   propagation?: Propagation,
 ): ClassDecorator;
@@ -261,7 +256,7 @@ export function Transactional(
  * @param propagation The propagation mode to use, @see{Propagation}.
  * @param options Transaction options depending on the adapter.
  */
-export function Transactional<TAdapter = any>(
+export function AutoTransaction<TAdapter = any>(
   propagation: Propagation,
   options?: TOptionsFromAdapter<TAdapter>,
 ): ClassDecorator;
@@ -271,12 +266,12 @@ export function Transactional<TAdapter = any>(
  * @param propagation The propagation mode to use, @see{Propagation}.
  * @param options Transaction options depending on the adapter.
  */
-export function Transactional<TAdapter = any>(
+export function AutoTransaction<TAdapter = any>(
   connectionName: string,
   propagation: Propagation,
   options?: TOptionsFromAdapter<TAdapter>,
 ): ClassDecorator;
-export function Transactional<TAdapter = any>(
+export function AutoTransaction<TAdapter = any>(
   firstParam?: string | Propagation | TOptionsFromAdapter<TAdapter>,
   secondParam?: Propagation | TOptionsFromAdapter<TAdapter>,
   thirdParam?: TOptionsFromAdapter<TAdapter>,
@@ -288,7 +283,7 @@ export function Transactional<TAdapter = any>(
     // Validate that the target has a prototype
     if (!proto) {
       throw new Error(
-        `@Transactional failed on ${className}: Target has no prototype`,
+        `@AutoTransaction failed on ${className}: Target has no prototype`,
       );
     }
 
@@ -298,7 +293,7 @@ export function Transactional<TAdapter = any>(
       secondParam,
       thirdParam,
     );
-    logger.log(className, `@Transactional decorator configuration:`);
+    logger.log(className, `@AutoTransaction decorator configuration:`);
     logger.log(
       className,
       `  - Connection: ${detectedParams.connectionName || 'default'}`,
@@ -348,11 +343,11 @@ export function Transactional<TAdapter = any>(
         | undefined;
 
       // Apply the @Transactional decorator with the appropriate parameters
-      // Note: ClsTransactional ALWAYS mutates the descriptor in place and returns void
+      // Note: Transactional ALWAYS mutates the descriptor in place and returns void
       if (thirdParam !== undefined) {
         // Three arguments: connectionName, propagation, options
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        (ClsTransactional as any)(firstParam, secondParam, thirdParam)(
+        (Transactional as any)(firstParam, secondParam, thirdParam)(
           proto,
           name,
           descriptor,
@@ -360,7 +355,7 @@ export function Transactional<TAdapter = any>(
       } else if (secondParam !== undefined) {
         // Two arguments: could be connectionName + options/propagation, or propagation + options
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        (ClsTransactional as any)(firstParam, secondParam)(
+        (Transactional as any)(firstParam, secondParam)(
           proto,
           name,
           descriptor,
@@ -368,10 +363,10 @@ export function Transactional<TAdapter = any>(
       } else if (firstParam !== undefined) {
         // One argument: could be connectionName, propagation, or options
         // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        (ClsTransactional as any)(firstParam)(proto, name, descriptor);
+        (Transactional as any)(firstParam)(proto, name, descriptor);
       } else {
         // No arguments
-        ClsTransactional()(proto, name, descriptor);
+        Transactional()(proto, name, descriptor);
       }
 
       // Validate that the decorator was applied correctly
