@@ -8,7 +8,6 @@ import { NO_TRANSACTION_KEY } from '../constants';
 import { mkdirSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
-// Type helper to extract transaction options from adapter
 type TOptionsFromAdapter<TAdapter> =
   TAdapter extends TransactionalAdapter<any, any, infer TOptions>
     ? TOptions
@@ -52,163 +51,6 @@ class TransactionalLogger {
 }
 
 const logger = new TransactionalLogger();
-
-/**
- * Validates that a descriptor was successfully modified by the @AutoTransaction decorator
- * Transactional mutates the descriptor in place by replacing descriptor.value with a Proxy.
- * We validate that the mutation occurred by comparing the original function reference.
- */
-function validateTransactionalApplication(
-  className: string,
-  methodName: string,
-  originalDescriptor: PropertyDescriptor,
-  mutatedDescriptor: PropertyDescriptor,
-): PropertyDescriptor {
-  if (!mutatedDescriptor.value && !mutatedDescriptor.get) {
-    throw new Error(
-      `@AutoTransaction failed to apply on ${className}.${methodName}: ` +
-        `Descriptor has no value or getter after decoration`,
-    );
-  }
-
-  if (
-    mutatedDescriptor.value &&
-    typeof mutatedDescriptor.value !== 'function'
-  ) {
-    throw new Error(
-      `@AutoTransaction failed to apply on ${className}.${methodName}: ` +
-        `Descriptor value is not a function (got ${typeof mutatedDescriptor.value})`,
-    );
-  }
-
-  // CRITICAL: Validate that the function was actually wrapped (changed reference)
-  // If the decorator returns void, it should have mutated the descriptor in place
-  // If it returns a new descriptor, the function reference should be different
-  const originalFunction = originalDescriptor.value as
-    | ((...args: unknown[]) => unknown)
-    | undefined;
-  const finalFunction = mutatedDescriptor.value as
-    | ((...args: unknown[]) => unknown)
-    | undefined;
-
-  if (
-    !originalFunction ||
-    !finalFunction ||
-    originalFunction === finalFunction
-  ) {
-    throw new Error(
-      `@AutoTransaction have not been been applied on ${className}.${methodName}: ` +
-        `Function reference unchanged or function(s) undefined.` +
-        `Original: ${originalFunction?.name}, Final: ${finalFunction?.name}`,
-    );
-  } else {
-    logger.log(
-      className,
-      `✓ ${methodName}: Function reference changed (wrapped)`,
-    );
-  }
-
-  // Validate that writable/configurable flags are appropriate
-  if (
-    mutatedDescriptor.value &&
-    mutatedDescriptor.writable === false &&
-    originalDescriptor.writable === true
-  ) {
-    throw new Error(
-      `@AutoTransaction failed to apply on ${className}.${methodName}: ` +
-        `Method became non-writable after decoration`,
-    );
-  }
-
-  return mutatedDescriptor;
-}
-
-/**
- * Validates that the property was successfully defined on the prototype
- */
-function validatePropertyDefinition(
-  className: string,
-  methodName: string,
-  proto: Record<string, unknown>,
-): void {
-  const finalDescriptor = Object.getOwnPropertyDescriptor(proto, methodName);
-
-  if (!finalDescriptor) {
-    throw new Error(
-      `@AutoTransaction failed to apply on ${className}.${methodName}: ` +
-        `Property descriptor not found after Object.defineProperty`,
-    );
-  }
-
-  if (!finalDescriptor.value && !finalDescriptor.get) {
-    throw new Error(
-      `@AutoTransaction failed to apply on ${className}.${methodName}: ` +
-        `Final property has no value or getter`,
-    );
-  }
-
-  if (finalDescriptor.value && typeof finalDescriptor.value !== 'function') {
-    throw new Error(
-      `@AutoTransaction failed to apply on ${className}.${methodName}: ` +
-        `Final property value is not a function (got ${typeof finalDescriptor.value})`,
-    );
-  }
-}
-
-/**
- * Helper function to check if a parameter is a Propagation enum value
- */
-function paramIsPropagationMode(param: unknown): param is Propagation {
-  return (
-    typeof param === 'string' &&
-    Object.values(Propagation).includes(param as Propagation)
-  );
-}
-
-/**
- * Helper function to detect and parse the parameters passed to @AutoTransaction
- */
-function detectTransactionalParameters<TAdapter>(
-  firstParam?: string | Propagation | TOptionsFromAdapter<TAdapter>,
-  secondParam?: Propagation | TOptionsFromAdapter<TAdapter>,
-  thirdParam?: TOptionsFromAdapter<TAdapter>,
-): {
-  connectionName?: string;
-  propagation?: Propagation;
-  options?: TOptionsFromAdapter<TAdapter>;
-} {
-  let connectionName: string | undefined;
-  let propagation: Propagation | undefined;
-  let options: TOptionsFromAdapter<TAdapter> | undefined;
-
-  if (thirdParam !== undefined) {
-    connectionName = firstParam as string;
-    propagation = secondParam as Propagation;
-    options = thirdParam;
-  } else if (secondParam !== undefined) {
-    if (typeof firstParam === 'string') {
-      connectionName = firstParam;
-      if (paramIsPropagationMode(secondParam)) {
-        propagation = secondParam;
-      } else {
-        options = secondParam as TOptionsFromAdapter<TAdapter>;
-      }
-    } else if (paramIsPropagationMode(firstParam)) {
-      propagation = firstParam;
-      options = secondParam as TOptionsFromAdapter<TAdapter>;
-    }
-  } else if (firstParam !== undefined) {
-    if (typeof firstParam === 'string') {
-      connectionName = firstParam;
-    } else if (paramIsPropagationMode(firstParam)) {
-      propagation = firstParam;
-    } else {
-      options = firstParam;
-    }
-  }
-
-  return { connectionName, propagation, options };
-}
 
 /**
  * Run the decorated class methods in a transaction.
@@ -277,35 +119,27 @@ export function AutoTransaction<TAdapter = any>(
   thirdParam?: TOptionsFromAdapter<TAdapter>,
 ): ClassDecorator {
   return (target) => {
+    if (typeof target !== 'function') {
+      throw new Error(
+        `@AutoTransaction can only be used on classes, but the target is not a function.`,
+      );
+    }
+
     const className = target.name;
     const proto = target.prototype as Record<string, unknown>;
 
-    // Validate that the target has a prototype
     if (!proto) {
       throw new Error(
         `@AutoTransaction failed on ${className}: Target has no prototype`,
       );
     }
 
-    // Detect and log which parameters were provided
-    const detectedParams = detectTransactionalParameters(
-      firstParam,
-      secondParam,
-      thirdParam,
-    );
-    logger.log(className, `@AutoTransaction decorator configuration:`);
-    logger.log(
-      className,
-      `  - Connection: ${detectedParams.connectionName || 'default'}`,
-    );
-    logger.log(
-      className,
-      `  - Propagation: ${detectedParams.propagation || 'REQUIRED (default)'}`,
-    );
-    logger.log(
-      className,
-      `  - Options: ${detectedParams.options ? JSON.stringify(detectedParams.options) : 'none'}`,
-    );
+    // Validate that the target is a class (constructors have prototypes with a constructor property)
+    if (proto.constructor !== target) {
+      throw new Error(
+        `@AutoTransaction can only be used on classes, but ${className || 'the target'} does not appear to be a class constructor.`,
+      );
+    }
 
     const methodsProcessed: string[] = [];
     const methodsSkipped: string[] = [];
@@ -342,53 +176,29 @@ export function AutoTransaction<TAdapter = any>(
         | ((...args: unknown[]) => unknown)
         | undefined;
 
-      // Apply the @Transactional decorator with the appropriate parameters
-      // Note: Transactional ALWAYS mutates the descriptor in place and returns void
-      if (thirdParam !== undefined) {
-        // Three arguments: connectionName, propagation, options
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        (Transactional as any)(firstParam, secondParam, thirdParam)(
-          proto,
-          name,
-          descriptor,
-        );
-      } else if (secondParam !== undefined) {
-        // Two arguments: could be connectionName + options/propagation, or propagation + options
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        (Transactional as any)(firstParam, secondParam)(
-          proto,
-          name,
-          descriptor,
-        );
-      } else if (firstParam !== undefined) {
-        // One argument: could be connectionName, propagation, or options
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-call
-        (Transactional as any)(firstParam)(proto, name, descriptor);
-      } else {
-        // No arguments
-        Transactional()(proto, name, descriptor);
-      }
-
-      // Validate that the decorator was applied correctly
-      // The descriptor has been mutated in place, so we validate it directly
-      const validatedDescriptor = validateTransactionalApplication(
-        className,
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-call
+      (Transactional as any)(firstParam, secondParam, thirdParam)(
+        proto,
         name,
-        {
-          ...descriptor,
-          value: originalFunctionRef,
-        } as PropertyDescriptor, // Pass original for comparison
-        descriptor, // Pass the mutated descriptor
+        descriptor,
       );
 
-      // Define the property with the validated descriptor
-      Object.defineProperty(proto, name, validatedDescriptor);
+      if (originalFunctionRef === descriptor.value) {
+        throw new Error(
+          `@AutoTransaction has not been applied on ${className}.${name}: ` +
+            `Function reference unchanged.`,
+        );
+      }
 
-      // Validate that the property was defined correctly
-      validatePropertyDefinition(className, name, proto);
+      logger.log(className, `✓ ${name}: Function wrapped in transaction proxy`);
+
+      // Define the property with the mutated descriptor
+      Object.defineProperty(proto, name, descriptor);
 
       methodsProcessed.push(name);
     }
+
+    logger.log(className, `@AutoTransaction decorator applied`);
 
     // Log summary
     logger.log(className, `Summary:`);
