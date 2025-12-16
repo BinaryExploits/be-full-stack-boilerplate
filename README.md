@@ -2,16 +2,16 @@
 
 A **modern full-stack TypeScript monorepo** using:
 
-* **Next.js** (Web)
-* **NestJS** (API)
-* **Expo** (Mobile)
-* **tRPC** (End-to-end type-safe API calls)
-* **PostgreSQL** or **MongoDB** (Database - your choice!)
-* **Prisma** or **Mongoose** (ORM/ODM - based on your DB choice)
-* **Better Auth** (Authentication with OAuth, Email OTP)
-* **SonarQube** (Code quality)
-* **Rollbar** (Error tracking)
-* **Turborepo** (Build orchestration)
+- **Next.js** (Web)
+- **NestJS** (API)
+- **Expo** (Mobile)
+- **tRPC** (End-to-end type-safe API calls)
+- **PostgreSQL** or **MongoDB** (Database - your choice!)
+- **Prisma** or **Mongoose** (ORM/ODM - based on your DB choice)
+- **Better Auth** (Authentication with OAuth, Email OTP)
+- **SonarQube** (Code quality)
+- **Rollbar** (Error tracking)
+- **Turborepo** (Build orchestration)
 
 This repository is structured for scalability, developer experience, and seamless cross-platform sharing of logic and types.
 
@@ -34,7 +34,8 @@ Make sure the following are installed **before** setup:
 ## 🏗️ Setup Guide
 
 ### 0. Prerequisites
-Before proceeding with the setup, ensure you have all the required prerequisites installed. 
+
+Before proceeding with the setup, ensure you have all the required prerequisites installed.
 Missing any of these may cause the setup to fail or not work as expected.
 
 ### 1. Clone the Repository
@@ -49,7 +50,9 @@ Once the repository is cloned, you can run an **automated setup script** from th
 ```bash
 npm run setup
 ```
+
 or
+
 ```bash
 node setup.js
 ```
@@ -183,28 +186,28 @@ This command runs all apps (API, Web, and Mobile) concurrently using Turborepo.
 
 ## 🧩 Tech Stack Highlights
 
-* ⚡ **Turborepo** – Monorepo management
-* 💬 **tRPC** – End-to-end type-safe API communication
-* 🧠 **Zod** – Runtime validation & schema definition
-* 🗄️ **Database Options** – Choose between:
-  * **PostgreSQL + Prisma** – Relational database with type-safe ORM
-  * **MongoDB + Mongoose** – NoSQL database with ODM
-* 🔐 **Better Auth** – Modern authentication framework with:
-  * Email OTP authentication
-  * Google OAuth
-  * Expo mobile support
-  * Email verification
-* 💻 **Next.js** – Web frontend
-* 📱 **Expo (React Native)** – Mobile app
-* 🧱 **NestJS** – Backend API
-* 🧩 **Shared Packages** – Centralized types & logic
+- ⚡ **Turborepo** – Monorepo management
+- 💬 **tRPC** – End-to-end type-safe API communication
+- 🧠 **Zod** – Runtime validation & schema definition
+- 🗄️ **Database Options** – Choose between:
+  - **PostgreSQL + Prisma** – Relational database with type-safe ORM
+  - **MongoDB + Mongoose** – NoSQL database with ODM
+- 🔐 **Better Auth** – Modern authentication framework with:
+  - Email OTP authentication
+  - Google OAuth
+  - Expo mobile support
+  - Email verification
+- 💻 **Next.js** – Web frontend
+- 📱 **Expo (React Native)** – Mobile app
+- 🧱 **NestJS** – Backend API
+- 🧩 **Shared Packages** – Centralized types & logic
 
 ---
 
 ## 🧑‍💻 Development Notes
 
-* Keep Docker running while developing backend/API.
-* Use `pnpm` consistently — **do not use npm or yarn**.
-* Better Auth requires proper environment variables for OAuth providers.
+- Keep Docker running while developing backend/API.
+- Use `pnpm` consistently — **do not use npm or yarn**.
+- Better Auth requires proper environment variables for OAuth providers.
 
 ---

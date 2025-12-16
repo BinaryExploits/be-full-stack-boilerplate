@@ -6,17 +6,13 @@ import {
   TransactionHost,
 } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
-import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
 import { CrudMongooseEntity } from './crud.mongoose-entity';
 import { Crud } from '../../schemas/crud.schema';
-import { ICrudMongooseRepository } from './crud.mongoose-repository.interface';
+import { CrudMongooseBaseRepository } from './crud.mongoose-repository.interface';
 import { ServerConstants } from '../../../../constants/server.constants';
 
 @Injectable()
-export class CrudMongooseRepository
-  extends MongooseBaseRepository<Crud, CrudMongooseEntity>
-  implements ICrudMongooseRepository
-{
+export class CrudMongooseRepository extends CrudMongooseBaseRepository {
   constructor(
     @InjectModel(CrudMongooseEntity.name)
     crudModel: Model<CrudMongooseEntity>,

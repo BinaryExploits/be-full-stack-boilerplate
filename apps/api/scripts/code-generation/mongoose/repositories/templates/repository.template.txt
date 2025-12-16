@@ -6,16 +6,13 @@ import {
   TransactionHost,
 } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
-import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
 import { {{ENTITY_NAME_CAPITALIZED}}MongooseEntity } from './{{ENTITY_NAME_LOWER}}.mongoose-entity';
 import { {{ENTITY_NAME_CAPITALIZED}} } from '../../schemas/{{ENTITY_NAME_LOWER}}.schema';
-import { I{{ENTITY_NAME_CAPITALIZED}}MongooseRepository } from './{{ENTITY_NAME_LOWER}}.mongoose-repository.interface';
+import { {{ENTITY_NAME_CAPITALIZED}}MongooseBaseRepository } from './{{ENTITY_NAME_LOWER}}.mongoose-repository.interface';
 import { ServerConstants } from '../../../../constants/server.constants';
 
 @Injectable()
-export class {{ENTITY_NAME_CAPITALIZED}}MongooseRepository
-  extends MongooseBaseRepository<{{ENTITY_NAME_CAPITALIZED}}, {{ENTITY_NAME_CAPITALIZED}}MongooseEntity>
-  implements I{{ENTITY_NAME_CAPITALIZED}}MongooseRepository
+export class {{ENTITY_NAME_CAPITALIZED}}MongooseRepository extends {{ENTITY_NAME_CAPITALIZED}}MongooseBaseRepository
 {
   constructor(
     @InjectModel({{ENTITY_NAME_CAPITALIZED}}MongooseEntity.name)

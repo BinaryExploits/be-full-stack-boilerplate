@@ -1,14 +1,14 @@
-export const requireTransactional = {
+export const requireTransaction = {
   meta: {
     type: 'problem',
     docs: {
       description:
-        'Warn if a service class is missing @Transactional decorator',
+        'Warn if a service class is missing @AutoTransaction decorator',
       recommended: 'warn',
     },
     messages: {
-      missingClassTransactional:
-        "Service class '{{name}}' is missing @Transactional decorator.",
+      missingClassAutoTransaction:
+        "Service class '{{name}}' is missing @AutoTransaction decorator.",
     },
     schema: [],
   },
@@ -21,14 +21,14 @@ export const requireTransactional = {
         const decorators = node.decorators || [];
         const hasTransactional = decorators.some(
           (d) =>
-            d.expression?.callee?.name === 'Transactional' ||
-            d.expression?.name === 'Transactional',
+            d.expression?.callee?.name === 'AutoTransaction' ||
+            d.expression?.name === 'AutoTransaction',
         );
 
         if (!hasTransactional) {
           context.report({
             node,
-            messageId: 'missingClassTransactional',
+            messageId: 'missingClassAutoTransaction',
             data: { name: className },
           });
         }

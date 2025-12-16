@@ -202,24 +202,24 @@ Use this only when you want a **fresh reset**.
 
 ## Project Structure
 
-| File/Directory           | Purpose                                          |
-| ------------------------ | ------------------------------------------------ |
-| `.env`                   | Personal environment configuration               |
-| `.env.example`           | Template for creating `.env`                     |
-| `docker-compose.yml`     | Defines SonarQube server and PostgreSQL database |
+| File/Directory               | Purpose                                          |
+| ---------------------------- | ------------------------------------------------ |
+| `.env`                       | Personal environment configuration               |
+| `.env.example`               | Template for creating `.env`                     |
+| `docker-compose.yml`         | Defines SonarQube server and PostgreSQL database |
 | `docker-compose-scanner.yml` | Defines the scanner container                    |
-| `sonar-project.properties` | Project analysis configuration                   |
-| `README.md`              | This setup guide                                 |
-| **unix/**                | **Scripts for macOS/Linux**                      |
-| `unix/start.sh`          | Starts SonarQube server using Docker             |
-| `unix/stop.sh`           | Gracefully stops SonarQube containers            |
-| `unix/clean.sh`          | Removes all SonarQube containers and volumes     |
-| `unix/scan.sh`           | Runs the SonarQube scanner for code analysis     |
-| **win/**                 | **Scripts for Windows**                          |
-| `win/start.bat`        | Starts SonarQube server using Docker             |
-| `win/stop.bat`         | Gracefully stops SonarQube containers            |
-| `win/clean.bat`        | Removes all SonarQube containers and volumes     |
-| `win/scan.bat`         | Runs the SonarQube scanner for code analysis     |
+| `sonar-project.properties`   | Project analysis configuration                   |
+| `README.md`                  | This setup guide                                 |
+| **unix/**                    | **Scripts for macOS/Linux**                      |
+| `unix/start.sh`              | Starts SonarQube server using Docker             |
+| `unix/stop.sh`               | Gracefully stops SonarQube containers            |
+| `unix/clean.sh`              | Removes all SonarQube containers and volumes     |
+| `unix/scan.sh`               | Runs the SonarQube scanner for code analysis     |
+| **win/**                     | **Scripts for Windows**                          |
+| `win/start.bat`              | Starts SonarQube server using Docker             |
+| `win/stop.bat`               | Gracefully stops SonarQube containers            |
+| `win/clean.bat`              | Removes all SonarQube containers and volumes     |
+| `win/scan.bat`               | Runs the SonarQube scanner for code analysis     |
 
 > You do not need to edit any `.yml` files — all configuration is handled via `.env`.
 

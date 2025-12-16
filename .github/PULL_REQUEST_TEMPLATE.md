@@ -17,10 +17,10 @@ Include any relevant background context.
 
 Select all that apply:
 
-* [ ] Bug fix (non-breaking change which fixes an issue)
-* [ ] New feature (non-breaking change which adds functionality)
-* [ ] Breaking change (fix or feature that could cause existing functionality to not work as expected)
-* [ ] Refactor / Chore (code cleanup, dependencies, tooling, etc.)
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that could cause existing functionality to not work as expected)
+- [ ] Refactor / Chore (code cleanup, dependencies, tooling, etc.)
 
 ---
 
@@ -39,10 +39,10 @@ If none, write: `N/A`.
 
 ## Checklist
 
-* [ ] My code follows the project’s code style.
-* [ ] I have run all linter.
-* [ ] I have checked that my changes do not introduce breaking changes.
-* [ ] I have commented my code where needed, especially complex logic.
+- [ ] My code follows the project’s code style.
+- [ ] I have run all linter.
+- [ ] I have checked that my changes do not introduce breaking changes.
+- [ ] I have commented my code where needed, especially complex logic.
 
 ---
 
@@ -57,8 +57,8 @@ If none, write: `N/A`.
 
 Add any extra details for reviewers:
 
-* Deployment notes
-* New dependencies or migrations
-* Performance considerations
-* Known limitations or follow-ups
-If none, write: `N/A`.
+- Deployment notes
+- New dependencies or migrations
+- Performance considerations
+- Known limitations or follow-ups
+  If none, write: `N/A`.

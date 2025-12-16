@@ -134,7 +134,6 @@ export function AutoTransaction<TAdapter = any>(
       );
     }
 
-    // Validate that the target is a class (constructors have prototypes with a constructor property)
     if (proto.constructor !== target) {
       throw new Error(
         `@AutoTransaction can only be used on classes, but ${className || 'the target'} does not appear to be a class constructor.`,
@@ -171,10 +170,7 @@ export function AutoTransaction<TAdapter = any>(
         continue;
       }
 
-      // Save the original function reference BEFORE applying the decorator
-      const originalFunctionRef = descriptor.value as
-        | ((...args: unknown[]) => unknown)
-        | undefined;
+      const originalFunctionRef = descriptor.value as object;
 
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
       (Transactional as any)(firstParam, secondParam, thirdParam)(
@@ -192,7 +188,6 @@ export function AutoTransaction<TAdapter = any>(
 
       logger.log(className, `✓ ${name}: Function wrapped in transaction proxy`);
 
-      // Define the property with the mutated descriptor
       Object.defineProperty(proto, name, descriptor);
 
       methodsProcessed.push(name);
@@ -200,7 +195,6 @@ export function AutoTransaction<TAdapter = any>(
 
     logger.log(className, `@AutoTransaction decorator applied`);
 
-    // Log summary
     logger.log(className, `Summary:`);
     logger.log(
       className,
@@ -215,7 +209,6 @@ export function AutoTransaction<TAdapter = any>(
       `  - Methods skipped: ${methodsSkipped.length} (${methodsSkipped.join(', ') || 'none'})`,
     );
 
-    // Validation: ensure at least some methods were processed (optional strict check)
     if (
       methodsProcessed.length === 0 &&
       methodsWithNoTransaction.length === 0
@@ -226,7 +219,6 @@ export function AutoTransaction<TAdapter = any>(
       );
     }
 
-    // Log process directory info
     logger.log(className, `Process directory: ${logger.getProcessDir()}`);
   };
 }
