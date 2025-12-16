@@ -1,19 +1,37 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PrismaModule } from '../prisma/prisma.module';
-import { CrudDocument, CrudSchema } from './models/crud.model';
-import { CrudRepository } from './repositories/crud.repository';
-import { CrudService } from './crud.service';
+import {
+  CrudMongooseEntity,
+  CrudMongooseSchema,
+} from './repositories/mongoose/crud.mongoose-entity';
 import { CrudRouter } from './crud.router';
+import { CrudMongooseRepository } from './repositories/mongoose/crud.mongoose-repository';
+import { CrudPrismaRepository } from './repositories/prisma/crud.prisma-repository';
+import { CrudMongooseService } from './services/crud.mongoose.service';
+import { CrudPrismaService } from './services/crud.prisma.service';
+import { ServerConstants } from '../../constants/server.constants';
 
 @Module({
   imports: [
     PrismaModule,
     MongooseModule.forFeature([
-      { name: CrudDocument.name, schema: CrudSchema },
+      { name: CrudMongooseEntity.name, schema: CrudMongooseSchema },
     ]),
   ],
-  providers: [CrudRepository, CrudService, CrudRouter],
-  exports: [CrudRepository, CrudService],
+  providers: [
+    {
+      provide: ServerConstants.Repositories.MongooseCrudInterface,
+      useClass: CrudMongooseRepository,
+    },
+    {
+      provide: ServerConstants.Repositories.PrismaCrudInterface,
+      useClass: CrudPrismaRepository,
+    },
+    CrudMongooseService,
+    CrudPrismaService,
+    CrudRouter,
+  ],
+  exports: [CrudMongooseService, CrudPrismaService],
 })
 export class CrudModule {}

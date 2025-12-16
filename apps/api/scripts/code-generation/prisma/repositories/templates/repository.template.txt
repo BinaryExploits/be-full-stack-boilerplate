@@ -1,0 +1,85 @@
+import { Injectable } from '@nestjs/common';
+import {
+  TransactionHost,
+  InjectTransactionHost,
+} from '@nestjs-cls/transactional';
+import { Prisma } from '@repo/prisma-db';
+import { I{{ENTITY_NAME_CAPITALIZED}}PrismaRepository } from './{{ENTITY_NAME_LOWER}}.prisma-repository.interface';
+import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
+import { ServerConstants } from '../../../../constants/server.constants';
+
+@Injectable()
+export class {{ENTITY_NAME_CAPITALIZED}}PrismaRepository implements I{{ENTITY_NAME_CAPITALIZED}}PrismaRepository {
+  constructor(
+    @InjectTransactionHost(ServerConstants.TransactionConnectionNames.Prisma)
+    protected readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
+  ) {}
+
+  protected get delegate(): Prisma.{{ENTITY_NAME_CAPITALIZED}}Delegate {
+    return this.prismaTxHost.tx.{{ENTITY_NAME_LOWER}};
+  }
+
+  create(
+    args: Prisma.{{ENTITY_NAME_CAPITALIZED}}CreateArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}CreateArgs>> {
+    return this.delegate.create(args);
+  }
+
+  createMany(args: Prisma.{{ENTITY_NAME_CAPITALIZED}}CreateManyArgs): Promise<Prisma.BatchPayload> {
+    return this.delegate.createMany(args);
+  }
+
+  findFirst(
+    args?: Prisma.{{ENTITY_NAME_CAPITALIZED}}FindFirstArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}FindFirstArgs> | null> {
+    return this.delegate.findFirst(args);
+  }
+
+  findUnique(
+    args: Prisma.{{ENTITY_NAME_CAPITALIZED}}FindUniqueArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}FindUniqueArgs> | null> {
+    return this.delegate.findUnique(args);
+  }
+
+  findMany(
+    args?: Prisma.{{ENTITY_NAME_CAPITALIZED}}FindManyArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}FindManyArgs>[]> {
+    return this.delegate.findMany(args);
+  }
+
+  update(
+    args: Prisma.{{ENTITY_NAME_CAPITALIZED}}UpdateArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}UpdateArgs>> {
+    return this.delegate.update(args);
+  }
+
+  updateMany(args: Prisma.{{ENTITY_NAME_CAPITALIZED}}UpdateManyArgs): Promise<Prisma.BatchPayload> {
+    return this.delegate.updateMany(args);
+  }
+
+  upsert(
+    args: Prisma.{{ENTITY_NAME_CAPITALIZED}}UpsertArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}UpsertArgs>> {
+    return this.delegate.upsert(args);
+  }
+
+  delete(
+    args: Prisma.{{ENTITY_NAME_CAPITALIZED}}DeleteArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}DeleteArgs>> {
+    return this.delegate.delete(args);
+  }
+
+  deleteMany(args?: Prisma.{{ENTITY_NAME_CAPITALIZED}}DeleteManyArgs): Promise<Prisma.BatchPayload> {
+    return this.delegate.deleteMany(args);
+  }
+
+  count(args?: Prisma.{{ENTITY_NAME_CAPITALIZED}}CountArgs): Promise<number> {
+    return this.delegate.count(args);
+  }
+
+  aggregate(
+    args: Prisma.{{ENTITY_NAME_CAPITALIZED}}AggregateArgs,
+  ): Promise<Prisma.Get{{ENTITY_NAME_CAPITALIZED}}AggregateType<Prisma.{{ENTITY_NAME_CAPITALIZED}}AggregateArgs>> {
+    return this.delegate.aggregate(args);
+  }
+}

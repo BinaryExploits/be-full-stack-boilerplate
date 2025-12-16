@@ -132,8 +132,6 @@ cd packages/ui
 npx eslint src/
 ```
 
-
-
 **Note:** The workflow dynamically discovers all workspaces from `pnpm-workspace.yaml`, so you don't need to manually maintain a list. Any new workspace you add will automatically be included in linting.
 
 ## Recommended Testing Flow

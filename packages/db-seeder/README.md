@@ -14,7 +14,7 @@ Shared database seeding infrastructure for all database types (Prisma, Mongoose,
 This package is already available in the monorepo workspace:
 
 ```typescript
-import { BaseSeeder, runSeeders, SeedLogger } from '@repo/db-seeder';
+import { BaseSeeder, runSeeders, SeedLogger } from "@repo/db-seeder";
 ```
 
 ## Architecture
@@ -103,19 +103,16 @@ Create `seed-data/users.json`:
 ### 3. Create Seed Script
 
 ```typescript
-import { PrismaClient } from '@prisma/client';
-import { runSeeders } from '@repo/db-seeder';
-import { UserSeeder } from './seeders/user.seeder';
-import { PostSeeder } from './seeders/post.seeder';
+import { PrismaClient } from "@prisma/client";
+import { runSeeders } from "@repo/db-seeder";
+import { UserSeeder } from "./seeders/user.seeder";
+import { PostSeeder } from "./seeders/post.seeder";
 
 const prisma = new PrismaClient();
 
 runSeeders({
-  seeders: [
-    new UserSeeder(prisma),
-    new PostSeeder(prisma),
-  ],
-  loggerPrefix: '[SEED_PRISMA]',
+  seeders: [new UserSeeder(prisma), new PostSeeder(prisma)],
+  loggerPrefix: "[SEED_PRISMA]",
   onDisconnect: async () => {
     await prisma.$disconnect();
   },
@@ -128,15 +125,15 @@ runSeeders({
 
 All logs follow a consistent color scheme:
 
-| Element | Color | Example |
-|---------|-------|---------|
-| Prefix `[SEED_*]` | Cyan | `[SEED_PRISMA]` |
-| Entity Context | Magenta | `[USER]` |
-| Step Context | Yellow | `[Step 1]` |
-| Success Messages | Green | `✓ Seeded 5 records` |
-| Error Messages | Red | `✗ Validation failed` |
-| Info Messages | Blue | General information |
-| Separators | Gray | Visual dividers |
+| Element           | Color   | Example               |
+| ----------------- | ------- | --------------------- |
+| Prefix `[SEED_*]` | Cyan    | `[SEED_PRISMA]`       |
+| Entity Context    | Magenta | `[USER]`              |
+| Step Context      | Yellow  | `[Step 1]`            |
+| Success Messages  | Green   | `✓ Seeded 5 records`  |
+| Error Messages    | Red     | `✗ Validation failed` |
+| Info Messages     | Blue    | General information   |
+| Separators        | Gray    | Visual dividers       |
 
 ## API Reference
 
@@ -145,6 +142,7 @@ All logs follow a consistent color scheme:
 Main function to run the seeding process.
 
 **Parameters:**
+
 - `seeders`: Array of seeder instances
 - `loggerPrefix`: Custom prefix for logs (e.g., `"[SEED_PRISMA]"`)
 - `onConnect`: Optional callback to connect to database
@@ -155,7 +153,7 @@ Main function to run the seeding process.
 ```typescript
 await runSeeders({
   seeders: [new UserSeeder(prisma)],
-  loggerPrefix: '[SEED_PRISMA]',
+  loggerPrefix: "[SEED_PRISMA]",
   onConnect: async () => {
     await database.connect();
   },
@@ -170,15 +168,18 @@ await runSeeders({
 Abstract base class for all seeders.
 
 **Constructor:**
+
 - `seedDataDir`: Path to seed data directory
 
 **Properties:**
+
 - `entityName`: Name of the entity (e.g., "USER", "POST")
 - `seedFile`: JSON file name (e.g., "users.json")
 - `records`: Loaded records array
 - `logger`: SeedLogger instance
 
 **Methods:**
+
 - `loadData()`: Loads data from JSON file (implemented)
 - `validate()`: Validate records (must implement)
 - `clean()`: Clean database (must implement)
@@ -189,6 +190,7 @@ Abstract base class for all seeders.
 Static logger class with colored output.
 
 **Methods:**
+
 - `log(message, context?)`: Blue info messages
 - `success(message, context?)`: Green success messages
 - `error(message, context?)`: Red error messages
@@ -247,14 +249,14 @@ To add support for a new database type:
 Example for TypeORM:
 
 ```typescript
-import { BaseSeeder as SharedBaseSeeder } from '@repo/db-seeder';
-import { Repository } from 'typeorm';
+import { BaseSeeder as SharedBaseSeeder } from "@repo/db-seeder";
+import { Repository } from "typeorm";
 
 export abstract class TypeORMSeeder<T> extends SharedBaseSeeder<T> {
   abstract readonly repository: Repository<T>;
 
   constructor() {
-    super(path.join(__dirname, '..', 'seed-data'));
+    super(path.join(__dirname, "..", "seed-data"));
   }
 
   async clean(): Promise<void> {
