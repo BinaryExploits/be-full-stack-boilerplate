@@ -7,7 +7,7 @@ export type I{{ENTITY_NAME_CAPITALIZED}}MongooseRepository = IMongooseRepository
   {{ENTITY_NAME_CAPITALIZED}},
   {{ENTITY_NAME_CAPITALIZED}}MongooseEntity
 >;
-
+  
 export abstract class {{ENTITY_NAME_CAPITALIZED}}MongooseBaseRepository
   extends MongooseBaseRepository<{{ENTITY_NAME_CAPITALIZED}}, {{ENTITY_NAME_CAPITALIZED}}MongooseEntity>
   implements I{{ENTITY_NAME_CAPITALIZED}}MongooseRepository {}
