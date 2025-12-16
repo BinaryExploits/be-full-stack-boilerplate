@@ -51,7 +51,7 @@ export class CrudMongooseService {
 
   async update(id: string, data: Partial<Crud>): Promise<Crud | null> {
     const updated = await this.crudRepository.findByIdAndUpdate(id, {
-      $set: { content: data.content },
+      content: data.content,
     });
     if (!updated) throw new NotFoundException(`Crud with id ${id} not found`);
     return updated;
