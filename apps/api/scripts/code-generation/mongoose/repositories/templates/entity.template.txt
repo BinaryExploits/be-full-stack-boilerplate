@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { MongooseBaseEntity } from '../../../../repositories/mongoose/mongoose.base-entity';
 
-@Schema({ collection: '{{ENTITY_NAME_LOWER}}', timestamps: true })
-export class {{ENTITY_NAME_CAPITALIZED}}MongooseEntity extends MongooseBaseEntity {}
+@Schema({ collection: '{{ENTITY_NAME_KEBAB}}', timestamps: true })
+export class {{ENTITY_NAME_PASCAL}}MongooseEntity extends MongooseBaseEntity {}
 
-export const {{ENTITY_NAME_CAPITALIZED}}MongooseSchema =
-  SchemaFactory.createForClass({{ENTITY_NAME_CAPITALIZED}}MongooseEntity);
+export const {{ENTITY_NAME_PASCAL}}MongooseSchema =
+  SchemaFactory.createForClass({{ENTITY_NAME_PASCAL}}MongooseEntity);

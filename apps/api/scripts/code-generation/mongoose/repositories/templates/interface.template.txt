@@ -1,13 +1,13 @@
 import { IMongooseRepository } from '../../../../repositories/mongoose/mongoose.repository.interface';
 import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
-import { {{ENTITY_NAME_CAPITALIZED}} } from '../../schemas/{{ENTITY_NAME_LOWER}}.schema';
-import { {{ENTITY_NAME_CAPITALIZED}}MongooseEntity } from './{{ENTITY_NAME_LOWER}}.mongoose-entity';
+import { {{ENTITY_NAME_PASCAL}} } from '../../schemas/{{ENTITY_NAME_KEBAB}}.schema';
+import { {{ENTITY_NAME_PASCAL}}MongooseEntity } from './{{ENTITY_NAME_KEBAB}}.mongoose-entity';
 
-export type I{{ENTITY_NAME_CAPITALIZED}}MongooseRepository = IMongooseRepository<
-  {{ENTITY_NAME_CAPITALIZED}},
-  {{ENTITY_NAME_CAPITALIZED}}MongooseEntity
+export type I{{ENTITY_NAME_PASCAL}}MongooseRepository = IMongooseRepository<
+  {{ENTITY_NAME_PASCAL}},
+  {{ENTITY_NAME_PASCAL}}MongooseEntity
 >;
 
-export abstract class {{ENTITY_NAME_CAPITALIZED}}MongooseBaseRepository
-  extends MongooseBaseRepository<{{ENTITY_NAME_CAPITALIZED}}, {{ENTITY_NAME_CAPITALIZED}}MongooseEntity>
-  implements I{{ENTITY_NAME_CAPITALIZED}}MongooseRepository {}
+export abstract class {{ENTITY_NAME_PASCAL}}MongooseBaseRepository
+  extends MongooseBaseRepository<{{ENTITY_NAME_PASCAL}}, {{ENTITY_NAME_PASCAL}}MongooseEntity>
+  implements I{{ENTITY_NAME_PASCAL}}MongooseRepository {}

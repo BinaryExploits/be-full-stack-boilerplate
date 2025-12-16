@@ -1,36 +1,36 @@
 import { Prisma } from '@repo/prisma-db';
 
-export interface I{{ENTITY_NAME_CAPITALIZED}}PrismaRepository {
+export interface I{{ENTITY_NAME_PASCAL}}PrismaRepository {
   create(
-    args: Prisma.{{ENTITY_NAME_CAPITALIZED}}CreateArgs,
-  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}CreateArgs>>;
-  createMany(args: Prisma.{{ENTITY_NAME_CAPITALIZED}}CreateManyArgs): Promise<Prisma.BatchPayload>;
+    args: Prisma.{{ENTITY_NAME_PASCAL}}CreateArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}CreateArgs>>;
+  createMany(args: Prisma.{{ENTITY_NAME_PASCAL}}CreateManyArgs): Promise<Prisma.BatchPayload>;
 
   findFirst(
-    args?: Prisma.{{ENTITY_NAME_CAPITALIZED}}FindFirstArgs,
-  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}FindFirstArgs> | null>;
+    args?: Prisma.{{ENTITY_NAME_PASCAL}}FindFirstArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}FindFirstArgs> | null>;
   findUnique(
-    args: Prisma.{{ENTITY_NAME_CAPITALIZED}}FindUniqueArgs,
-  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}FindUniqueArgs> | null>;
+    args: Prisma.{{ENTITY_NAME_PASCAL}}FindUniqueArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}FindUniqueArgs> | null>;
   findMany(
-    args?: Prisma.{{ENTITY_NAME_CAPITALIZED}}FindManyArgs,
-  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}FindManyArgs>[]>;
+    args?: Prisma.{{ENTITY_NAME_PASCAL}}FindManyArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}FindManyArgs>[]>;
 
   update(
-    args: Prisma.{{ENTITY_NAME_CAPITALIZED}}UpdateArgs,
-  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}UpdateArgs>>;
-  updateMany(args: Prisma.{{ENTITY_NAME_CAPITALIZED}}UpdateManyArgs): Promise<Prisma.BatchPayload>;
+    args: Prisma.{{ENTITY_NAME_PASCAL}}UpdateArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}UpdateArgs>>;
+  updateMany(args: Prisma.{{ENTITY_NAME_PASCAL}}UpdateManyArgs): Promise<Prisma.BatchPayload>;
   upsert(
-    args: Prisma.{{ENTITY_NAME_CAPITALIZED}}UpsertArgs,
-  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}UpsertArgs>>;
+    args: Prisma.{{ENTITY_NAME_PASCAL}}UpsertArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}UpsertArgs>>;
 
   delete(
-    args: Prisma.{{ENTITY_NAME_CAPITALIZED}}DeleteArgs,
-  ): Promise<Prisma.{{ENTITY_NAME_CAPITALIZED}}GetPayload<Prisma.{{ENTITY_NAME_CAPITALIZED}}DeleteArgs>>;
-  deleteMany(args?: Prisma.{{ENTITY_NAME_CAPITALIZED}}DeleteManyArgs): Promise<Prisma.BatchPayload>;
+    args: Prisma.{{ENTITY_NAME_PASCAL}}DeleteArgs,
+  ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}DeleteArgs>>;
+  deleteMany(args?: Prisma.{{ENTITY_NAME_PASCAL}}DeleteManyArgs): Promise<Prisma.BatchPayload>;
 
-  count(args?: Prisma.{{ENTITY_NAME_CAPITALIZED}}CountArgs): Promise<number>;
+  count(args?: Prisma.{{ENTITY_NAME_PASCAL}}CountArgs): Promise<number>;
   aggregate(
-    args: Prisma.{{ENTITY_NAME_CAPITALIZED}}AggregateArgs,
-  ): Promise<Prisma.Get{{ENTITY_NAME_CAPITALIZED}}AggregateType<Prisma.{{ENTITY_NAME_CAPITALIZED}}AggregateArgs>>;
+    args: Prisma.{{ENTITY_NAME_PASCAL}}AggregateArgs,
+  ): Promise<Prisma.Get{{ENTITY_NAME_PASCAL}}AggregateType<Prisma.{{ENTITY_NAME_PASCAL}}AggregateArgs>>;
 }

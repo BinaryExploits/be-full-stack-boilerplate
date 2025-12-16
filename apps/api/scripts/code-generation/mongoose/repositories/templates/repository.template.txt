@@ -6,23 +6,23 @@ import {
   TransactionHost,
 } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
-import { {{ENTITY_NAME_CAPITALIZED}}MongooseEntity } from './{{ENTITY_NAME_LOWER}}.mongoose-entity';
-import { {{ENTITY_NAME_CAPITALIZED}} } from '../../schemas/{{ENTITY_NAME_LOWER}}.schema';
-import { {{ENTITY_NAME_CAPITALIZED}}MongooseBaseRepository } from './{{ENTITY_NAME_LOWER}}.mongoose-repository.interface';
+import { {{ENTITY_NAME_PASCAL}}MongooseEntity } from './{{ENTITY_NAME_KEBAB}}.mongoose-entity';
+import { {{ENTITY_NAME_PASCAL}} } from '../../schemas/{{ENTITY_NAME_KEBAB}}.schema';
+import { {{ENTITY_NAME_PASCAL}}MongooseBaseRepository } from './{{ENTITY_NAME_KEBAB}}.mongoose-repository.interface';
 import { ServerConstants } from '../../../../constants/server.constants';
 
 @Injectable()
-export class {{ENTITY_NAME_CAPITALIZED}}MongooseRepository extends {{ENTITY_NAME_CAPITALIZED}}MongooseBaseRepository {
+export class {{ENTITY_NAME_PASCAL}}MongooseRepository extends {{ENTITY_NAME_PASCAL}}MongooseBaseRepository {
   constructor(
-    @InjectModel({{ENTITY_NAME_CAPITALIZED}}MongooseEntity.name)
-    {{ENTITY_NAME_LOWER}}Model: Model<{{ENTITY_NAME_CAPITALIZED}}MongooseEntity>,
+    @InjectModel({{ENTITY_NAME_PASCAL}}MongooseEntity.name)
+    {{ENTITY_NAME_CAMEL}}Model: Model<{{ENTITY_NAME_PASCAL}}MongooseEntity>,
     @InjectTransactionHost(ServerConstants.TransactionConnectionNames.Mongoose)
     mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
   ) {
-    super({{ENTITY_NAME_LOWER}}Model, mongoTxHost);
+    super({{ENTITY_NAME_CAMEL}}Model, mongoTxHost);
   }
 
-  protected toDomainEntity(dbEntity: {{ENTITY_NAME_CAPITALIZED}}MongooseEntity): {{ENTITY_NAME_CAPITALIZED}} {
+  protected toDomainEntity({{ENTITY_NAME_CAMEL}}Entity: {{ENTITY_NAME_PASCAL}}MongooseEntity): {{ENTITY_NAME_PASCAL}} {
     throw new Error('Method not implemented.');
 
     // Complete Conversion Below

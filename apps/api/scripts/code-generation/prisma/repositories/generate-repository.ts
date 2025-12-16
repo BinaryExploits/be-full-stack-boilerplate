@@ -1,24 +1,27 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { NamingUtil } from '../../utils/naming.util';
 
 interface GeneratorConfig {
   entityName: string;
 }
 
 export class RepositoryGenerator {
-  private readonly entityName: string;
-  private readonly entityNameCapitalized: string;
+  private readonly entityNameKebab: string;
+  private readonly entityNamePascal: string;
+  private readonly entityNameCamel: string;
   private readonly outputDir: string;
   private readonly templatesDir: string;
 
   constructor(config: GeneratorConfig) {
-    this.entityName = config.entityName.toLowerCase();
-    this.entityNameCapitalized =
-      this.entityName.charAt(0).toUpperCase() + this.entityName.slice(1);
+    this.entityNameKebab = NamingUtil.toKebabCase(config.entityName);
+    this.entityNamePascal = NamingUtil.toPascalCase(config.entityName);
+    this.entityNameCamel = NamingUtil.toCamelCase(config.entityName);
+
     this.outputDir = path.join(
       __dirname,
       '../../../../src/modules',
-      this.entityName,
+      this.entityNameKebab,
       'repositories/prisma',
     );
     this.templatesDir = path.join(__dirname, 'templates');
@@ -33,7 +36,7 @@ export class RepositoryGenerator {
     this.generateRepository();
 
     console.log(
-      `✅ Generated repository for ${this.entityNameCapitalized} in ${this.outputDir}`,
+      `✅ Generated repository for ${this.entityNamePascal} in ${this.outputDir}`,
     );
   }
 
@@ -41,7 +44,7 @@ export class RepositoryGenerator {
     const content = this.loadTemplate('interface.template.txt');
     const filePath = path.join(
       this.outputDir,
-      `${this.entityName}.prisma-repository.interface.ts`,
+      `${this.entityNameKebab}.prisma-repository.interface.ts`,
     );
     fs.writeFileSync(filePath, content, 'utf-8');
   }
@@ -50,7 +53,7 @@ export class RepositoryGenerator {
     const content = this.loadTemplate('repository.template.txt');
     const filePath = path.join(
       this.outputDir,
-      `${this.entityName}.prisma-repository.ts`,
+      `${this.entityNameKebab}.prisma-repository.ts`,
     );
     fs.writeFileSync(filePath, content, 'utf-8');
   }
@@ -59,12 +62,12 @@ export class RepositoryGenerator {
     const templatePath = path.join(this.templatesDir, templateName);
     let template = fs.readFileSync(templatePath, 'utf-8');
 
-    // Replace placeholders
     template = template.replace(
-      /{{ENTITY_NAME_CAPITALIZED}}/g,
-      this.entityNameCapitalized,
+      /{{ENTITY_NAME_PASCAL}}/g,
+      this.entityNamePascal,
     );
-    template = template.replace(/{{ENTITY_NAME_LOWER}}/g, this.entityName);
+    template = template.replace(/{{ENTITY_NAME_KEBAB}}/g, this.entityNameKebab);
+    template = template.replace(/{{ENTITY_NAME_CAMEL}}/g, this.entityNameCamel);
 
     return template;
   }
@@ -77,6 +80,8 @@ if (require.main === module) {
   if (!entityName) {
     console.error('❌ Usage: pnpm run generate:repo:prisma <entityName>');
     console.error('   Example: pnpm run generate:repo:prisma crud');
+    console.error('   Example: pnpm run generate:repo:prisma data-provider');
+    console.error('   Example: pnpm run generate:repo:prisma company-data-set');
     process.exit(1);
   }
 
