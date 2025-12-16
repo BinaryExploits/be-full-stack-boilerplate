@@ -33,7 +33,6 @@ export class CrudMongooseService {
     });
 
     Logger.instance.debug('[Mongoose] Created:', created);
-
     return created;
   }
 
