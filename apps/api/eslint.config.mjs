@@ -6,7 +6,7 @@ import { plugin as customPlugin } from './eslint-rules/plugin.mjs';
 export default tseslint.config(
   ...baseConfig,
   {
-    ignores: ['eslint.config.mjs', 'src/generated/**'],
+    ignores: ['eslint.config.mjs', 'src/generated/**', 'eslint-rules/**'],
   },
   {
     languageOptions: {
