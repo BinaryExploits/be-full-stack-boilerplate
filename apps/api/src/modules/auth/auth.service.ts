@@ -1,3 +1,4 @@
+/* eslint-disable custom/require-transactional */
 import { Injectable } from '@nestjs/common';
 import type { Auth } from 'better-auth';
 import { EmailService } from '../email/email.service';
@@ -11,8 +12,6 @@ export class AuthService {
   constructor(email: EmailService, logger: BetterAuthLogger) {
     this.auth = createBetterAuth(email, logger);
   }
-
-  ok() {}
 
   async getSession(headers: Headers | HeadersInit) {
     return this.auth.api.getSession({ headers });
