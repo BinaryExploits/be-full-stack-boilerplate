@@ -12,6 +12,8 @@ export class AuthService {
     this.auth = createBetterAuth(email, logger);
   }
 
+  ok() {}
+
   async getSession(headers: Headers | HeadersInit) {
     return this.auth.api.getSession({ headers });
   }
