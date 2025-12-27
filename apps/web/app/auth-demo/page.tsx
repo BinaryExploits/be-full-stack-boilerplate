@@ -23,10 +23,7 @@ export default function AuthDemo() {
     });
 
     if (signInResponse.error) {
-      Logger.instance.critical(
-        "Error while Signing in",
-        signInResponse.error.message,
-      );
+      Logger.instance.critical("Error while Signing in", signInResponse.error);
       setError("Failed to sign in with Google");
     }
   };
