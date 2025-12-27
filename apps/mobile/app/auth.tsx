@@ -297,10 +297,7 @@ export default function Auth() {
 
     if (signInResponse.error) {
       Alert.alert("Error while Signing in", signInResponse.error.message);
-      Logger.instance.critical(
-        "Error while Signing in",
-        signInResponse.error.message,
-      );
+      Logger.instance.critical("Error while Signing in", signInResponse.error);
       setError("Failed to sign in with Google");
     }
   };
@@ -377,7 +374,7 @@ export default function Auth() {
       Alert.alert("Error while signing out", signOutResponse.error.message);
       Logger.instance.critical(
         "Error while signing out",
-        signOutResponse.error.message,
+        signOutResponse.error,
       );
     } else {
       resetAuthFlow();
