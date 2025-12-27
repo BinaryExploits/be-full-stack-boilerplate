@@ -3,7 +3,6 @@ import { MiddlewareOptions, TRPCMiddleware } from 'nestjs-trpc';
 import { TRPCError } from '@trpc/server';
 import { AppContextType } from '../../app.context';
 import { AuthService } from './auth.service';
-import { fromNodeHeaders } from 'better-auth/node';
 
 @Injectable()
 export class AuthMiddleware implements TRPCMiddleware {
@@ -14,9 +13,7 @@ export class AuthMiddleware implements TRPCMiddleware {
     const { ctx, next } = opts;
     const appCtx = ctx as AppContextType;
 
-    const session = await this.authService.getSession(
-      fromNodeHeaders(appCtx.req.headers),
-    );
+    const session = await this.authService.getSessionForContext(appCtx);
 
     if (!session) {
       throw new TRPCError({
@@ -25,11 +22,12 @@ export class AuthMiddleware implements TRPCMiddleware {
       });
     }
 
+    appCtx.session = session.session;
+    appCtx.user = session.user;
+
     return next({
       ctx: {
         ...appCtx,
-        session: session.session,
-        user: session.user,
       },
     });
   }
