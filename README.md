@@ -38,14 +38,16 @@ Make sure the following are installed **before** setup:
 Before proceeding with the setup, ensure you have all the required prerequisites installed.
 Missing any of these may cause the setup to fail or not work as expected.
 
-### 1. Clone the Repository
+### 1. Clone the Repository and Set Up Environment Variables
 
 ```bash
 git clone https://github.com/BinaryExploits/be-full-stack-boilerplate.git
 cd be-full-stack-boilerplate
 ```
 
-Once the repository is cloned, you can run an **automated setup script** from the root to prepare dependencies and the project:
+After cloning the repository, request the required environment files from the code owner. You can also copy **.env.example**, rename it to **.env**, and update it with the required secrets.
+
+Once this is completed, run the automated setup script from the project root to install dependencies and prepare the project:
 
 ```bash
 npm run setup
@@ -59,9 +61,7 @@ node setup.js
 
 This script will automatically perform all the steps mentioned below.
 
-⚠️ You may still need to manually update some values in your .env files as required.
-
-Alternatively, you can follow the steps mentioned below manually to set up the project.
+If you prefer, you can follow the steps below to set up the project manually.
 
 ---
 

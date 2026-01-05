@@ -1,10 +1,3 @@
-## Pull Request Title
-
-Provide a concise title that clearly summarizes your changes.
-Example: `Add search functionality to the homepage`.
-
----
-
 ## Description
 
 Briefly describe the purpose of this PR.
