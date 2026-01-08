@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -8,9 +7,9 @@ import { Crud } from '../schemas/crud.schema';
 import { NoTransaction } from '../../../decorators/method/no-transaction.decorator';
 import { AutoTransaction } from '../../../decorators/class/auto-transaction.decorator';
 import { ServerConstants } from '../../../constants/server.constants';
-import { ICrudMongooseRepository } from '../repositories/mongoose/crud.mongoose-repository.interface';
 import { Logger, StringExtensions } from '@repo/utils-core';
 import { Propagation } from '@nestjs-cls/transactional';
+import { CrudMongooseRepository } from '../repositories/mongoose/crud.mongoose-repository';
 
 @Injectable()
 @AutoTransaction(
@@ -18,10 +17,7 @@ import { Propagation } from '@nestjs-cls/transactional';
   Propagation.Required,
 )
 export class CrudMongooseService {
-  constructor(
-    @Inject(ServerConstants.Repositories.MongooseCrudInterface)
-    private readonly crudRepository: ICrudMongooseRepository,
-  ) {}
+  constructor(private readonly crudRepository: CrudMongooseRepository) {}
 
   async createCrud(data: Partial<Crud>): Promise<Crud> {
     if (StringExtensions.IsNullOrEmpty(data.content)) {

@@ -3,9 +3,9 @@ import { Crud } from '../schemas/crud.schema';
 import { NoTransaction } from '../../../decorators/method/no-transaction.decorator';
 import { AutoTransaction } from '../../../decorators/class/auto-transaction.decorator';
 import { ServerConstants } from '../../../constants/server.constants';
-import { ICrudPrismaRepository } from '../repositories/prisma/crud.prisma-repository.interface';
 import { Logger } from '@repo/utils-core';
 import { Propagation } from '@nestjs-cls/transactional';
+import { CrudPrismaRepository } from '../repositories/prisma/crud.prisma-repository';
 
 @Injectable()
 @AutoTransaction(
@@ -13,10 +13,7 @@ import { Propagation } from '@nestjs-cls/transactional';
   Propagation.Required,
 )
 export class CrudPrismaService {
-  constructor(
-    @Inject(ServerConstants.Repositories.PrismaCrudInterface)
-    private readonly crudRepository: ICrudPrismaRepository,
-  ) {}
+  constructor(private readonly crudRepository: CrudPrismaRepository) {}
 
   async createCrud(data: Partial<Crud>): Promise<Crud> {
     const created = await this.crudRepository.create({

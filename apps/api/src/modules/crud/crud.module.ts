@@ -10,7 +10,6 @@ import { CrudMongooseRepository } from './repositories/mongoose/crud.mongoose-re
 import { CrudPrismaRepository } from './repositories/prisma/crud.prisma-repository';
 import { CrudMongooseService } from './services/crud.mongoose.service';
 import { CrudPrismaService } from './services/crud.prisma.service';
-import { ServerConstants } from '../../constants/server.constants';
 
 @Module({
   imports: [
@@ -20,17 +19,11 @@ import { ServerConstants } from '../../constants/server.constants';
     ]),
   ],
   providers: [
-    {
-      provide: ServerConstants.Repositories.MongooseCrudInterface,
-      useClass: CrudMongooseRepository,
-    },
-    {
-      provide: ServerConstants.Repositories.PrismaCrudInterface,
-      useClass: CrudPrismaRepository,
-    },
     CrudMongooseService,
     CrudPrismaService,
     CrudRouter,
+    CrudMongooseRepository,
+    CrudPrismaRepository,
   ],
   exports: [CrudMongooseService, CrudPrismaService],
 })
