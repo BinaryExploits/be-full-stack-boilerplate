@@ -8,11 +8,14 @@ import {
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { CrudMongooseEntity } from './crud.mongoose-entity';
 import { Crud } from '../../schemas/crud.schema';
-import { CrudMongooseBaseRepository } from './crud.mongoose-repository.interface';
 import { ServerConstants } from '../../../../constants/server.constants';
+import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
 
 @Injectable()
-export class CrudMongooseRepository extends CrudMongooseBaseRepository {
+export class CrudMongooseRepository extends MongooseBaseRepository<
+  Crud,
+  CrudMongooseEntity
+> {
   constructor(
     @InjectModel(CrudMongooseEntity.name)
     crudModel: Model<CrudMongooseEntity>,
@@ -22,12 +25,10 @@ export class CrudMongooseRepository extends CrudMongooseBaseRepository {
     super(crudModel, mongoTxHost);
   }
 
-  protected toDomainEntity(dbEntity: CrudMongooseEntity): Crud {
+  protected toDomainEntity(crudEntity: CrudMongooseEntity): Crud {
     return {
-      id: dbEntity._id?.toString() ?? '',
-      content: dbEntity.content,
-      createdAt: dbEntity.createdAt,
-      updatedAt: dbEntity.updatedAt,
+      id: crudEntity._id?.toString() ?? '',
+      ...crudEntity,
     };
   }
 }

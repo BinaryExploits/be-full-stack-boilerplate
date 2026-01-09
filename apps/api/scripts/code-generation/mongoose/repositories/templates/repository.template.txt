@@ -8,11 +8,14 @@ import {
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { {{ENTITY_NAME_PASCAL}}MongooseEntity } from './{{ENTITY_NAME_KEBAB}}.mongoose-entity';
 import { {{ENTITY_NAME_PASCAL}} } from '../../schemas/{{ENTITY_NAME_KEBAB}}.schema';
-import { {{ENTITY_NAME_PASCAL}}MongooseBaseRepository } from './{{ENTITY_NAME_KEBAB}}.mongoose-repository.interface';
 import { ServerConstants } from '../../../../constants/server.constants';
+import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
 
 @Injectable()
-export class {{ENTITY_NAME_PASCAL}}MongooseRepository extends {{ENTITY_NAME_PASCAL}}MongooseBaseRepository {
+export class {{ENTITY_NAME_PASCAL}}MongooseRepository extends MongooseBaseRepository<
+  {{ENTITY_NAME_PASCAL}},
+  {{ENTITY_NAME_PASCAL}}MongooseEntity
+> {
   constructor(
     @InjectModel({{ENTITY_NAME_PASCAL}}MongooseEntity.name)
     {{ENTITY_NAME_CAMEL}}Model: Model<{{ENTITY_NAME_PASCAL}}MongooseEntity>,
@@ -23,11 +26,9 @@ export class {{ENTITY_NAME_PASCAL}}MongooseRepository extends {{ENTITY_NAME_PASC
   }
 
   protected toDomainEntity({{ENTITY_NAME_CAMEL}}Entity: {{ENTITY_NAME_PASCAL}}MongooseEntity): {{ENTITY_NAME_PASCAL}} {
-    throw new Error('Method not implemented.');
-
-    // Complete Conversion Below
-    // return {
-    //   id: dbEntity._id?.toString() ?? '',
-    // };
+    return {
+      id: {{ENTITY_NAME_CAMEL}}Entity._id?.toString() ?? '',
+      ...{{ENTITY_NAME_CAMEL}}Entity,
+    };
   }
 }

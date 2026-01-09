@@ -3,9 +3,4 @@ export class ServerConstants {
     Mongoose: 'MONGOOSE_CONNECTION',
     Prisma: 'PRISMA_CONNECTION',
   } as const;
-
-  static readonly Repositories = {
-    MongooseCrudInterface: Symbol('ICrudMongooseRepository'),
-    PrismaCrudInterface: Symbol('ICrudPrismaRepository'),
-  } as const;
 }
