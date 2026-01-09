@@ -8,8 +8,8 @@ import {
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { {{ENTITY_NAME_PASCAL}}MongooseEntity } from './{{ENTITY_NAME_KEBAB}}.mongoose-entity';
 import { {{ENTITY_NAME_PASCAL}} } from '../../schemas/{{ENTITY_NAME_KEBAB}}.schema';
-import { {{ENTITY_NAME_PASCAL}}MongooseBaseRepository } from './{{ENTITY_NAME_KEBAB}}.mongoose-repository.interface';
 import { ServerConstants } from '../../../../constants/server.constants';
+import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
 
 @Injectable()
 export class {{ENTITY_NAME_PASCAL}}MongooseRepository extends MongooseBaseRepository<
@@ -27,8 +27,8 @@ export class {{ENTITY_NAME_PASCAL}}MongooseRepository extends MongooseBaseReposi
 
   protected toDomainEntity({{ENTITY_NAME_CAMEL}}Entity: {{ENTITY_NAME_PASCAL}}MongooseEntity): {{ENTITY_NAME_PASCAL}} {
     return {
-        id: dbEntity._id?.toString() ?? '',
-        ...{{ENTITY_NAME_CAMEL}}Entity,
+      id: {{ENTITY_NAME_CAMEL}}Entity._id?.toString() ?? '',
+      ...{{ENTITY_NAME_CAMEL}}Entity,
     };
   }
 }

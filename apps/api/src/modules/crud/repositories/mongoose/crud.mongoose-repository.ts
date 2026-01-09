@@ -25,12 +25,10 @@ export class CrudMongooseRepository extends MongooseBaseRepository<
     super(crudModel, mongoTxHost);
   }
 
-  protected toDomainEntity(dbEntity: CrudMongooseEntity): Crud {
+  protected toDomainEntity(crudEntity: CrudMongooseEntity): Crud {
     return {
-      id: dbEntity._id?.toString() ?? '',
-      content: dbEntity.content,
-      createdAt: dbEntity.createdAt,
-      updatedAt: dbEntity.updatedAt,
+      id: crudEntity._id?.toString() ?? '',
+      ...crudEntity,
     };
   }
 }
