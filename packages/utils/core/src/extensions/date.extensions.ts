@@ -12,6 +12,7 @@ export class DateExtensions {
   }
 
   static hasDatePassed(date: Date): boolean;
+  static hasDatePassed(date: Date, serverSyncThresholdSeconds: number): boolean;
   static hasDatePassed(
     date: Date,
     serverSyncThresholdSeconds?: number,
@@ -21,6 +22,6 @@ export class DateExtensions {
       : 0;
 
     const thresholdDateMs = date.getTime() + thresholdMs;
-    return thresholdDateMs <= new Date().getTime();
+    return thresholdDateMs <= Date.now();
   }
 }
