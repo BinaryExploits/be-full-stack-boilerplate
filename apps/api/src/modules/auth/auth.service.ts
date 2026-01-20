@@ -6,7 +6,7 @@ import { BetterAuthLogger } from '../logger/logger-better-auth';
 import { createBetterAuth } from './auth';
 import { AppContextType } from '../../app.context';
 import { fromNodeHeaders } from 'better-auth/node';
-import { Logger } from '@repo/utils-core';
+import { DateExtensions, Logger } from '@repo/utils-core';
 
 @Injectable()
 export class AuthService {
@@ -90,7 +90,7 @@ export class AuthService {
       !token ||
       !token.accessToken ||
       !token.accessTokenExpiresAt ||
-      token.accessTokenExpiresAt < new Date()
+      DateExtensions.hasDatePassed(token.accessTokenExpiresAt)
     ) {
       return null;
     }
