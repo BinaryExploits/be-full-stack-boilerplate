@@ -10,4 +10,17 @@ export class DateExtensions {
       hour12: true,
     });
   }
+
+  static hasDatePassed(date: Date): boolean;
+  static hasDatePassed(
+    date: Date,
+    serverSyncThresholdSeconds?: number,
+  ): boolean {
+    const thresholdMs = serverSyncThresholdSeconds
+      ? serverSyncThresholdSeconds * 1000
+      : 0;
+
+    const thresholdDateMs = date.getTime() + thresholdMs;
+    return thresholdDateMs <= new Date().getTime();
+  }
 }

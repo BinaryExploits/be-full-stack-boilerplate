@@ -17,6 +17,7 @@ import { ClsPluginTransactional } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { ServerConstants } from './constants/server.constants';
+import { parseNodeEnvironment } from './lib/types/environment.type';
 
 @Module({
   imports: [
@@ -58,12 +59,7 @@ import { ServerConstants } from './constants/server.constants';
     RollbarModule.register({
       accessToken: process.env.ROLLBAR_ACCESS_TOKEN!,
       // @ts-expect-error (rollbar config allow any string)
-      environment:
-        (process.env.NODE_ENV as
-          | 'development'
-          | 'production'
-          | 'staging'
-          | 'testing') || 'development',
+      environment: parseNodeEnvironment(process.env.NODE_ENV),
     }),
     LoggerModule,
     CrudModule,

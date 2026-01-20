@@ -6,6 +6,7 @@ import { BetterAuthLogger } from '../logger/logger-better-auth';
 import { createBetterAuth } from './auth';
 import { AppContextType } from '../../app.context';
 import { fromNodeHeaders } from 'better-auth/node';
+import { DateExtensions, Logger } from '@repo/utils-core';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +14,10 @@ export class AuthService {
 
   constructor(email: EmailService, logger: BetterAuthLogger) {
     this.auth = createBetterAuth(email, logger);
+  }
+
+  private get logger() {
+    return Logger.instance.withContext(AuthService.name);
   }
 
   async getSessionForContext(ctx: AppContextType): Promise<Session | null> {
@@ -51,15 +56,29 @@ export class AuthService {
     provider: 'google',
     ctx: AppContextType,
   ): Promise<string | undefined> {
-    const session = await this.getSessionForContext(ctx);
+    const headers = fromNodeHeaders(ctx.req.headers);
+    const session = await this.getSession(headers);
     if (!session?.session.userId) {
       return undefined;
     }
 
-    return this.getAccessToken(provider, session.session.userId);
+    return this.getAccessToken(provider, session.session.userId, headers);
   }
 
-  async getAccessToken(provider: 'google', userId: string): Promise<string> {
+  async getAccessToken(
+    provider: 'google',
+    userId: string,
+    headers: Headers | HeadersInit,
+  ): Promise<string> {
+    const token = await this.hasValidAccessToken(provider, userId);
+    if (token) {
+      return token.accessToken;
+    }
+
+    return this.refreshAccessToken(provider, headers);
+  }
+
+  async hasValidAccessToken(provider: 'google', userId: string) {
     const token = await this.auth.api.getAccessToken({
       body: {
         providerId: provider,
@@ -67,7 +86,48 @@ export class AuthService {
       },
     });
 
-    return token.accessToken;
+    if (
+      !token ||
+      !token.accessToken ||
+      !token.accessTokenExpiresAt ||
+      DateExtensions.hasDatePassed(token.accessTokenExpiresAt)
+    ) {
+      return null;
+    }
+
+    return token;
+  }
+
+  private async refreshAccessToken(
+    provider: 'google',
+    headers: Headers | HeadersInit,
+  ): Promise<string> {
+    const accounts = await this.auth.api.listUserAccounts({
+      headers,
+    });
+
+    const account = accounts.find((acc) => acc.providerId === provider);
+    if (!account) {
+      throw new Error(
+        `No ${provider} account found for provider ${provider}. User may need to link their account.`,
+      );
+    }
+
+    const tokens = await this.auth.api.refreshToken({
+      body: {
+        providerId: provider,
+        accountId: account.id,
+        userId: account.userId,
+      },
+    });
+
+    if (!tokens || !tokens.accessToken) {
+      throw new Error(
+        `Failed to refresh token for user ${account.userId} and provider ${provider}. User may need to re-authenticate.`,
+      );
+    }
+
+    return tokens.accessToken;
   }
 }
 

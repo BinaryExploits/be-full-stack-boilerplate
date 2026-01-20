@@ -5,6 +5,10 @@ import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '@repo/prisma-db';
 import { EmailService } from '../email/email.service';
 import { BetterAuthLogger } from '../logger/logger-better-auth';
+import {
+  NodeEnvironment,
+  parseNodeEnvironment,
+} from '../../lib/types/environment.type';
 
 const createDatabaseAdapter = () => {
   const prisma = new PrismaClient();
@@ -27,6 +31,11 @@ export const createBetterAuth = (
         clientId: process.env.GOOGLE_CLIENT_ID!,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
         accessType: 'offline',
+        prompt:
+          parseNodeEnvironment(process.env.NODE_ENV) ===
+          NodeEnvironment.Production
+            ? undefined
+            : 'consent',
         scope: [
           'openid',
           'email',
