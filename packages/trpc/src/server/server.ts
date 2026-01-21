@@ -6,27 +6,15 @@ const publicProcedure = t.procedure;
 
 const appRouter = t.router({
   crud: t.router({
-    createCrudMongo: publicProcedure.input(z.object({
-      requestId: z.string().uuid().optional(),
-      timestamp: z.number().optional(),
-    }).merge(z.object({
-      id: z.string(),
-      createdAt: z.date(),
-      updatedAt: z.date(),
-    }).extend({
+    createCrudMongo: publicProcedure.input(z.object({}).extend({
       content: z.string().min(1).max(1000),
-    }).pick({
-      content: true,
-    }))).output(z.object({
+    })).output(z.object({
       success: z.boolean(),
       message: z.string().optional(),
     }).extend({
       id: z.string(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    findAllMongo: publicProcedure.input(z.object({
-      requestId: z.string().uuid().optional(),
-      timestamp: z.number().optional(),
-    }).extend({
+    findAllMongo: publicProcedure.input(z.object({}).extend({
       limit: z.number().int().positive().max(100).default(10).optional(),
       offset: z.number().int().nonnegative().default(0).optional(),
     })).output(z.object({
@@ -44,10 +32,7 @@ const appRouter = t.router({
       limit: z.number().int().positive(),
       offset: z.number().int().nonnegative(),
     })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    findOneCrudMongo: publicProcedure.input(z.object({
-      requestId: z.string().uuid().optional(),
-      timestamp: z.number().optional(),
-    }).extend({
+    findOneCrudMongo: publicProcedure.input(z.object({}).extend({
       id: z.string(),
     })).output(z.object({
       id: z.string(),
@@ -56,10 +41,7 @@ const appRouter = t.router({
     }).extend({
       content: z.string().min(1).max(1000),
     }).nullable()).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    updateCrudMongo: publicProcedure.input(z.object({
-      requestId: z.string().uuid().optional(),
-      timestamp: z.number().optional(),
-    }).extend({
+    updateCrudMongo: publicProcedure.input(z.object({}).extend({
       id: z.string(),
       data: z.object({
         id: z.string(),
@@ -84,36 +66,21 @@ const appRouter = t.router({
         content: z.string().min(1).max(1000),
       }).optional(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    deleteCrudMongo: publicProcedure.input(z.object({
-      requestId: z.string().uuid().optional(),
-      timestamp: z.number().optional(),
-    }).extend({
+    deleteCrudMongo: publicProcedure.input(z.object({}).extend({
       id: z.string(),
     })).output(z.object({
       success: z.boolean(),
       message: z.string().optional(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    createCrudPrisma: publicProcedure.input(z.object({
-      requestId: z.string().uuid().optional(),
-      timestamp: z.number().optional(),
-    }).merge(z.object({
-      id: z.string(),
-      createdAt: z.date(),
-      updatedAt: z.date(),
-    }).extend({
+    createCrudPrisma: publicProcedure.input(z.object({}).extend({
       content: z.string().min(1).max(1000),
-    }).pick({
-      content: true,
-    }))).output(z.object({
+    })).output(z.object({
       success: z.boolean(),
       message: z.string().optional(),
     }).extend({
       id: z.string(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    findAllPrisma: publicProcedure.input(z.object({
-      requestId: z.string().uuid().optional(),
-      timestamp: z.number().optional(),
-    }).extend({
+    findAllPrisma: publicProcedure.input(z.object({}).extend({
       limit: z.number().int().positive().max(100).default(10).optional(),
       offset: z.number().int().nonnegative().default(0).optional(),
     })).output(z.object({
@@ -131,10 +98,7 @@ const appRouter = t.router({
       limit: z.number().int().positive(),
       offset: z.number().int().nonnegative(),
     })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    findOneCrudPrisma: publicProcedure.input(z.object({
-      requestId: z.string().uuid().optional(),
-      timestamp: z.number().optional(),
-    }).extend({
+    findOneCrudPrisma: publicProcedure.input(z.object({}).extend({
       id: z.string(),
     })).output(z.object({
       id: z.string(),
@@ -143,10 +107,7 @@ const appRouter = t.router({
     }).extend({
       content: z.string().min(1).max(1000),
     }).nullable()).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    updateCrudPrisma: publicProcedure.input(z.object({
-      requestId: z.string().uuid().optional(),
-      timestamp: z.number().optional(),
-    }).extend({
+    updateCrudPrisma: publicProcedure.input(z.object({}).extend({
       id: z.string(),
       data: z.object({
         id: z.string(),
@@ -171,10 +132,7 @@ const appRouter = t.router({
         content: z.string().min(1).max(1000),
       }).optional(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    deleteCrudPrisma: publicProcedure.input(z.object({
-      requestId: z.string().uuid().optional(),
-      timestamp: z.number().optional(),
-    }).extend({
+    deleteCrudPrisma: publicProcedure.input(z.object({}).extend({
       id: z.string(),
     })).output(z.object({
       success: z.boolean(),

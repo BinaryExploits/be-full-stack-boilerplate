@@ -11,7 +11,7 @@ interface CrudItem {
   content: string;
 }
 
-function CrudPanel({ dbType }: { dbType: DbType }) {
+function CrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
   const utils = trpc.useUtils();
   const [content, setContent] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);

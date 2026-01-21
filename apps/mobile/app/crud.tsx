@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
   },
 });
 
-function CrudPanel({ dbType }: { dbType: DbType }) {
+function CrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
   const utils = trpc.useUtils();
   const [content, setContent] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);

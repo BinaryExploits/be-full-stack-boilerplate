@@ -5,52 +5,11 @@ import {
   type TransactionalAdapter,
 } from '@nestjs-cls/transactional';
 import { NO_TRANSACTION_KEY } from '../constants';
-import { mkdirSync, writeFileSync } from 'fs';
-import { join } from 'path';
 
 type TOptionsFromAdapter<TAdapter> =
   TAdapter extends TransactionalAdapter<any, any, infer TOptions>
     ? TOptions
     : never;
-
-class TransactionalLogger {
-  private readonly processDir: string;
-
-  constructor() {
-    const baseLogDir = join(process.cwd(), 'tmp', 'transaction');
-
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const random = Math.random().toString(36).substring(2, 8);
-    const processId = `${timestamp}_${random}`;
-
-    this.processDir = join(baseLogDir, processId);
-    mkdirSync(this.processDir, { recursive: true });
-
-    this.log('Session', 'Transaction validation session started');
-    this.log('Session', `Process ID: ${processId}`);
-    this.log('Session', `Log directory: ${this.processDir}`);
-  }
-
-  log(className: string, message: string): void {
-    const timestamp = new Date().toISOString();
-    const logMessage = `[${timestamp}] ${message}`;
-
-    const classLogFile = join(this.processDir, `${className}.log`);
-
-    writeFileSync(classLogFile, logMessage + '\n', {
-      flag: 'a',
-      encoding: 'utf-8',
-    });
-
-    // console.log(`[${timestamp}] [${className}] ${message}`);
-  }
-
-  getProcessDir(): string {
-    return this.processDir;
-  }
-}
-
-const logger = new TransactionalLogger();
 
 /**
  * Run the decorated class methods in a transaction.
@@ -120,7 +79,7 @@ export function AutoTransaction<TAdapter = any>(
 ): ClassDecorator {
   return (target) => {
     if (typeof target !== 'function') {
-      throw new Error(
+      throw new TypeError(
         `@AutoTransaction can only be used on classes, but the target is not a function.`,
       );
     }
@@ -140,10 +99,6 @@ export function AutoTransaction<TAdapter = any>(
       );
     }
 
-    const methodsProcessed: string[] = [];
-    const methodsSkipped: string[] = [];
-    const methodsWithNoTransaction: string[] = [];
-
     for (const name of Object.getOwnPropertyNames(proto)) {
       if (name === 'constructor') {
         continue;
@@ -151,12 +106,10 @@ export function AutoTransaction<TAdapter = any>(
 
       const descriptor = Object.getOwnPropertyDescriptor(proto, name);
       if (!descriptor) {
-        methodsSkipped.push(`${name} (no descriptor)`);
         continue;
       }
 
       if (typeof descriptor.value !== 'function') {
-        methodsSkipped.push(`${name} (not a function)`);
         continue;
       }
 
@@ -166,7 +119,6 @@ export function AutoTransaction<TAdapter = any>(
       );
 
       if (noTransaction) {
-        methodsWithNoTransaction.push(name);
         continue;
       }
 
@@ -186,39 +138,7 @@ export function AutoTransaction<TAdapter = any>(
         );
       }
 
-      logger.log(className, `✓ ${name}: Function wrapped in transaction proxy`);
-
       Object.defineProperty(proto, name, descriptor);
-
-      methodsProcessed.push(name);
     }
-
-    logger.log(className, `@AutoTransaction decorator applied`);
-
-    logger.log(className, `Summary:`);
-    logger.log(
-      className,
-      `  - Methods wrapped: ${methodsProcessed.length} (${methodsProcessed.join(', ') || 'none'})`,
-    );
-    logger.log(
-      className,
-      `  - Methods with @NoTransaction: ${methodsWithNoTransaction.length} (${methodsWithNoTransaction.join(', ') || 'none'})`,
-    );
-    logger.log(
-      className,
-      `  - Methods skipped: ${methodsSkipped.length} (${methodsSkipped.join(', ') || 'none'})`,
-    );
-
-    if (
-      methodsProcessed.length === 0 &&
-      methodsWithNoTransaction.length === 0
-    ) {
-      logger.log(
-        className,
-        `⚠ Warning: No methods were wrapped. This may indicate the decorator is applied to a class with no methods.`,
-      );
-    }
-
-    logger.log(className, `Process directory: ${logger.getProcessDir()}`);
   };
 }

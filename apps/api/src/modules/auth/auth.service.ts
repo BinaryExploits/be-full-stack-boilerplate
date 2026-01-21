@@ -87,8 +87,7 @@ export class AuthService {
     });
 
     if (
-      !token ||
-      !token.accessToken ||
+      !token?.accessToken ||
       !token.accessTokenExpiresAt ||
       DateExtensions.hasDatePassed(token.accessTokenExpiresAt)
     ) {
@@ -121,7 +120,7 @@ export class AuthService {
       },
     });
 
-    if (!tokens || !tokens.accessToken) {
+    if (!tokens?.accessToken) {
       throw new Error(
         `Failed to refresh token for user ${account.userId} and provider ${provider}. User may need to re-authenticate.`,
       );

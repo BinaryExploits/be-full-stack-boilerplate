@@ -1,10 +1,6 @@
 import { z } from 'zod';
 
-export const ZBaseRequest = z.object({
-  requestId: z.string().uuid().optional(),
-  timestamp: z.number().optional(),
-});
-
+export const ZBaseRequest = z.object({});
 export const ZBaseResponse = z.object({
   success: z.boolean(),
   message: z.string().optional(),

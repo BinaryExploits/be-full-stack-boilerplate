@@ -1,10 +1,10 @@
 export enum LogLevel {
   None = 0,
-  Info = 1 << 0,
-  Warn = 1 << 1,
-  Debug = 1 << 2,
-  Error = 1 << 3,
-  Trace = 1 << 4,
-  Critical = 1 << 5,
-  All = Info | Warn | Debug | Error | Trace | Critical,
+  Info = 1,
+  Warn = 2,
+  Debug = 4,
+  Error = 8,
+  Trace = 16,
+  Critical = 32,
+  All = 63,
 }

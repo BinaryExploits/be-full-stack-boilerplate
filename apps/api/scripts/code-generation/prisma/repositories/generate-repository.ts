@@ -1,5 +1,5 @@
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 import { NamingUtil } from '../../utils/naming.util';
 
 interface GeneratorConfig {
@@ -62,12 +62,18 @@ export class RepositoryGenerator {
     const templatePath = path.join(this.templatesDir, templateName);
     let template = fs.readFileSync(templatePath, 'utf-8');
 
-    template = template.replace(
-      /{{ENTITY_NAME_PASCAL}}/g,
+    template = template.replaceAll(
+      '{{ENTITY_NAME_PASCAL}}',
       this.entityNamePascal,
     );
-    template = template.replace(/{{ENTITY_NAME_KEBAB}}/g, this.entityNameKebab);
-    template = template.replace(/{{ENTITY_NAME_CAMEL}}/g, this.entityNameCamel);
+    template = template.replaceAll(
+      '{{ENTITY_NAME_KEBAB}}',
+      this.entityNameKebab,
+    );
+    template = template.replaceAll(
+      '{{ENTITY_NAME_CAMEL}}',
+      this.entityNameCamel,
+    );
 
     return template;
   }
