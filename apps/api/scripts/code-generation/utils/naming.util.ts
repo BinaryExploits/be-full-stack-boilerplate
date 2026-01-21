@@ -2,8 +2,8 @@ export class NamingUtil {
   static toKebabCase(str: string): string {
     return str
       .trim()
-      .replace(/([a-z])([A-Z])/g, '$1-$2')
-      .replace(/[\s_]+/g, '-')
+      .replaceAll(/([a-z])([A-Z])/g, '$1-$2')
+      .replaceAll(/[\s_]+/g, '-')
       .toLowerCase();
   }
 
@@ -11,7 +11,7 @@ export class NamingUtil {
     return str
       .trim()
       .split(/[-_\s]+/)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
       .join('');
   }
 

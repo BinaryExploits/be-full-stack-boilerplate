@@ -17,7 +17,9 @@ export const ZUpdateCrudDto = ZCrud.pick({
   content: true,
 });
 
-export const ZCrudCreateRequest = ZBaseRequest.merge(ZCreateCrudDto);
+export const ZCrudCreateRequest = ZBaseRequest.extend({
+  content: z.string().min(1).max(1000),
+});
 
 export const ZCrudCreateResponse = ZBaseResponse.extend({
   id: z.string(),

@@ -15,8 +15,7 @@ import { MongooseBaseEntity } from './mongoose.base-entity';
 export abstract class MongooseBaseRepository<
   TDomainEntity extends BaseEntity,
   TDbEntity extends MongooseBaseEntity,
-> implements IMongooseRepository<TDomainEntity, TDbEntity>
-{
+> implements IMongooseRepository<TDomainEntity, TDbEntity> {
   protected readonly model: Model<TDbEntity>;
   protected readonly mongoTxHost: TransactionHost<TransactionalAdapterMongoose>;
 
