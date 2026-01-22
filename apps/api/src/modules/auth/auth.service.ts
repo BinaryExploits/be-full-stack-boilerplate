@@ -7,6 +7,7 @@ import { createBetterAuth } from './auth';
 import { AppContextType } from '../../app.context';
 import { fromNodeHeaders } from 'better-auth/node';
 import { DateExtensions, Logger } from '@repo/utils-core';
+import { ErrorBuilder } from '../../lib/errors';
 
 @Injectable()
 export class AuthService {
@@ -107,8 +108,8 @@ export class AuthService {
 
     const account = accounts.find((acc) => acc.providerId === provider);
     if (!account) {
-      throw new Error(
-        `No ${provider} account found for provider ${provider}. User may need to link their account.`,
+      return ErrorBuilder.notFound(
+        `No ${provider} account found. User may need to link their ${provider} account`,
       );
     }
 
@@ -121,8 +122,8 @@ export class AuthService {
     });
 
     if (!tokens?.accessToken) {
-      throw new Error(
-        `Failed to refresh token for user ${account.userId} and provider ${provider}. User may need to re-authenticate.`,
+      return ErrorBuilder.unauthorized(
+        `Failed to refresh ${provider} token. User may need to re-authenticate`,
       );
     }
 
