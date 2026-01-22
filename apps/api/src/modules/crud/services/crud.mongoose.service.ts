@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Crud } from '../schemas/crud.schema';
 import { NoTransaction } from '../../../decorators/method/no-transaction.decorator';
 import { AutoTransaction } from '../../../decorators/class/auto-transaction.decorator';
@@ -10,6 +6,7 @@ import { ServerConstants } from '../../../constants/server.constants';
 import { Logger, StringExtensions } from '@repo/utils-core';
 import { Propagation } from '@nestjs-cls/transactional';
 import { CrudMongooseRepository } from '../repositories/mongoose/crud.mongoose-repository';
+import { ErrorBuilder } from '../../../lib/errors';
 
 @Injectable()
 @AutoTransaction(
@@ -21,7 +18,7 @@ export class CrudMongooseService {
 
   async createCrud(data: Partial<Crud>): Promise<Crud> {
     if (StringExtensions.IsNullOrEmpty(data.content)) {
-      throw new BadRequestException('Content is Empty');
+      return ErrorBuilder.badRequest('Content cannot be empty');
     }
 
     const created = await this.crudRepository.create({
@@ -40,7 +37,7 @@ export class CrudMongooseService {
   @NoTransaction('dont care if transaction is broken')
   async findOne(id: string): Promise<Crud> {
     const crud = await this.crudRepository.findById(id);
-    if (!crud) throw new NotFoundException(`Crud with id ${id} not found`);
+    if (!crud) return ErrorBuilder.notFound(`Crud not found: ${id}`);
     return crud;
   }
 
@@ -48,13 +45,13 @@ export class CrudMongooseService {
     const updated = await this.crudRepository.findByIdAndUpdate(id, {
       content: data.content,
     });
-    if (!updated) throw new NotFoundException(`Crud with id ${id} not found`);
+    if (!updated) return ErrorBuilder.notFound(`Crud not found: ${id}`);
     return updated;
   }
 
   async delete(id: string): Promise<Crud | null> {
     const deleted = await this.crudRepository.findByIdAndDelete(id);
-    if (!deleted) throw new NotFoundException(`Crud with id ${id} not found`);
+    if (!deleted) return ErrorBuilder.notFound(`Crud not found: ${id}`);
     Logger.instance.debug('[Mongoose] Deleted:', deleted);
     return deleted;
   }

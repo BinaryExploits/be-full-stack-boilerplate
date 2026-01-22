@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Crud } from '../schemas/crud.schema';
 import { NoTransaction } from '../../../decorators/method/no-transaction.decorator';
 import { AutoTransaction } from '../../../decorators/class/auto-transaction.decorator';
@@ -6,6 +6,7 @@ import { ServerConstants } from '../../../constants/server.constants';
 import { Logger } from '@repo/utils-core';
 import { Propagation } from '@nestjs-cls/transactional';
 import { CrudPrismaRepository } from '../repositories/prisma/crud.prisma-repository';
+import { ErrorBuilder } from '../../../lib/errors';
 
 @Injectable()
 @AutoTransaction(
@@ -43,7 +44,7 @@ export class CrudPrismaService {
       where: { id },
       data: { content: data.content },
     });
-    if (!updated) throw new NotFoundException(`Crud with id ${id} not found`);
+    if (!updated) return ErrorBuilder.notFound(`Crud not found: ${id}`);
     return updated;
   }
 
@@ -52,7 +53,7 @@ export class CrudPrismaService {
       where: { id },
     });
 
-    if (!deleted) throw new NotFoundException(`Crud with id ${id} not found`);
+    if (!deleted) return ErrorBuilder.notFound(`Crud not found: ${id}`);
     Logger.instance.debug('[Prisma] Deleted:', deleted);
     return deleted;
   }
