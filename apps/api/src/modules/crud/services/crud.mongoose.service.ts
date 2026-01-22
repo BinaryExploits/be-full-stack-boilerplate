@@ -18,12 +18,7 @@ export class CrudMongooseService {
 
   async createCrud(data: Partial<Crud>): Promise<Crud> {
     if (StringExtensions.IsNullOrEmpty(data.content)) {
-      return ErrorBuilder.validationError([
-        {
-          field: 'content',
-          message: 'Content cannot be empty',
-        },
-      ]);
+      return ErrorBuilder.validationError('Content cannot be empty');
     }
 
     const created = await this.crudRepository.create({

@@ -364,6 +364,14 @@ export class ErrorBuilder {
    * Throws a database-related error
    * @param message - Error message
    */
+  static validationError(message: string): never {
+    throw new BadRequestException(message);
+  }
+
+  /**
+   * Throws a database-related error
+   * @param message - Error message
+   */
   static databaseError(message: string): never {
     throw new InternalServerErrorException(message);
   }
