@@ -18,7 +18,12 @@ export class CrudMongooseService {
 
   async createCrud(data: Partial<Crud>): Promise<Crud> {
     if (StringExtensions.IsNullOrEmpty(data.content)) {
-      return ErrorBuilder.badRequest('Content cannot be empty');
+      return ErrorBuilder.validationError([
+        {
+          field: 'content',
+          message: 'Content cannot be empty',
+        },
+      ]);
     }
 
     const created = await this.crudRepository.create({
@@ -37,7 +42,7 @@ export class CrudMongooseService {
   @NoTransaction('dont care if transaction is broken')
   async findOne(id: string): Promise<Crud> {
     const crud = await this.crudRepository.findById(id);
-    if (!crud) return ErrorBuilder.notFound(`Crud not found: ${id}`);
+    if (!crud) return ErrorBuilder.resourceNotFound('Crud', id);
     return crud;
   }
 
@@ -45,13 +50,13 @@ export class CrudMongooseService {
     const updated = await this.crudRepository.findByIdAndUpdate(id, {
       content: data.content,
     });
-    if (!updated) return ErrorBuilder.notFound(`Crud not found: ${id}`);
+    if (!updated) return ErrorBuilder.resourceNotFound('Crud', id);
     return updated;
   }
 
   async delete(id: string): Promise<Crud | null> {
     const deleted = await this.crudRepository.findByIdAndDelete(id);
-    if (!deleted) return ErrorBuilder.notFound(`Crud not found: ${id}`);
+    if (!deleted) return ErrorBuilder.resourceNotFound('Crud', id);
     Logger.instance.debug('[Mongoose] Deleted:', deleted);
     return deleted;
   }

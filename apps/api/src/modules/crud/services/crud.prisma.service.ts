@@ -44,7 +44,7 @@ export class CrudPrismaService {
       where: { id },
       data: { content: data.content },
     });
-    if (!updated) return ErrorBuilder.notFound(`Crud not found: ${id}`);
+    if (!updated) return ErrorBuilder.resourceNotFound('Crud', id);
     return updated;
   }
 
@@ -53,7 +53,7 @@ export class CrudPrismaService {
       where: { id },
     });
 
-    if (!deleted) return ErrorBuilder.notFound(`Crud not found: ${id}`);
+    if (!deleted) return ErrorBuilder.resourceNotFound('Crud', id);
     Logger.instance.debug('[Prisma] Deleted:', deleted);
     return deleted;
   }
