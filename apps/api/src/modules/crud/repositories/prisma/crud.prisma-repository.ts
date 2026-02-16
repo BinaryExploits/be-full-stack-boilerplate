@@ -16,7 +16,7 @@ export class CrudPrismaRepository implements ICrudPrismaRepository {
   ) {}
 
   protected get delegate(): Prisma.CrudDelegate {
-    return this.prismaTxHost.tx.crud;
+    return this.prismaTxHost.tx.crud as Prisma.CrudDelegate;
   }
 
   create(

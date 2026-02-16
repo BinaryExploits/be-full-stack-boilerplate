@@ -26,6 +26,9 @@ export const createBetterAuth = (
     trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',') || [],
     basePath: '/api/auth',
     database: createDatabaseAdapter(),
+    emailAndPassword: {
+      enabled: true,
+    },
     socialProviders: {
       google: {
         clientId: process.env.GOOGLE_CLIENT_ID!,

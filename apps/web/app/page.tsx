@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { TenantDashboardOnly } from "./components/tenant-dashboard-only";
 
 export default function Home() {
   return (
@@ -18,7 +19,7 @@ export default function Home() {
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
           <Link href="/crud-demo">
             <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-blue-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-1">
               <div className="flex items-center gap-4 mb-4">
@@ -61,6 +62,50 @@ export default function Home() {
               </div>
             </div>
           </Link>
+
+          <TenantDashboardOnly>
+            <Link href="/tenant-dashboard">
+              <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-amber-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-amber-500/20 hover:-translate-y-1">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-14 h-14 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg
+                      className="w-8 h-8 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                      />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">Tenant Dashboard</h2>
+                </div>
+                <p className="text-slate-400 mb-6">
+                  View, add, edit, and remove tenants. Super-admin only.
+                </p>
+                <div className="flex items-center text-amber-400 font-medium group-hover:gap-3 gap-2 transition-all">
+                  <span>Manage tenants</span>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          </TenantDashboardOnly>
 
           <Link href="/auth-demo">
             <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-green-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-green-500/20 hover:-translate-y-1">

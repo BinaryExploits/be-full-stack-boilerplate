@@ -18,6 +18,7 @@ import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { ServerConstants } from './constants/server.constants';
 import { parseNodeEnvironment } from './lib/types/environment.type';
+import { TenantModule } from './modules/tenant/tenant.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { parseNodeEnvironment } from './lib/types/environment.type';
       errorFormatter: trpcErrorFormatter,
     }),
     PrismaModule,
+    TenantModule,
     MongooseModule.forRoot(process.env.DATABASE_URL_MONGODB!),
     ClsModule.forRoot({
       global: true,
@@ -71,6 +73,10 @@ import { parseNodeEnvironment } from './lib/types/environment.type';
 export class AppModule implements NestModule {
   // noinspection JSUnusedGlobalSymbols
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoggerMiddleware).forRoutes('*');
+    consumer
+      .apply(LoggerMiddleware)
+      .forRoutes('*')
+      .apply(TenantModule.resolutionMiddleware)
+      .forRoutes('*');
   }
 }

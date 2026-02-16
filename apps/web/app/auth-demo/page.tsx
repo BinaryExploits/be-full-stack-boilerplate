@@ -3,18 +3,37 @@
 import { Logger } from "@repo/utils-core";
 import Link from "next/link";
 import { useState } from "react";
-import { authClient } from "../lib/auth/auth-client";
+import { useAuthClient } from "../lib/auth/auth-client";
 import { getJoinedFrontendUrl } from "../lib/utils/url";
 
-type AuthStep = "choose" | "email" | "otp";
+type AuthStep =
+  | "choose"
+  | "email"
+  | "otp"
+  | "emailPasswordSignUp"
+  | "emailPasswordSignIn";
 
 export default function AuthDemo() {
-  const { data: session, isPending } = authClient.useSession();
+  const authClient = useAuthClient();
+  const sessionResult = authClient?.useSession?.();
+  const session = sessionResult?.data;
+  const isPending = sessionResult?.isPending ?? true;
+  const refetchSession = sessionResult?.refetch ?? (async () => {});
   const [authStep, setAuthStep] = useState<AuthStep>("choose");
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
+  const [name, setName] = useState("");
+  const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  if (!authClient) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p>Loading auth...</p>
+      </div>
+    );
+  }
 
   const signInWithGoogle = async () => {
     const signInResponse = await authClient.signIn.social({
@@ -92,7 +111,48 @@ export default function AuthDemo() {
     setAuthStep("choose");
     setEmail("");
     setOtp("");
+    setName("");
+    setPassword("");
     setError(null);
+  };
+
+  const handleSignUpEmailPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    const { data, error: err } = await authClient.signUp.email({
+      name: name.trim(),
+      email: email.trim(),
+      password,
+      callbackURL: getJoinedFrontendUrl("auth-demo"),
+    });
+    setLoading(false);
+    if (err) {
+      setError(err.message ?? "Sign up failed");
+      return;
+    }
+    if (!data) setError("Sign up failed");
+    else {
+      // Better Auth signs the user in on sign-up; refetch session so UI updates
+      await refetchSession();
+    }
+  };
+
+  const handleSignInEmailPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    const { data, error: err } = await authClient.signIn.email({
+      email: email.trim(),
+      password,
+      callbackURL: getJoinedFrontendUrl("auth-demo"),
+    });
+    setLoading(false);
+    if (err) {
+      setError(err.message ?? "Sign in failed");
+      return;
+    }
+    if (!data) setError("Sign in failed");
   };
 
   if (isPending) {
@@ -292,7 +352,178 @@ export default function AuthDemo() {
                     </svg>
                     Sign in with Email OTP
                   </button>
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <div className="w-full border-t border-gray-300"></div>
+                    </div>
+                    <div className="relative flex justify-center text-sm">
+                      <span className="px-2 bg-white text-gray-500">
+                        Or Email & Password
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    onClick={() => {
+                      setAuthStep("emailPasswordSignUp");
+                      setError(null);
+                      setName("");
+                      setEmail("");
+                      setPassword("");
+                    }}
+                    disabled={loading}
+                    className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Sign up with Email & Password
+                  </button>
+
+                  <button
+                    onClick={() => {
+                      setAuthStep("emailPasswordSignIn");
+                      setError(null);
+                      setEmail("");
+                      setPassword("");
+                    }}
+                    disabled={loading}
+                    className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Sign in with Email & Password
+                  </button>
                 </>
+              )}
+
+              {authStep === "emailPasswordSignUp" && (
+                <form
+                  onSubmit={handleSignUpEmailPassword}
+                  className="space-y-4"
+                >
+                  <div>
+                    <label
+                      htmlFor="signup-name"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      Name
+                    </label>
+                    <input
+                      type="text"
+                      id="signup-name"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      placeholder="Your name"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="signup-email"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="signup-email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      placeholder="you@example.com"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="signup-password"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      Password (min 8 characters)
+                    </label>
+                    <input
+                      type="password"
+                      id="signup-password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      minLength={8}
+                      maxLength={128}
+                      placeholder="••••••••"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full px-4 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? "Creating account..." : "Sign up"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={resetAuthFlow}
+                    disabled={loading}
+                    className="w-full px-4 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Back
+                  </button>
+                </form>
+              )}
+
+              {authStep === "emailPasswordSignIn" && (
+                <form
+                  onSubmit={handleSignInEmailPassword}
+                  className="space-y-4"
+                >
+                  <div>
+                    <label
+                      htmlFor="signin-email"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="signin-email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      placeholder="you@example.com"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <div>
+                    <label
+                      htmlFor="signin-password"
+                      className="block text-sm font-medium text-gray-700 mb-2"
+                    >
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      id="signin-password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                      placeholder="••••••••"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {loading ? "Signing in..." : "Sign in"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={resetAuthFlow}
+                    disabled={loading}
+                    className="w-full px-4 py-3 bg-white text-gray-700 font-medium rounded-lg border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    Back
+                  </button>
+                </form>
               )}
 
               {authStep === "email" && (

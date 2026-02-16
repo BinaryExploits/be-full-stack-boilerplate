@@ -14,12 +14,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// Multi-tenant: one default tenant = normal app; add more for abc.company.com, xyz.company.com
+model Tenant {
+  id             String   @id @default(uuid())
+  name           String   @db.VarChar(255)
+  slug           String   @unique @db.VarChar(100)
+  allowedOrigins String[] // e.g. ["abc.company.com", "https://abc.company.com"]
+  isDefault      Boolean  @default(false) // when true, unmatched requests use this tenant
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  crud           Crud[]
+
+  @@map("tenant")
+}
+
 model Crud {
   id        String   @id @default(uuid())
+  tenantId  String?
   content   String   @db.VarChar(500)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  tenant    Tenant?  @relation(fields: [tenantId], references: [id], onDelete: SetNull)
 
+  @@index([tenantId])
   @@map("crud")
 }
 

@@ -5,6 +5,55 @@ const t = initTRPC.create();
 const publicProcedure = t.procedure;
 
 const appRouter = t.router({
+  tenant: t.router({
+    create: publicProcedure.input(z.object({
+      name: z.string().min(1).max(255),
+      slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/),
+      allowedOrigins: z.array(z.string().min(1)).min(0),
+      isDefault: z.boolean().optional(),
+    })).output(z.object({
+      id: z.string(),
+      name: z.string(),
+      slug: z.string(),
+      allowedOrigins: z.array(z.string()),
+      isDefault: z.boolean(),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    findAll: publicProcedure.output(z.object({
+      tenants: z.array(z.object({
+        id: z.string(),
+        name: z.string(),
+        slug: z.string(),
+        allowedOrigins: z.array(z.string()),
+        isDefault: z.boolean(),
+      })),
+    })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    findOne: publicProcedure.input(z.object({
+      id: z.string().uuid(),
+    })).output(z.object({
+      id: z.string(),
+      name: z.string(),
+      slug: z.string(),
+      allowedOrigins: z.array(z.string()),
+      isDefault: z.boolean(),
+    }).nullable()).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    update: publicProcedure.input(z.object({
+      id: z.string().uuid(),
+      name: z.string().min(1).max(255).optional(),
+      slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/).optional(),
+      allowedOrigins: z.array(z.string().min(1)).optional(),
+      isDefault: z.boolean().optional(),
+    })).output(z.object({
+      id: z.string(),
+      name: z.string(),
+      slug: z.string(),
+      allowedOrigins: z.array(z.string()),
+      isDefault: z.boolean(),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    delete: publicProcedure.input(z.object({
+      id: z.string().uuid(),
+    })).output(z.object({ success: z.boolean() })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
+  }),
+  tenantMeta: t.router({ isSuperAdmin: publicProcedure.output(z.object({ isSuperAdmin: z.boolean() })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any) }),
   crud: t.router({
     createCrudMongo: publicProcedure.input(z.object({}).extend({
       content: z.string().min(1).max(1000),
