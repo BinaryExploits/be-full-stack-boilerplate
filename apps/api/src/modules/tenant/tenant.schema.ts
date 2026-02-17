@@ -26,13 +26,13 @@ export const ZTenantFindAllResponse = z.object({
 });
 
 export const ZTenantFindOneRequest = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
 });
 
 export const ZTenantFindOneResponse = ZTenant.nullable();
 
 export const ZTenantUpdateRequest = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
   name: z.string().min(1).max(255).optional(),
   slug: z
     .string()
@@ -47,7 +47,7 @@ export const ZTenantUpdateRequest = z.object({
 export const ZTenantUpdateResponse = ZTenant;
 
 export const ZTenantDeleteRequest = z.object({
-  id: z.string().uuid(),
+  id: z.string(),
 });
 
 export const ZTenantDeleteResponse = z.object({ success: z.boolean() });

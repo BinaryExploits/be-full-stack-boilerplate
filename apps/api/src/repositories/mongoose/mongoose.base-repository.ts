@@ -39,24 +39,6 @@ export abstract class MongooseBaseRepository<
     this.tenantScoped = options?.tenantScoped ?? false;
   }
 
-  /** Merge tenant filter when tenantScoped and tenantId is set. */
-  private tenantFilter(): Record<string, unknown> {
-    if (!this.tenantScoped || !this.tenantContext?.getTenantId()) {
-      return {};
-    }
-    return { tenantId: this.tenantContext.getTenantId() };
-  }
-
-  private withTenantData(data: Partial<TDbEntity>): Partial<TDbEntity> {
-    const tenantId = this.tenantScoped
-      ? this.tenantContext?.getTenantId()
-      : null;
-    if (tenantId) {
-      return { ...data, tenantId } as Partial<TDbEntity>;
-    }
-    return data;
-  }
-
   async create(entity: Partial<TDbEntity>): Promise<TDomainEntity> {
     const doc = new this.model(this.withTenantData(entity));
     await doc.save({ session: this.mongoTxHost.tx });
@@ -85,6 +67,7 @@ export abstract class MongooseBaseRepository<
       ...this.tenantFilter(),
       ...filter,
     } as QueryFilter<TDbEntity>;
+
     const docs = await this.model
       .find(merged, projection, options)
       .session(this.mongoTxHost.tx)
@@ -102,6 +85,7 @@ export abstract class MongooseBaseRepository<
       ...this.tenantFilter(),
       _id: id,
     } as QueryFilter<TDbEntity>;
+
     const doc = await this.model
       .findOne(filter, projection, options)
       .session(this.mongoTxHost.tx)
@@ -119,6 +103,7 @@ export abstract class MongooseBaseRepository<
       ...this.tenantFilter(),
       ...filter,
     } as QueryFilter<TDbEntity>;
+
     const doc = await this.model
       .findOne(merged, projection, options)
       .session(this.mongoTxHost.tx)
@@ -145,6 +130,7 @@ export abstract class MongooseBaseRepository<
       ...this.tenantFilter(),
       ...filter,
     } as QueryFilter<TDbEntity>;
+
     const updateResult = await this.model
       .updateOne(merged, update)
       .session(this.mongoTxHost.tx);
@@ -160,6 +146,7 @@ export abstract class MongooseBaseRepository<
       ...this.tenantFilter(),
       ...filter,
     } as QueryFilter<TDbEntity>;
+
     const updateResult = await this.model
       .updateMany(merged, update)
       .session(this.mongoTxHost.tx);
@@ -176,6 +163,7 @@ export abstract class MongooseBaseRepository<
       _id: id,
       ...this.tenantFilter(),
     } as QueryFilter<TDbEntity>;
+
     const doc = await this.model
       .findOneAndUpdate(filter, update, { new: true, ...options })
       .session(this.mongoTxHost.tx)
@@ -193,6 +181,7 @@ export abstract class MongooseBaseRepository<
       ...this.tenantFilter(),
       ...filter,
     } as QueryFilter<TDbEntity>;
+
     const doc = await this.model
       .findOneAndUpdate(merged, update, { new: true, ...options })
       .session(this.mongoTxHost.tx)
@@ -213,6 +202,7 @@ export abstract class MongooseBaseRepository<
       ...this.tenantFilter(),
       ...filter,
     } as QueryFilter<TDbEntity>;
+
     const deleteResult = await this.model
       .deleteOne(merged)
       .session(this.mongoTxHost.tx);
@@ -225,6 +215,7 @@ export abstract class MongooseBaseRepository<
       ...this.tenantFilter(),
       ...filter,
     } as QueryFilter<TDbEntity>;
+
     const deleteResult = await this.model
       .deleteMany(merged)
       .session(this.mongoTxHost.tx);
@@ -237,6 +228,7 @@ export abstract class MongooseBaseRepository<
       _id: id,
       ...this.tenantFilter(),
     } as QueryFilter<TDbEntity>;
+
     const deletedDoc = await this.model
       .findOneAndDelete(filter)
       .session(this.mongoTxHost.tx)
@@ -252,6 +244,7 @@ export abstract class MongooseBaseRepository<
       ...this.tenantFilter(),
       ...filter,
     } as QueryFilter<TDbEntity>;
+
     const deletedDoc = await this.model
       .findOneAndDelete(merged)
       .session(this.mongoTxHost.tx)
@@ -261,4 +254,25 @@ export abstract class MongooseBaseRepository<
   }
 
   protected abstract toDomainEntity(tDbEntity: TDbEntity): TDomainEntity;
+
+  /** Merge tenant filter when tenantScoped and tenantId is set. */
+  private tenantFilter(): Record<string, unknown> {
+    if (!this.tenantScoped || !this.tenantContext?.getTenantId()) {
+      return {};
+    }
+
+    return { tenantId: this.tenantContext.getTenantId() };
+  }
+
+  private withTenantData(data: Partial<TDbEntity>): Partial<TDbEntity> {
+    const tenantId = this.tenantScoped
+      ? this.tenantContext?.getTenantId()
+      : null;
+
+    if (tenantId) {
+      return { ...data, tenantId } as Partial<TDbEntity>;
+    }
+
+    return data;
+  }
 }

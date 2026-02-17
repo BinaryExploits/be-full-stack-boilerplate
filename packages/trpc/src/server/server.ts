@@ -8,7 +8,11 @@ const appRouter = t.router({
   tenant: t.router({
     create: publicProcedure.input(z.object({
       name: z.string().min(1).max(255),
-      slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/),
+      slug: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-]+$/),
       allowedOrigins: z.array(z.string().min(1)).min(0),
       isDefault: z.boolean().optional(),
     })).output(z.object({
@@ -28,7 +32,7 @@ const appRouter = t.router({
       })),
     })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     findOne: publicProcedure.input(z.object({
-      id: z.string().uuid(),
+      id: z.string(),
     })).output(z.object({
       id: z.string(),
       name: z.string(),
@@ -37,9 +41,14 @@ const appRouter = t.router({
       isDefault: z.boolean(),
     }).nullable()).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     update: publicProcedure.input(z.object({
-      id: z.string().uuid(),
+      id: z.string(),
       name: z.string().min(1).max(255).optional(),
-      slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/).optional(),
+      slug: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-]+$/)
+        .optional(),
       allowedOrigins: z.array(z.string().min(1)).optional(),
       isDefault: z.boolean().optional(),
     })).output(z.object({
@@ -50,7 +59,7 @@ const appRouter = t.router({
       isDefault: z.boolean(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     delete: publicProcedure.input(z.object({
-      id: z.string().uuid(),
+      id: z.string(),
     })).output(z.object({ success: z.boolean() })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
   }),
   tenantMeta: t.router({ isSuperAdmin: publicProcedure.output(z.object({ isSuperAdmin: z.boolean() })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any) }),

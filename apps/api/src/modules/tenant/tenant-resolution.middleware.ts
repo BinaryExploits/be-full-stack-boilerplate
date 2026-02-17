@@ -13,15 +13,18 @@ export class TenantResolutionMiddleware implements NestMiddleware {
   async use(req: Request, _res: Response, next: NextFunction): Promise<void> {
     const host = req.headers['host'];
     const origin = req.headers['origin'];
+
     // When request is proxied (e.g. Next.js rewrite), Origin/Host may be the API server;
     // frontend sends x-tenant-origin so we can resolve tenant from the actual page origin.
     const tenantOrigin =
       (req.headers['x-tenant-origin'] as string) ||
       (typeof origin === 'string' ? origin : undefined);
+
     await this.tenantResolution.resolveAndSet(
       typeof host === 'string' ? host : undefined,
       tenantOrigin,
     );
+
     next();
   }
 }

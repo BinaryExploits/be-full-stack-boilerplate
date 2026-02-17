@@ -39,6 +39,7 @@ export class SuperAdminGuard implements TRPCMiddleware {
         message: 'You must be logged in to access this resource',
       });
     }
+
     const email = user.email.trim().toLowerCase();
     if (!this.superAdminEmails.has(email)) {
       throw new TRPCError({
@@ -46,6 +47,7 @@ export class SuperAdminGuard implements TRPCMiddleware {
         message: 'Super admin access required',
       });
     }
+
     return opts.next({ ctx });
   }
 }
