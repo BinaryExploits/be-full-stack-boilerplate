@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { Logger } from '@repo/utils-core';
 import { INestApplication } from '@nestjs/common';
+import { matchesWildcard } from './lib/patterns/wildcard';
 
 run().catch((err: Error) => {
   console.error(err);
@@ -47,9 +48,23 @@ async function createNestApp() {
   });
 }
 
-function bootstrap(app: INestApplication<any>) {
+function bootstrap(app: INestApplication) {
+  const corsPatterns: string[] = (process.env.CORS_ORIGINS ?? '')
+    .split(',')
+    .map((p) => p.trim())
+    .filter(Boolean);
+
   app.enableCors({
-    origin: process.env.CORS_ORIGINS?.split(',') || [],
+    origin: (
+      origin: string | undefined,
+      callback: (err: Error | null, allow?: boolean) => void,
+    ) => {
+      if (!origin) return callback(null, true);
+      callback(
+        null,
+        corsPatterns.some((p) => matchesWildcard(origin, p)),
+      );
+    },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
     allowedHeaders: 'Content-Type, Accept, Authorization, x-tenant-origin',
