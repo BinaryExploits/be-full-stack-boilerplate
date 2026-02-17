@@ -33,10 +33,10 @@ The app supports **single-tenant by default** and **multi-tenant** when you add 
 1. **Tenant resolution** (per request): The `TenantResolutionMiddleware` reads `Host`, `Origin`, or the frontend-sent `x-tenant-origin` header and looks up a tenant by `allowedOrigins`. If none match, a tenant with `isDefault: true` is used (single-tenant mode).
 2. **Tenant context**: The resolved tenant is stored in **CLS** (request-scoped). Services and repositories never receive a tenant argument; they read from `TenantContext` or the tenant is applied automatically.
 3. **Data isolation**:
-   - **Prisma**: The `Crud` model is tenant-scoped via a Prisma extension; `tenantId` is injected on create and all reads/updates/deletes are filtered by it.
+   - **Prisma**: The `CrudPrismaRepository` injects `TenantContext` and merges `tenantId` into all Crud queries (create, findMany, findUnique, update, delete, etc.). When a tenant is resolved, `tenantId` is added to `where` and to create `data`.
    - **Mongoose**: Repositories that opt in with `tenantScoped: true` (e.g. `CrudMongooseRepository`) automatically add `tenantId` to filters and to created documents.
 
-Developers writing services or repository code do **not** need to pass or check tenant; isolation is handled in middleware, Prisma extension, and base repository.
+Developers writing services or repository code do **not** need to pass or check tenant; isolation is handled in middleware and in the tenant-scoped repositories (Prisma and Mongoose).
 
 ## Single-tenant (default)
 
