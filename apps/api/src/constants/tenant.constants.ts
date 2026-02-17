@@ -6,4 +6,5 @@ export const TENANT_CLS_KEYS = {
   TENANT: 'tenant',
 } as const;
 
-export type TenantClsKey = (typeof TENANT_CLS_KEYS)[keyof typeof TENANT_CLS_KEYS];
+export type TenantClsKey =
+  (typeof TENANT_CLS_KEYS)[keyof typeof TENANT_CLS_KEYS];

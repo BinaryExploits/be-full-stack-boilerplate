@@ -72,7 +72,9 @@ export class TenantService {
       data: {
         ...(data.name != null && { name: data.name }),
         ...(data.slug != null && { slug: data.slug }),
-        ...(data.allowedOrigins != null && { allowedOrigins: data.allowedOrigins }),
+        ...(data.allowedOrigins != null && {
+          allowedOrigins: data.allowedOrigins,
+        }),
         ...(data.isDefault != null && { isDefault: data.isDefault }),
       },
     });

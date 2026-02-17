@@ -81,10 +81,13 @@ export default function Home() {
                     />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-white">Global CRUD Demo</h2>
+                <h2 className="text-2xl font-bold text-white">
+                  Global CRUD Demo
+                </h2>
               </div>
               <p className="text-slate-400 mb-6">
-                Same as CRUD but shared across all tenants. Everyone sees and edits the same data.
+                Same as CRUD but shared across all tenants. Everyone sees and
+                edits the same data.
               </p>
               <div className="flex items-center text-amber-400 font-medium group-hover:gap-3 gap-2 transition-all">
                 <span>Try it out</span>
@@ -124,7 +127,9 @@ export default function Home() {
                       />
                     </svg>
                   </div>
-                  <h2 className="text-2xl font-bold text-white">Tenant Dashboard</h2>
+                  <h2 className="text-2xl font-bold text-white">
+                    Tenant Dashboard
+                  </h2>
                 </div>
                 <p className="text-slate-400 mb-6">
                   View, add, edit, and remove tenants. Super-admin only.

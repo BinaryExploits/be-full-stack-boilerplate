@@ -32,7 +32,10 @@ export class GlobalCrudMongooseService {
     return this.repository.findById(id);
   }
 
-  async update(id: string, data: Partial<GlobalCrud>): Promise<GlobalCrud | null> {
+  async update(
+    id: string,
+    data: Partial<GlobalCrud>,
+  ): Promise<GlobalCrud | null> {
     const updated = await this.repository.findByIdAndUpdate(id, {
       content: data.content,
     });

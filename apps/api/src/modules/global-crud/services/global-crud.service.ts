@@ -31,7 +31,10 @@ export class GlobalCrudService {
     return this.repository.findUnique({ where: { id } });
   }
 
-  async update(id: string, data: Partial<GlobalCrud>): Promise<GlobalCrud | null> {
+  async update(
+    id: string,
+    data: Partial<GlobalCrud>,
+  ): Promise<GlobalCrud | null> {
     const updated = await this.repository.update({
       where: { id },
       data: { content: data.content },

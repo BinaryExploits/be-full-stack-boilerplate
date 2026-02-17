@@ -48,7 +48,9 @@ export abstract class MongooseBaseRepository<
   }
 
   private withTenantData(data: Partial<TDbEntity>): Partial<TDbEntity> {
-    const tenantId = this.tenantScoped ? this.tenantContext?.getTenantId() : null;
+    const tenantId = this.tenantScoped
+      ? this.tenantContext?.getTenantId()
+      : null;
     if (tenantId) {
       return { ...data, tenantId } as Partial<TDbEntity>;
     }
@@ -79,7 +81,10 @@ export abstract class MongooseBaseRepository<
     projection?: ProjectionType<TDbEntity>,
     options?: QueryOptions<TDbEntity>,
   ): Promise<TDomainEntity[]> {
-    const merged = { ...this.tenantFilter(), ...filter } as QueryFilter<TDbEntity>;
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
     const docs = await this.model
       .find(merged, projection, options)
       .session(this.mongoTxHost.tx)
@@ -93,7 +98,10 @@ export abstract class MongooseBaseRepository<
     projection?: ProjectionType<TDbEntity>,
     options?: QueryOptions<TDbEntity>,
   ): Promise<TDomainEntity | null> {
-    const filter = { ...this.tenantFilter(), _id: id } as QueryFilter<TDbEntity>;
+    const filter = {
+      ...this.tenantFilter(),
+      _id: id,
+    } as QueryFilter<TDbEntity>;
     const doc = await this.model
       .findOne(filter, projection, options)
       .session(this.mongoTxHost.tx)
@@ -107,7 +115,10 @@ export abstract class MongooseBaseRepository<
     projection?: ProjectionType<TDbEntity>,
     options?: QueryOptions<TDbEntity>,
   ): Promise<TDomainEntity | null> {
-    const merged = { ...this.tenantFilter(), ...filter } as QueryFilter<TDbEntity>;
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
     const doc = await this.model
       .findOne(merged, projection, options)
       .session(this.mongoTxHost.tx)
@@ -130,7 +141,10 @@ export abstract class MongooseBaseRepository<
     filter: QueryFilter<TDbEntity>,
     update: UpdateQuery<TDbEntity>,
   ): Promise<boolean> {
-    const merged = { ...this.tenantFilter(), ...filter } as QueryFilter<TDbEntity>;
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
     const updateResult = await this.model
       .updateOne(merged, update)
       .session(this.mongoTxHost.tx);
@@ -142,7 +156,10 @@ export abstract class MongooseBaseRepository<
     filter: QueryFilter<TDbEntity>,
     update: UpdateQuery<TDbEntity>,
   ): Promise<boolean> {
-    const merged = { ...this.tenantFilter(), ...filter } as QueryFilter<TDbEntity>;
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
     const updateResult = await this.model
       .updateMany(merged, update)
       .session(this.mongoTxHost.tx);
@@ -172,7 +189,10 @@ export abstract class MongooseBaseRepository<
     update: UpdateQuery<TDbEntity>,
     options?: QueryOptions<TDbEntity>,
   ): Promise<TDomainEntity | null> {
-    const merged = { ...this.tenantFilter(), ...filter } as QueryFilter<TDbEntity>;
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
     const doc = await this.model
       .findOneAndUpdate(merged, update, { new: true, ...options })
       .session(this.mongoTxHost.tx)
@@ -182,13 +202,17 @@ export abstract class MongooseBaseRepository<
   }
 
   async deleteOneById(id: string): Promise<boolean> {
-    return this.deleteOne(
-      { _id: id, ...this.tenantFilter() } as QueryFilter<TDbEntity>,
-    );
+    return this.deleteOne({
+      _id: id,
+      ...this.tenantFilter(),
+    } as QueryFilter<TDbEntity>);
   }
 
   async deleteOne(filter: QueryFilter<TDbEntity>): Promise<boolean> {
-    const merged = { ...this.tenantFilter(), ...filter } as QueryFilter<TDbEntity>;
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
     const deleteResult = await this.model
       .deleteOne(merged)
       .session(this.mongoTxHost.tx);
@@ -197,7 +221,10 @@ export abstract class MongooseBaseRepository<
   }
 
   async deleteMany(filter: QueryFilter<TDbEntity>): Promise<boolean> {
-    const merged = { ...this.tenantFilter(), ...filter } as QueryFilter<TDbEntity>;
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
     const deleteResult = await this.model
       .deleteMany(merged)
       .session(this.mongoTxHost.tx);
@@ -221,7 +248,10 @@ export abstract class MongooseBaseRepository<
   async findOneAndDelete(
     filter: QueryFilter<TDbEntity>,
   ): Promise<TDomainEntity | null> {
-    const merged = { ...this.tenantFilter(), ...filter } as QueryFilter<TDbEntity>;
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
     const deletedDoc = await this.model
       .findOneAndDelete(merged)
       .session(this.mongoTxHost.tx)

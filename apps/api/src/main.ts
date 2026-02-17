@@ -52,8 +52,7 @@ function bootstrap(app: INestApplication<any>) {
     origin: process.env.CORS_ORIGINS?.split(',') || [],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
-    allowedHeaders:
-      'Content-Type, Accept, Authorization, x-tenant-origin',
+    allowedHeaders: 'Content-Type, Accept, Authorization, x-tenant-origin',
     maxAge: 3600,
   });
 }

@@ -10,7 +10,11 @@ export const ZTenant = z.object({
 
 export const ZTenantCreateRequest = z.object({
   name: z.string().min(1).max(255),
-  slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/),
+  slug: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/^[a-z0-9-]+$/),
   allowedOrigins: z.array(z.string().min(1)).min(0),
   isDefault: z.boolean().optional(),
 });
@@ -30,7 +34,12 @@ export const ZTenantFindOneResponse = ZTenant.nullable();
 export const ZTenantUpdateRequest = z.object({
   id: z.string().uuid(),
   name: z.string().min(1).max(255).optional(),
-  slug: z.string().min(1).max(100).regex(/^[a-z0-9-]+$/).optional(),
+  slug: z
+    .string()
+    .min(1)
+    .max(100)
+    .regex(/^[a-z0-9-]+$/)
+    .optional(),
   allowedOrigins: z.array(z.string().min(1)).optional(),
   isDefault: z.boolean().optional(),
 });

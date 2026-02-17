@@ -9,9 +9,11 @@ The app supports **single-tenant by default** and **multi-tenant** when you add 
    pnpm run docker:start
    ```
 2. **Run migration and seed** (creates `tenant` table, adds `crud.tenantId`, seeds three tenants: binaryexports, binaryexperiments, binaryexploits):
+
    ```bash
    pnpm run db:ready
    ```
+
    This runs `prisma migrate deploy` then `prisma db seed` from `packages/prisma-db`. Ensure `packages/prisma-db/.env` has `DATABASE_URL` pointing at your Postgres.
 
 3. **Env** (in `apps/api/.env`): `CORS_ORIGINS`, `SUPER_ADMIN_EMAILS`, and `BETTER_AUTH_TRUSTED_ORIGINS` should include all tenant origins (see `.env.example`). Default seed assumes super-admin emails like `anns.shahbaz@binaryexports.com` (and same for binaryexperiments / binaryexploits).
@@ -30,8 +32,8 @@ The app supports **single-tenant by default** and **multi-tenant** when you add 
 
 1. **Tenant resolution** (per request): The `TenantResolutionMiddleware` reads `Host`, `Origin`, or the frontend-sent `x-tenant-origin` header and looks up a tenant by `allowedOrigins`. If none match, a tenant with `isDefault: true` is used (single-tenant mode).
 2. **Tenant context**: The resolved tenant is stored in **CLS** (request-scoped). Services and repositories never receive a tenant argument; they read from `TenantContext` or the tenant is applied automatically.
-3. **Data isolation**:  
-   - **Prisma**: The `Crud` model is tenant-scoped via a Prisma extension; `tenantId` is injected on create and all reads/updates/deletes are filtered by it.  
+3. **Data isolation**:
+   - **Prisma**: The `Crud` model is tenant-scoped via a Prisma extension; `tenantId` is injected on create and all reads/updates/deletes are filtered by it.
    - **Mongoose**: Repositories that opt in with `tenantScoped: true` (e.g. `CrudMongooseRepository`) automatically add `tenantId` to filters and to created documents.
 
 Developers writing services or repository code do **not** need to pass or check tenant; isolation is handled in middleware, Prisma extension, and base repository.
@@ -69,20 +71,20 @@ Developers writing services or repository code do **not** need to pass or check 
 
 ## Env summary
 
-| Env var                       | Purpose |
-|-------------------------------|--------|
+| Env var                       | Purpose                                                                |
+| ----------------------------- | ---------------------------------------------------------------------- |
 | `CORS_ORIGINS`                | Comma-separated allowed frontend origins (include all tenant domains). |
-| `SUPER_ADMIN_EMAILS`          | Comma-separated emails that can manage tenants (tenant.* tRPC). |
-| `BETTER_AUTH_TRUSTED_ORIGINS` | Same origins as CORS for auth/cookies (Better Auth). |
+| `SUPER_ADMIN_EMAILS`          | Comma-separated emails that can manage tenants (tenant.\* tRPC).       |
+| `BETTER_AUTH_TRUSTED_ORIGINS` | Same origins as CORS for auth/cookies (Better Auth).                   |
 
 ## Default tenants (seed)
 
 The Prisma seed (`packages/prisma-db/seed.ts`) runs `TenantSeeder`, which upserts three tenants:
 
-| Slug              | Name              | Default | Origins (examples) |
-|-------------------|-------------------|--------|---------------------|
-| `binaryexports`   | Binary Exports    | No     | binaryexports.com, binaryexports.localhost:3000 |
-| `binaryexperiments` | Binary Experiments | No   | binaryexperiments.com, binaryexperiments.localhost:3000 |
-| `binaryexploits` | Binary Exploits   | **Yes** | binaryexploits.com, binaryexploits.localhost:3000 |
+| Slug                | Name               | Default | Origins (examples)                                      |
+| ------------------- | ------------------ | ------- | ------------------------------------------------------- |
+| `binaryexports`     | Binary Exports     | No      | binaryexports.com, binaryexports.localhost:3000         |
+| `binaryexperiments` | Binary Experiments | No      | binaryexperiments.com, binaryexperiments.localhost:3000 |
+| `binaryexploits`    | Binary Exploits    | **Yes** | binaryexploits.com, binaryexploits.localhost:3000       |
 
 Unmatched requests use the default tenant (`binaryexploits`). To change which is default, update the seed or use `tenant.update` (super-admin).

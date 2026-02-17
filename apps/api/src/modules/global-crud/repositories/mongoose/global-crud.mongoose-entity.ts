@@ -7,5 +7,6 @@ export class GlobalCrudMongooseEntity extends MongooseBaseEntity {
   content: string;
 }
 
-export const GlobalCrudMongooseSchema =
-  SchemaFactory.createForClass(GlobalCrudMongooseEntity);
+export const GlobalCrudMongooseSchema = SchemaFactory.createForClass(
+  GlobalCrudMongooseEntity,
+);

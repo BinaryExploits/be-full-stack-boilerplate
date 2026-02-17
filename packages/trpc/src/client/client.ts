@@ -29,10 +29,7 @@ export const createTrpcClient = (url: string, getCookies?: () => string) => {
               headers.set("Cookie", cookies);
             }
           }
-          if (
-            typeof window !== "undefined" &&
-            window.location?.origin
-          ) {
+          if (typeof window !== "undefined" && window.location?.origin) {
             headers.set(TENANT_ORIGIN_HEADER, window.location.origin);
           }
           return Object.fromEntries(headers);

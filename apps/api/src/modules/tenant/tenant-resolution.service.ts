@@ -35,7 +35,9 @@ export class TenantResolutionService {
    */
   async resolveAndSet(host?: string, origin?: string): Promise<void> {
     const candidates = [host, origin].filter(Boolean) as string[];
-    const normalized = [...new Set(candidates.map((c) => this.normalizeHost(c)))];
+    const normalized = [
+      ...new Set(candidates.map((c) => this.normalizeHost(c))),
+    ];
     const tenant = await this.resolveTenant(normalized);
     this.tenantContext.setTenant(tenant);
   }

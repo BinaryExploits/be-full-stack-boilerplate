@@ -62,12 +62,26 @@ export const ZGlobalCrudDeleteResponse = ZBaseResponse;
 
 export type GlobalCrud = z.infer<typeof ZGlobalCrud>;
 export type TGlobalCrudCreateRequest = z.infer<typeof ZGlobalCrudCreateRequest>;
-export type TGlobalCrudCreateResponse = z.infer<typeof ZGlobalCrudCreateResponse>;
-export type TGlobalCrudFindOneRequest = z.infer<typeof ZGlobalCrudFindOneRequest>;
-export type TGlobalCrudFindOneResponse = z.infer<typeof ZGlobalCrudFindOneResponse>;
-export type TGlobalCrudFindAllRequest = z.infer<typeof ZGlobalCrudFindAllRequest>;
-export type TGlobalCrudFindAllResponse = z.infer<typeof ZGlobalCrudFindAllResponse>;
+export type TGlobalCrudCreateResponse = z.infer<
+  typeof ZGlobalCrudCreateResponse
+>;
+export type TGlobalCrudFindOneRequest = z.infer<
+  typeof ZGlobalCrudFindOneRequest
+>;
+export type TGlobalCrudFindOneResponse = z.infer<
+  typeof ZGlobalCrudFindOneResponse
+>;
+export type TGlobalCrudFindAllRequest = z.infer<
+  typeof ZGlobalCrudFindAllRequest
+>;
+export type TGlobalCrudFindAllResponse = z.infer<
+  typeof ZGlobalCrudFindAllResponse
+>;
 export type TGlobalCrudUpdateRequest = z.infer<typeof ZGlobalCrudUpdateRequest>;
-export type TGlobalCrudUpdateResponse = z.infer<typeof ZGlobalCrudUpdateResponse>;
+export type TGlobalCrudUpdateResponse = z.infer<
+  typeof ZGlobalCrudUpdateResponse
+>;
 export type TGlobalCrudDeleteRequest = z.infer<typeof ZGlobalCrudDeleteRequest>;
-export type TGlobalCrudDeleteResponse = z.infer<typeof ZGlobalCrudDeleteResponse>;
+export type TGlobalCrudDeleteResponse = z.infer<
+  typeof ZGlobalCrudDeleteResponse
+>;

@@ -82,7 +82,9 @@ export default function TenantDashboard() {
       return;
     }
     if (!/^[a-z0-9-]+$/.test(trimmedSlug)) {
-      setErrorMessage("Slug must be lowercase letters, numbers, and hyphens only");
+      setErrorMessage(
+        "Slug must be lowercase letters, numbers, and hyphens only",
+      );
       return;
     }
     createTenant.mutate({
@@ -121,7 +123,9 @@ export default function TenantDashboard() {
       return;
     }
     if (!/^[a-z0-9-]+$/.test(trimmedSlug)) {
-      setErrorMessage("Slug must be lowercase letters, numbers, and hyphens only");
+      setErrorMessage(
+        "Slug must be lowercase letters, numbers, and hyphens only",
+      );
       return;
     }
     updateTenant.mutate({
@@ -134,7 +138,8 @@ export default function TenantDashboard() {
   };
 
   const handleDelete = (id: string, slug: string) => {
-    if (!window.confirm(`Delete tenant "${slug}"? This cannot be undone.`)) return;
+    if (!window.confirm(`Delete tenant "${slug}"? This cannot be undone.`))
+      return;
     deleteTenant.mutate({ id });
   };
 
@@ -185,11 +190,15 @@ export default function TenantDashboard() {
 
         {isForbidden && (
           <div className="mb-6 p-4 bg-red-900/30 border border-red-600 rounded-lg text-red-200">
-            Super-admin access required. Your email must be in SUPER_ADMIN_EMAILS.
+            Super-admin access required. Your email must be in
+            SUPER_ADMIN_EMAILS.
           </div>
         )}
 
-        {(errorMessage || createTenant.error?.message || updateTenant.error?.message || deleteTenant.error?.message) && (
+        {(errorMessage ||
+          createTenant.error?.message ||
+          updateTenant.error?.message ||
+          deleteTenant.error?.message) && (
           <div className="mb-6 p-4 bg-red-900/30 border border-red-600 rounded-lg text-red-200">
             {errorMessage ||
               createTenant.error?.message ||
@@ -227,7 +236,9 @@ export default function TenantDashboard() {
                       placeholder="e.g. acme-corp"
                       value={slug}
                       onChange={(e) =>
-                        setSlug(e.target.value.toLowerCase().replace(/\s+/g, "-"))
+                        setSlug(
+                          e.target.value.toLowerCase().replace(/\s+/g, "-"),
+                        )
                       }
                     />
                   </div>
@@ -238,7 +249,9 @@ export default function TenantDashboard() {
                   </label>
                   <textarea
                     className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 min-h-[80px] font-mono text-sm"
-                    placeholder={"acme.com\nhttps://acme.com\nhttp://acme.localhost:3000"}
+                    placeholder={
+                      "acme.com\nhttps://acme.com\nhttp://acme.localhost:3000"
+                    }
                     value={originsInput}
                     onChange={(e) => setOriginsInput(e.target.value)}
                   />
@@ -250,14 +263,13 @@ export default function TenantDashboard() {
                     onChange={(e) => setIsDefault(e.target.checked)}
                     className="rounded border-slate-500 text-amber-500 focus:ring-amber-500"
                   />
-                  Default tenant (used when request origin does not match any tenant)
+                  Default tenant (used when request origin does not match any
+                  tenant)
                 </label>
                 <button
                   onClick={handleCreate}
                   disabled={
-                    createTenant.isPending ||
-                    !name.trim() ||
-                    !slug.trim()
+                    createTenant.isPending || !name.trim() || !slug.trim()
                   }
                   className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed px-6 py-2 rounded-lg text-white font-semibold transition-all"
                 >
@@ -281,157 +293,161 @@ export default function TenantDashboard() {
                 </div>
               )}
 
-              {tenantList.data?.tenants?.length === 0 && !tenantList.isLoading && (
-                <div className="p-12 text-center text-slate-400">
-                  No tenants yet. Add one above.
-                </div>
-              )}
+              {tenantList.data?.tenants?.length === 0 &&
+                !tenantList.isLoading && (
+                  <div className="p-12 text-center text-slate-400">
+                    No tenants yet. Add one above.
+                  </div>
+                )}
 
-              {tenantList.data?.tenants && tenantList.data.tenants.length > 0 && (
-                <ul className="divide-y divide-slate-600">
-                  {tenantList.data.tenants.map((t: TenantItem) => (
-                    <li
-                      key={t.id}
-                      className="px-6 py-4 hover:bg-slate-700/50 transition-colors"
-                    >
-                      {editingId === t.id ? (
-                        <div className="space-y-4">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                              <label className="block text-xs text-slate-500 mb-1">
-                                Name
-                              </label>
-                              <input
-                                className="w-full bg-slate-600 border border-slate-500 rounded px-2 py-1 text-white text-sm"
-                                value={editName}
-                                onChange={(e) => setEditName(e.target.value)}
-                              />
+              {tenantList.data?.tenants &&
+                tenantList.data.tenants.length > 0 && (
+                  <ul className="divide-y divide-slate-600">
+                    {tenantList.data.tenants.map((t: TenantItem) => (
+                      <li
+                        key={t.id}
+                        className="px-6 py-4 hover:bg-slate-700/50 transition-colors"
+                      >
+                        {editingId === t.id ? (
+                          <div className="space-y-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-xs text-slate-500 mb-1">
+                                  Name
+                                </label>
+                                <input
+                                  className="w-full bg-slate-600 border border-slate-500 rounded px-2 py-1 text-white text-sm"
+                                  value={editName}
+                                  onChange={(e) => setEditName(e.target.value)}
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-xs text-slate-500 mb-1">
+                                  Slug
+                                </label>
+                                <input
+                                  className="w-full bg-slate-600 border border-slate-500 rounded px-2 py-1 text-white text-sm"
+                                  value={editSlug}
+                                  onChange={(e) =>
+                                    setEditSlug(
+                                      e.target.value
+                                        .toLowerCase()
+                                        .replace(/\s+/g, "-"),
+                                    )
+                                  }
+                                />
+                              </div>
                             </div>
                             <div>
                               <label className="block text-xs text-slate-500 mb-1">
-                                Slug
+                                Allowed origins
                               </label>
-                              <input
-                                className="w-full bg-slate-600 border border-slate-500 rounded px-2 py-1 text-white text-sm"
-                                value={editSlug}
+                              <textarea
+                                className="w-full bg-slate-600 border border-slate-500 rounded px-2 py-1 text-white text-sm min-h-[60px] font-mono"
+                                value={editOriginsInput}
                                 onChange={(e) =>
-                                  setEditSlug(
-                                    e.target.value.toLowerCase().replace(/\s+/g, "-")
-                                  )
+                                  setEditOriginsInput(e.target.value)
                                 }
                               />
                             </div>
-                          </div>
-                          <div>
-                            <label className="block text-xs text-slate-500 mb-1">
-                              Allowed origins
+                            <label className="flex items-center gap-2 text-slate-300 text-sm cursor-pointer">
+                              <input
+                                type="checkbox"
+                                checked={editIsDefault}
+                                onChange={(e) =>
+                                  setEditIsDefault(e.target.checked)
+                                }
+                                className="rounded border-slate-500 text-amber-500"
+                              />
+                              Default tenant
                             </label>
-                            <textarea
-                              className="w-full bg-slate-600 border border-slate-500 rounded px-2 py-1 text-white text-sm min-h-[60px] font-mono"
-                              value={editOriginsInput}
-                              onChange={(e) =>
-                                setEditOriginsInput(e.target.value)
-                              }
-                            />
+                            <div className="flex gap-2">
+                              <button
+                                onClick={handleUpdate}
+                                disabled={updateTenant.isPending}
+                                className="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 rounded text-white text-sm font-medium"
+                              >
+                                {updateTenant.isPending ? "Saving..." : "Save"}
+                              </button>
+                              <button
+                                onClick={cancelEdit}
+                                className="px-4 py-1.5 bg-slate-600 hover:bg-slate-500 rounded text-slate-200 text-sm"
+                              >
+                                Cancel
+                              </button>
+                            </div>
                           </div>
-                          <label className="flex items-center gap-2 text-slate-300 text-sm cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={editIsDefault}
-                              onChange={(e) =>
-                                setEditIsDefault(e.target.checked)
-                              }
-                              className="rounded border-slate-500 text-amber-500"
-                            />
-                            Default tenant
-                          </label>
-                          <div className="flex gap-2">
-                            <button
-                              onClick={handleUpdate}
-                              disabled={updateTenant.isPending}
-                              className="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 rounded text-white text-sm font-medium"
-                            >
-                              {updateTenant.isPending ? "Saving..." : "Save"}
-                            </button>
-                            <button
-                              onClick={cancelEdit}
-                              className="px-4 py-1.5 bg-slate-600 hover:bg-slate-500 rounded text-slate-200 text-sm"
-                            >
-                              Cancel
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex flex-wrap items-center justify-between gap-4">
-                          <div className="min-w-0">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-semibold text-white">
-                                {t.name}
-                              </span>
-                              <span className="text-slate-500 font-mono text-sm">
-                                {t.slug}
-                              </span>
-                              {t.isDefault && (
-                                <span className="px-2 py-0.5 rounded text-xs font-medium bg-amber-900/50 text-amber-300 border border-amber-600">
-                                  Default
+                        ) : (
+                          <div className="flex flex-wrap items-center justify-between gap-4">
+                            <div className="min-w-0">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <span className="font-semibold text-white">
+                                  {t.name}
                                 </span>
+                                <span className="text-slate-500 font-mono text-sm">
+                                  {t.slug}
+                                </span>
+                                {t.isDefault && (
+                                  <span className="px-2 py-0.5 rounded text-xs font-medium bg-amber-900/50 text-amber-300 border border-amber-600">
+                                    Default
+                                  </span>
+                                )}
+                              </div>
+                              {t.allowedOrigins.length > 0 && (
+                                <p className="text-slate-400 text-sm mt-1 truncate max-w-full">
+                                  {t.allowedOrigins.slice(0, 3).join(", ")}
+                                  {t.allowedOrigins.length > 3 &&
+                                    ` +${t.allowedOrigins.length - 3} more`}
+                                </p>
                               )}
                             </div>
-                            {t.allowedOrigins.length > 0 && (
-                              <p className="text-slate-400 text-sm mt-1 truncate max-w-full">
-                                {t.allowedOrigins.slice(0, 3).join(", ")}
-                                {t.allowedOrigins.length > 3 &&
-                                  ` +${t.allowedOrigins.length - 3} more`}
-                              </p>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <button
-                              onClick={() => startEdit(t)}
-                              className="p-2 text-slate-400 hover:text-amber-400 hover:bg-slate-600 rounded transition-colors"
-                              title="Edit"
-                            >
-                              <svg
-                                className="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
+                            <div className="flex items-center gap-2 shrink-0">
+                              <button
+                                onClick={() => startEdit(t)}
+                                className="p-2 text-slate-400 hover:text-amber-400 hover:bg-slate-600 rounded transition-colors"
+                                title="Edit"
                               >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                                />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={() => handleDelete(t.id, t.slug)}
-                              disabled={deleteTenant.isPending}
-                              className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-600 rounded transition-colors disabled:opacity-50"
-                              title="Delete"
-                            >
-                              <svg
-                                className="w-5 h-5"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
+                                <svg
+                                  className="w-5 h-5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                  />
+                                </svg>
+                              </button>
+                              <button
+                                onClick={() => handleDelete(t.id, t.slug)}
+                                disabled={deleteTenant.isPending}
+                                className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-600 rounded transition-colors disabled:opacity-50"
+                                title="Delete"
                               >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                />
-                              </svg>
-                            </button>
+                                <svg
+                                  className="w-5 h-5"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-              )}
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                )}
             </div>
 
             <div className="mt-6 flex justify-center">

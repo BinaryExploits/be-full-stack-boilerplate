@@ -1,10 +1,4 @@
-import {
-  Input,
-  Mutation,
-  Query,
-  Router,
-  UseMiddlewares,
-} from 'nestjs-trpc';
+import { Input, Mutation, Query, Router, UseMiddlewares } from 'nestjs-trpc';
 import { AuthMiddleware } from '../auth/auth.middleware';
 import { SuperAdminGuard } from './guards/super-admin.guard';
 import { TenantService } from './tenant.service';
@@ -30,7 +24,13 @@ export class TenantRouter {
     output: ZTenantCreateResponse,
   })
   async create(
-    @Input() req: { name: string; slug: string; allowedOrigins: string[]; isDefault?: boolean },
+    @Input()
+    req: {
+      name: string;
+      slug: string;
+      allowedOrigins: string[];
+      isDefault?: boolean;
+    },
   ) {
     return this.tenantService.create(req);
   }

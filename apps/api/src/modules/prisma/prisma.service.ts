@@ -13,9 +13,7 @@ export class PrismaService
   constructor(private readonly cls: ClsService) {
     super();
     const getTenantId = () =>
-      (this.cls.get<string | null>(TENANT_CLS_KEYS.TENANT_ID) ?? null) as
-        | string
-        | null;
+      this.cls.get<string | null>(TENANT_CLS_KEYS.TENANT_ID) ?? null;
     const ext = this.$extends(
       prismaTenantExtension(getTenantId),
     ) as unknown as PrismaClient;
