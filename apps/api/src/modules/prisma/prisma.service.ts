@@ -1,12 +1,12 @@
 /* eslint-disable custom/require-transactional */
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 import { PrismaClient } from '@repo/prisma-db';
-import { prismaTenantExtension } from './prisma-tenant.extension';
+import { createPrismaTenantExtension } from './prisma-tenant.extension';
+import { TenantContext } from '../tenant/tenant.context';
 
 /**
- * Wraps the Prisma client extended with tenant scoping. At runtime PrismaClient is a
- * constructor and $extends is on the instance, so we create base.$extends(extension)
- * and proxy all access to that extended instance.
+ * Wraps the Prisma client extended with tenant scoping. Tenant id is read from
+ * TenantContext (CLS) at query time so Crud operations are scoped to the current request's tenant.
  */
 @Injectable()
 export class PrismaService
@@ -14,9 +14,14 @@ export class PrismaService
   implements OnModuleInit, OnModuleDestroy
 {
   /** Extended client (tenant scoping on Crud). All property access is forwarded here. */
-  readonly client: PrismaClient = new PrismaClient().$extends(
-    prismaTenantExtension,
-  ) as unknown as PrismaClient;
+  readonly client: PrismaClient;
+
+  constructor(private readonly tenantContext: TenantContext) {
+    super();
+    this.client = new PrismaClient().$extends(
+      createPrismaTenantExtension(() => this.tenantContext.getTenantId()),
+    ) as unknown as PrismaClient;
+  }
 
   async onModuleInit(): Promise<void> {
     await this.client.$connect();
