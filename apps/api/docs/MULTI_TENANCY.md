@@ -34,10 +34,10 @@ The app supports **multi-tenant** resolution by host/origin. **Constraint:** at 
 2. **Require-tenant gate**: The `RequireTenantMiddleware` runs **immediately after** resolution. If no tenant was resolved, the request is **rejected with 403** before any route handler runs (except for `/api/auth`). Unregistered hosts/origins never reach tRPC or tenant-scoped logic. Debug logging: resolution logs `[TenantResolution]` with host/origin and resolved tenant; rejections log `[RequireTenant]` with path and host/origin.
 3. **Tenant context**: The resolved tenant is stored in **CLS** (request-scoped). Services and repositories never receive a tenant argument; they read from `TenantContext` or the tenant is applied automatically.
 4. **Data isolation**:
-   - **Prisma**: The `CrudPrismaRepository` injects `TenantContext` and merges `tenantId` into all Crud queries (create, findMany, findUnique, update, delete, etc.). When no tenant is resolved, the request is rejected (403).
+   - **Prisma**: The Prisma client is extended with a **tenant extension** (`prisma-tenant.extension.ts`) that scopes all `Crud` model operations to the current tenant (from `TenantContext` via a ref). `PrismaService` uses this extended client; `CrudPrismaRepository` delegates directly to it. When no tenant is resolved, the extension throws (403).
    - **Mongoose**: Repositories with `tenantScoped: true` (e.g. `CrudMongooseRepository`) add `tenantId` to filters and to created documents; when no tenant is resolved, the request is rejected (403).
 
-Developers writing services or repository code do **not** need to pass or check tenant; isolation is handled in middleware and in the tenant-scoped repositories (Prisma and Mongoose).
+Developers writing services or repository code do **not** need to pass or check tenant; isolation is handled in middleware, the Prisma tenant extension, and tenant-scoped Mongoose repositories.
 
 ## Single-tenant
 

@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { TenantContext, TenantInfo } from './tenant.context';
 import { PrismaService } from '../prisma/prisma.service';
 import { Logger } from '@repo/utils-core';
+import { AutoTransaction } from '../../decorators/class/auto-transaction.decorator';
+import { ServerConstants } from '../../constants/server.constants';
+import { Propagation } from '@nestjs-cls/transactional';
 
 /**
  * Resolves tenant from request host/origin. Used by TenantResolutionMiddleware.
@@ -38,7 +41,10 @@ export class TenantResolutionService {
    * - pageOrigin (x-tenant-origin / Origin) → use only its normalized host, e.g. operand-solutions.localhost.
    * - No pageOrigin → use requestHost (e.g. direct API call).
    */
-  async resolveAndSet(pageOrigin?: string, requestHost?: string): Promise<void> {
+  async resolveAndSet(
+    pageOrigin?: string,
+    requestHost?: string,
+  ): Promise<void> {
     const normalized =
       pageOrigin != null && pageOrigin !== ''
         ? [this.normalizeHost(pageOrigin)]

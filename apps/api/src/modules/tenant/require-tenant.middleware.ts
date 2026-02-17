@@ -1,8 +1,4 @@
-import {
-  ForbiddenException,
-  Injectable,
-  NestMiddleware,
-} from '@nestjs/common';
+import { ForbiddenException, Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import { Logger } from '@repo/utils-core';
 import { TenantContext } from './tenant.context';
@@ -19,17 +15,22 @@ export class RequireTenantMiddleware implements NestMiddleware {
   constructor(private readonly tenantContext: TenantContext) {}
 
   use(req: Request, _res: Response, next: NextFunction): void {
-    if (SKIP_PATHS.some((p) => req.path === p || req.path.startsWith(p + '/'))) {
+    if (
+      SKIP_PATHS.some((p) => req.path === p || req.path.startsWith(p + '/'))
+    ) {
       return next();
     }
     if (this.tenantContext.getTenantId() == null) {
       const host = req.headers['host'];
       const origin = req.headers['x-tenant-origin'] ?? req.headers['origin'];
-      Logger.instance.debug('[RequireTenant] Rejecting unregistered host/origin', {
-        path: req.path,
-        host: host ?? null,
-        origin: origin ?? null,
-      });
+      Logger.instance.debug(
+        '[RequireTenant] Rejecting unregistered host/origin',
+        {
+          path: req.path,
+          host: host ?? null,
+          origin: origin ?? null,
+        },
+      );
       throw new ForbiddenException(
         'Tenant could not be resolved from request origin. Access denied.',
       );

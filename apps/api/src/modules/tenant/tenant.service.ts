@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { TenantContext, TenantInfo } from './tenant.context';
+import { AutoTransaction } from '../../decorators/class/auto-transaction.decorator';
+import { ServerConstants } from '../../constants/server.constants';
+import { Propagation } from '@nestjs-cls/transactional';
 
 export interface CreateTenantInput {
   name: string;

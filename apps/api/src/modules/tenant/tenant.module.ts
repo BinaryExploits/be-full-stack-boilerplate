@@ -4,6 +4,7 @@ import { PrismaModule } from '../prisma/prisma.module';
 import { SuperAdminGuard } from './guards/super-admin.guard';
 import { RequireTenantMiddleware } from './require-tenant.middleware';
 import { TenantContext } from './tenant.context';
+import { TenantContextRefBootstrap } from './tenant-context-ref.bootstrap';
 import { TenantResolutionMiddleware } from './tenant-resolution.middleware';
 import { TenantResolutionService } from './tenant-resolution.service';
 import { TenantMetaRouter } from './tenant-meta.router';
@@ -14,6 +15,7 @@ import { TenantService } from './tenant.service';
   imports: [PrismaModule, AuthModule],
   providers: [
     TenantContext,
+    TenantContextRefBootstrap,
     TenantResolutionService,
     TenantService,
     TenantResolutionMiddleware,
