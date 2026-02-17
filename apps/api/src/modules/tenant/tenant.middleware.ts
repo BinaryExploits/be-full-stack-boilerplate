@@ -3,9 +3,6 @@ import { Request, Response, NextFunction } from 'express';
 import { Logger } from '@repo/utils-core';
 import { TenantResolutionService } from './tenant-resolution.service';
 
-/** Paths that do not require a resolved tenant (e.g. auth, health). */
-const SKIP_PATHS = ['/api/auth'];
-
 /**
  * Single middleware for tenant: resolves tenant from host/origin, sets it in CLS via
  * TenantResolutionService (TenantContext), and rejects with 403 if no tenant when required.
@@ -32,23 +29,20 @@ export class TenantMiddleware implements NestMiddleware {
       tenantId: tenantId ?? null,
     });
 
-    if (
-      !SKIP_PATHS.some((p) => req.path === p || req.path.startsWith(p + '/'))
-    ) {
-      if (tenantId == null) {
-        Logger.instance.debug(
-          '[RequireTenant] Rejecting unregistered host/origin',
-          {
-            path: req.path,
-            host: host ?? null,
-            origin:
-              req.headers['x-tenant-origin'] ?? req.headers['origin'] ?? null,
-          },
-        );
-        throw new ForbiddenException(
-          'Tenant could not be resolved from request origin. Access denied.',
-        );
-      }
+    if (tenantId == null) {
+      Logger.instance.debug(
+        '[RequireTenant] Rejecting unregistered host/origin',
+        {
+          path: req.path,
+          host: host ?? null,
+          origin:
+            req.headers['x-tenant-origin'] ?? req.headers['origin'] ?? null,
+        },
+      );
+
+      throw new ForbiddenException(
+        'Tenant could not be resolved from request origin. Access denied.',
+      );
     }
 
     next();
