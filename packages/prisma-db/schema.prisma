@@ -40,6 +40,16 @@ model Crud {
   @@map("crud")
 }
 
+// Global (non-tenant) entity: all tenants see and edit the same data.
+model GlobalCrud {
+  id        String   @id @default(uuid())
+  content   String   @db.VarChar(500)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("global_crud")
+}
+
 model User {
   id            String    @id
   name          String

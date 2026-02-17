@@ -19,6 +19,7 @@ import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-pr
 import { ServerConstants } from './constants/server.constants';
 import { parseNodeEnvironment } from './lib/types/environment.type';
 import { TenantModule } from './modules/tenant/tenant.module';
+import { GlobalCrudModule } from './modules/global-crud/global-crud.module';
 
 @Module({
   imports: [
@@ -65,6 +66,7 @@ import { TenantModule } from './modules/tenant/tenant.module';
     }),
     LoggerModule,
     CrudModule,
+    GlobalCrudModule,
     EmailModule,
   ],
   controllers: [],

@@ -20,6 +20,7 @@ export class PrismaService
       prismaTenantExtension(getTenantId),
     ) as unknown as PrismaClient;
     (this as Record<string, unknown>).crud = ext.crud;
+    (this as Record<string, unknown>).globalCrud = ext.globalCrud;
     (this as Record<string, unknown>).tenant = ext.tenant;
     (this as Record<string, unknown>).user = ext.user;
     (this as Record<string, unknown>).session = ext.session;

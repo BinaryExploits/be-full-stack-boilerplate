@@ -63,6 +63,48 @@ export default function Home() {
             </div>
           </Link>
 
+          <Link href="/global-crud-demo">
+            <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-amber-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-amber-500/20 hover:-translate-y-1">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-14 h-14 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg
+                    className="w-8 h-8 text-white"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <h2 className="text-2xl font-bold text-white">Global CRUD Demo</h2>
+              </div>
+              <p className="text-slate-400 mb-6">
+                Same as CRUD but shared across all tenants. Everyone sees and edits the same data.
+              </p>
+              <div className="flex items-center text-amber-400 font-medium group-hover:gap-3 gap-2 transition-all">
+                <span>Try it out</span>
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </div>
+            </div>
+          </Link>
+
           <TenantDashboardOnly>
             <Link href="/tenant-dashboard">
               <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-amber-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-amber-500/20 hover:-translate-y-1">
