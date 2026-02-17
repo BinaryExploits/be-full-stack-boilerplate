@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { TenantContext, TenantInfo } from './tenant.context';
+import { Tenant } from '@repo/prisma-db';
+import { TenantContext } from './tenant.context';
 import type {
   TTenantCreateRequest,
   TTenantUpdateRequest,
@@ -20,43 +21,39 @@ export class TenantService {
     private readonly tenantContext: TenantContext,
   ) {}
 
-  async create(data: TTenantCreateRequest): Promise<TenantInfo> {
-    const tenant = await this.tenantRepository.create({
+  async create(data: TTenantCreateRequest): Promise<Tenant> {
+    return this.tenantRepository.create({
       data: {
         name: data.name,
         slug: data.slug,
         allowedOrigins: data.allowedOrigins,
       },
     });
-    return this.toTenantInfo(tenant);
   }
 
-  async findAll(): Promise<TenantInfo[]> {
-    const list = await this.tenantRepository.findMany({
+  async findAll(): Promise<Tenant[]> {
+    return this.tenantRepository.findMany({
       orderBy: { slug: 'asc' },
     });
-    return list.map((t) => this.toTenantInfo(t));
   }
 
-  async findOne(id: string): Promise<TenantInfo | null> {
-    const tenant = await this.tenantRepository.findUnique({
+  async findOne(id: string): Promise<Tenant | null> {
+    return this.tenantRepository.findUnique({
       where: { id },
     });
-    return tenant ? this.toTenantInfo(tenant) : null;
   }
 
-  async findBySlug(slug: string): Promise<TenantInfo | null> {
-    const tenant = await this.tenantRepository.findUnique({
+  async findBySlug(slug: string): Promise<Tenant | null> {
+    return this.tenantRepository.findUnique({
       where: { slug },
     });
-    return tenant ? this.toTenantInfo(tenant) : null;
   }
 
   async update(
     id: string,
     data: Omit<TTenantUpdateRequest, 'id'>,
-  ): Promise<TenantInfo> {
-    const tenant = await this.tenantRepository.update({
+  ): Promise<Tenant> {
+    return this.tenantRepository.update({
       where: { id },
       data: {
         ...(data.name != null && { name: data.name }),
@@ -66,7 +63,6 @@ export class TenantService {
         }),
       },
     });
-    return this.toTenantInfo(tenant);
   }
 
   async delete(id: string): Promise<void> {
@@ -74,25 +70,7 @@ export class TenantService {
   }
 
   /** Current request tenant (from CLS). */
-  getCurrentTenant(): TenantInfo | null {
+  getCurrentTenant(): Tenant | null {
     return this.tenantContext.getTenant();
-  }
-
-  private toTenantInfo(row: {
-    id: string;
-    name: string;
-    slug: string;
-    allowedOrigins: string[];
-    createdAt: Date;
-    updatedAt: Date;
-  }): TenantInfo {
-    return {
-      id: row.id,
-      name: row.name,
-      slug: row.slug,
-      allowedOrigins: row.allowedOrigins,
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
-    };
   }
 }

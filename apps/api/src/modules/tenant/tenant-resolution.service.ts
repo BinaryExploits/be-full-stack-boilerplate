@@ -1,6 +1,7 @@
 /* eslint-disable custom/require-transactional */
 import { Injectable } from '@nestjs/common';
-import { TenantContext, TenantInfo } from './tenant.context';
+import { Tenant } from '@repo/prisma-db';
+import { TenantContext } from './tenant.context';
 import { TenantPrismaRepository } from './repositories/prisma/tenant.prisma-repository';
 import { Logger } from '@repo/utils-core';
 
@@ -68,7 +69,7 @@ export class TenantResolutionService {
   }
 
   /** Resolve tenant only when one of normalizedHosts exactly matches a tenant's allowedOrigins. */
-  async resolveTenant(normalizedHosts: string[]): Promise<TenantInfo | null> {
+  async resolveTenant(normalizedHosts: string[]): Promise<Tenant | null> {
     if (normalizedHosts.length === 0) return null;
 
     const allTenants = await this.tenantRepository.findMany();
@@ -76,26 +77,8 @@ export class TenantResolutionService {
       const tenant = allTenants.find((t) =>
         t.allowedOrigins.some((o) => this.normalizeHost(o) === candidate),
       );
-      if (tenant) return this.toTenantInfo(tenant);
+      if (tenant) return tenant;
     }
     return null;
-  }
-
-  private toTenantInfo(row: {
-    id: string;
-    name: string;
-    slug: string;
-    allowedOrigins: string[];
-    createdAt: Date;
-    updatedAt: Date;
-  }): TenantInfo {
-    return {
-      id: row.id,
-      name: row.name,
-      slug: row.slug,
-      allowedOrigins: row.allowedOrigins,
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
-    };
   }
 }

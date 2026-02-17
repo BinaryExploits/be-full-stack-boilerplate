@@ -1,15 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ClsService } from 'nestjs-cls';
+import { Tenant } from '@repo/prisma-db';
 import { TENANT_CLS_KEYS } from '../../constants/tenant.constants';
-
-export interface TenantInfo {
-  id: string;
-  name: string;
-  slug: string;
-  allowedOrigins: string[];
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 /**
  * Request-scoped tenant context. Services and repositories use this to get the current tenant
@@ -24,11 +16,11 @@ export class TenantContext {
     return this.cls.get<string | null>(TENANT_CLS_KEYS.TENANT_ID) ?? null;
   }
 
-  getTenant(): TenantInfo | null {
-    return this.cls.get<TenantInfo | null>(TENANT_CLS_KEYS.TENANT) ?? null;
+  getTenant(): Tenant | null {
+    return this.cls.get<Tenant | null>(TENANT_CLS_KEYS.TENANT) ?? null;
   }
 
-  setTenant(tenant: TenantInfo | null): void {
+  setTenant(tenant: Tenant | null): void {
     this.cls.set(TENANT_CLS_KEYS.TENANT_ID, tenant?.id ?? null);
     this.cls.set(TENANT_CLS_KEYS.TENANT, tenant);
   }
