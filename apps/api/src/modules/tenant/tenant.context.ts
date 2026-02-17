@@ -7,6 +7,8 @@ export interface TenantInfo {
   name: string;
   slug: string;
   allowedOrigins: string[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 /**

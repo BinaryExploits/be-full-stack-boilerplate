@@ -1,0 +1,55 @@
+[
+  {
+    "slug": "localhost",
+    "name": "Localhost",
+    "allowedOrigins": [
+      "localhost",
+      "127.0.0.1",
+      "http://localhost",
+      "https://localhost",
+      "http://localhost:3000",
+      "https://localhost:3000",
+      "http://127.0.0.1:3000",
+      "https://127.0.0.1:3000"
+    ]
+  },
+  {
+    "slug": "binaryexports",
+    "name": "Binary Exports",
+    "allowedOrigins": [
+      "binaryexports.com",
+      "www.binaryexports.com",
+      "https://binaryexports.com",
+      "http://binaryexports.com",
+      "binaryexports.localhost",
+      "http://binaryexports.localhost:3000",
+      "https://binaryexports.localhost:3000"
+    ]
+  },
+  {
+    "slug": "binaryexperiments",
+    "name": "Binary Experiments",
+    "allowedOrigins": [
+      "binaryexperiments.com",
+      "www.binaryexperiments.com",
+      "https://binaryexperiments.com",
+      "http://binaryexperiments.com",
+      "binaryexperiments.localhost",
+      "http://binaryexperiments.localhost:3000",
+      "https://binaryexperiments.localhost:3000"
+    ]
+  },
+  {
+    "slug": "binaryexploits",
+    "name": "Binary Exploits",
+    "allowedOrigins": [
+      "binaryexploits.com",
+      "www.binaryexploits.com",
+      "https://binaryexploits.com",
+      "http://binaryexploits.com",
+      "binaryexploits.localhost",
+      "http://binaryexploits.localhost:3000",
+      "https://binaryexploits.localhost:3000"
+    ]
+  }
+]

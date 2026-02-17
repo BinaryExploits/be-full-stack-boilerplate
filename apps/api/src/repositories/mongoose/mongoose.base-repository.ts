@@ -18,9 +18,8 @@ const TENANT_REQUIRED_MSG =
   'Tenant could not be resolved from request origin; tenant-scoped data is not available.';
 
 export interface MongooseBaseRepositoryOptions {
+  /** When set, all queries and creates are scoped by tenantContext.getTenantId(); when absent, no tenant scoping. */
   tenantContext?: TenantContext;
-  /** When true, all queries and creates are scoped by tenantContext.getTenantId() */
-  tenantScoped?: boolean;
 }
 
 export abstract class MongooseBaseRepository<
@@ -30,7 +29,6 @@ export abstract class MongooseBaseRepository<
   protected readonly model: Model<TDbEntity>;
   protected readonly mongoTxHost: TransactionHost<TransactionalAdapterMongoose>;
   private readonly tenantContext?: TenantContext;
-  private readonly tenantScoped: boolean;
 
   protected constructor(
     model: Model<TDbEntity>,
@@ -40,7 +38,6 @@ export abstract class MongooseBaseRepository<
     this.model = model;
     this.mongoTxHost = mongoTxHost;
     this.tenantContext = options?.tenantContext;
-    this.tenantScoped = options?.tenantScoped ?? false;
   }
 
   async create(entity: Partial<TDbEntity>): Promise<TDomainEntity> {
@@ -259,17 +256,17 @@ export abstract class MongooseBaseRepository<
 
   protected abstract toDomainEntity(tDbEntity: TDbEntity): TDomainEntity;
 
-  /** Merge tenant filter; when tenantScoped and no tenant resolved, reject. */
+  /** Merge tenant filter when tenantContext is set; when no context, no scoping. */
   private tenantFilter(): Record<string, unknown> {
-    if (!this.tenantScoped) return {};
-    const tenantId = this.tenantContext?.getTenantId();
+    if (this.tenantContext == null) return {};
+    const tenantId = this.tenantContext.getTenantId();
     if (tenantId == null) throw new ForbiddenException(TENANT_REQUIRED_MSG);
     return { tenantId };
   }
 
   private withTenantData(data: Partial<TDbEntity>): Partial<TDbEntity> {
-    if (!this.tenantScoped) return data;
-    const tenantId = this.tenantContext?.getTenantId();
+    if (this.tenantContext == null) return data;
+    const tenantId = this.tenantContext.getTenantId();
     if (tenantId == null) throw new ForbiddenException(TENANT_REQUIRED_MSG);
     return { ...data, tenantId } as Partial<TDbEntity>;
   }

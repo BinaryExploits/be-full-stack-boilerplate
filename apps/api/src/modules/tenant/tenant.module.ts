@@ -2,37 +2,31 @@ import { Module } from '@nestjs/common';
 import { AuthModule } from '../auth/auth.module';
 import { PrismaModule } from '../prisma/prisma.module';
 import { SuperAdminGuard } from './guards/super-admin.guard';
-import { RequireTenantMiddleware } from './require-tenant.middleware';
 import { TenantContext } from './tenant.context';
-import { TenantContextRefBootstrap } from './tenant-context-ref.bootstrap';
-import { TenantResolutionMiddleware } from './tenant-resolution.middleware';
+import { TenantMiddleware } from './tenant.middleware';
 import { TenantResolutionService } from './tenant-resolution.service';
-import { TenantMetaRouter } from './tenant-meta.router';
 import { TenantRouter } from './tenant.router';
 import { TenantService } from './tenant.service';
+import { TenantPrismaRepository } from './repositories/prisma/tenant.prisma-repository';
 
 @Module({
   imports: [PrismaModule, AuthModule],
   providers: [
     TenantContext,
-    TenantContextRefBootstrap,
     TenantResolutionService,
     TenantService,
-    TenantResolutionMiddleware,
-    RequireTenantMiddleware,
+    TenantMiddleware,
     SuperAdminGuard,
     TenantRouter,
-    TenantMetaRouter,
+    TenantPrismaRepository,
   ],
   exports: [
     TenantContext,
     TenantService,
     TenantResolutionService,
-    TenantResolutionMiddleware,
-    RequireTenantMiddleware,
+    TenantPrismaRepository,
   ],
 })
 export class TenantModule {
-  static readonly resolutionMiddleware = TenantResolutionMiddleware;
-  static readonly requireTenantMiddleware = RequireTenantMiddleware;
+  static readonly tenantMiddleware = TenantMiddleware;
 }

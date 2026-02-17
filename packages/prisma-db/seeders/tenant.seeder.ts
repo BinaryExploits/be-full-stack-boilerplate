@@ -7,77 +7,9 @@ type TenantSeedRecord = {
   allowedOrigins: string[];
 };
 
-const DEFAULT_TENANTS: TenantSeedRecord[] = [
-  {
-    slug: "localhost",
-    name: "Localhost",
-    allowedOrigins: [
-      "localhost",
-      "127.0.0.1",
-      "http://localhost",
-      "https://localhost",
-      "http://localhost:3000",
-      "https://localhost:3000",
-      "http://127.0.0.1:3000",
-      "https://127.0.0.1:3000",
-    ],
-  },
-  {
-    slug: "binaryexports",
-    name: "Binary Exports",
-    allowedOrigins: [
-      "binaryexports.com",
-      "www.binaryexports.com",
-      "https://binaryexports.com",
-      "http://binaryexports.com",
-      "binaryexports.localhost",
-      "http://binaryexports.localhost:3000",
-      "https://binaryexports.localhost:3000",
-    ],
-  },
-  {
-    slug: "binaryexperiments",
-    name: "Binary Experiments",
-    allowedOrigins: [
-      "binaryexperiments.com",
-      "www.binaryexperiments.com",
-      "https://binaryexperiments.com",
-      "http://binaryexperiments.com",
-      "binaryexperiments.localhost",
-      "http://binaryexperiments.localhost:3000",
-      "https://binaryexperiments.localhost:3000",
-    ],
-  },
-  {
-    slug: "binaryexploits",
-    name: "Binary Exploits",
-    allowedOrigins: [
-      "binaryexploits.com",
-      "www.binaryexploits.com",
-      "https://binaryexploits.com",
-      "http://binaryexploits.com",
-      "binaryexploits.localhost",
-      "http://binaryexploits.localhost:3000",
-      "https://binaryexploits.localhost:3000",
-    ],
-  },
-];
-
 export class TenantSeeder extends PrismaSeeder<TenantSeedRecord> {
   readonly entityName = "Tenant";
   readonly seedDataFile = "tenant.json";
-
-  override async loadData(): Promise<void> {
-    this.records = [...DEFAULT_TENANTS];
-    SeedLogger.log(
-      `Loaded ${this.records.length} tenant(s) (inline)`,
-      this.entityName,
-    );
-    SeedLogger.success(
-      `✓ Loaded ${this.records.length} record(s)`,
-      this.entityName,
-    );
-  }
 
   validate(): string[] {
     const errors: string[] = [];

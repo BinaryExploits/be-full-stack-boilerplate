@@ -1,5 +1,5 @@
 /**
- * CLS keys for multi-tenant context. Resolved once per request in TenantResolutionMiddleware.
+ * CLS keys for multi-tenant context. Resolved once per request in TenantMiddleware.
  */
 export const TENANT_CLS_KEYS = {
   TENANT_ID: 'tenantId',

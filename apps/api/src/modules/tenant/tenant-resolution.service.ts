@@ -1,20 +1,18 @@
+/* eslint-disable custom/require-transactional */
 import { Injectable } from '@nestjs/common';
 import { TenantContext, TenantInfo } from './tenant.context';
-import { PrismaService } from '../prisma/prisma.service';
+import { TenantPrismaRepository } from './repositories/prisma/tenant.prisma-repository';
 import { Logger } from '@repo/utils-core';
-import { AutoTransaction } from '../../decorators/class/auto-transaction.decorator';
-import { ServerConstants } from '../../constants/server.constants';
-import { Propagation } from '@nestjs-cls/transactional';
 
 /**
- * Resolves tenant from request host/origin. Used by TenantResolutionMiddleware.
+ * Resolves tenant from request host/origin. Used by TenantMiddleware (single merged middleware).
  * - Only exact match: host/origin must be in a tenant's allowedOrigins (no parent-domain fallback).
- * - Unregistered hosts get no tenant and are rejected by RequireTenantMiddleware.
+ * - Unregistered hosts get no tenant and are rejected in the same middleware (403).
  */
 @Injectable()
 export class TenantResolutionService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly tenantRepository: TenantPrismaRepository,
     private readonly tenantContext: TenantContext,
   ) {}
 
@@ -41,10 +39,14 @@ export class TenantResolutionService {
    * - pageOrigin (x-tenant-origin / Origin) → use only its normalized host, e.g. operand-solutions.localhost.
    * - No pageOrigin → use requestHost (e.g. direct API call).
    */
+  /**
+   * Resolves tenant from host/origin, sets it in CLS, and returns the tenant id
+   * so the caller can set it in the request-scoped store (for Prisma extension / @Transactional).
+   */
   async resolveAndSet(
     pageOrigin?: string,
     requestHost?: string,
-  ): Promise<void> {
+  ): Promise<string | null> {
     const normalized =
       pageOrigin != null && pageOrigin !== ''
         ? [this.normalizeHost(pageOrigin)]
@@ -61,13 +63,15 @@ export class TenantResolutionService {
       normalizedHosts: normalized,
       tenant: tenant ? { id: tenant.id, slug: tenant.slug } : 'none',
     });
+
+    return tenant?.id ?? null;
   }
 
   /** Resolve tenant only when one of normalizedHosts exactly matches a tenant's allowedOrigins. */
   async resolveTenant(normalizedHosts: string[]): Promise<TenantInfo | null> {
     if (normalizedHosts.length === 0) return null;
 
-    const allTenants = await this.prisma.tenant.findMany();
+    const allTenants = await this.tenantRepository.findMany();
     for (const candidate of normalizedHosts) {
       const tenant = allTenants.find((t) =>
         t.allowedOrigins.some((o) => this.normalizeHost(o) === candidate),
@@ -82,12 +86,16 @@ export class TenantResolutionService {
     name: string;
     slug: string;
     allowedOrigins: string[];
+    createdAt: Date;
+    updatedAt: Date;
   }): TenantInfo {
     return {
       id: row.id,
       name: row.name,
       slug: row.slug,
       allowedOrigins: row.allowedOrigins,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
     };
   }
 }

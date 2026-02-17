@@ -24,10 +24,7 @@ export class CrudMongooseRepository extends MongooseBaseRepository<
     mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
     tenantContext: TenantContext,
   ) {
-    super(crudModel, mongoTxHost, {
-      tenantContext,
-      tenantScoped: true,
-    });
+    super(crudModel, mongoTxHost, { tenantContext });
   }
 
   protected toDomainEntity(crudEntity: CrudMongooseEntity): Crud {

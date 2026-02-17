@@ -16,7 +16,7 @@ export function TenantDashboardOnly({
   const sessionResult = authClient?.useSession?.();
   const session = sessionResult?.data;
 
-  const { data } = trpc.tenantMeta.isSuperAdmin.useQuery(undefined, {
+  const { data } = trpc.tenant.isSuperAdmin.useQuery(undefined, {
     enabled: !!session?.user,
   });
 

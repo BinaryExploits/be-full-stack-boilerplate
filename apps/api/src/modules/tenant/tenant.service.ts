@@ -1,31 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import { TenantContext, TenantInfo } from './tenant.context';
+import type {
+  TTenantCreateRequest,
+  TTenantUpdateRequest,
+} from './tenant.schema';
+import { TenantPrismaRepository } from './repositories/prisma/tenant.prisma-repository';
 import { AutoTransaction } from '../../decorators/class/auto-transaction.decorator';
 import { ServerConstants } from '../../constants/server.constants';
 import { Propagation } from '@nestjs-cls/transactional';
 
-export interface CreateTenantInput {
-  name: string;
-  slug: string;
-  allowedOrigins: string[];
-}
-
-export interface UpdateTenantInput {
-  name?: string;
-  slug?: string;
-  allowedOrigins?: string[];
-}
-
 @Injectable()
+@AutoTransaction(
+  ServerConstants.TransactionConnectionNames.Prisma,
+  Propagation.Required,
+)
 export class TenantService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly tenantRepository: TenantPrismaRepository,
     private readonly tenantContext: TenantContext,
   ) {}
 
-  async create(data: CreateTenantInput): Promise<TenantInfo> {
-    const tenant = await this.prisma.tenant.create({
+  async create(data: TTenantCreateRequest): Promise<TenantInfo> {
+    const tenant = await this.tenantRepository.create({
       data: {
         name: data.name,
         slug: data.slug,
@@ -36,28 +32,31 @@ export class TenantService {
   }
 
   async findAll(): Promise<TenantInfo[]> {
-    const list = await this.prisma.tenant.findMany({
+    const list = await this.tenantRepository.findMany({
       orderBy: { slug: 'asc' },
     });
     return list.map((t) => this.toTenantInfo(t));
   }
 
   async findOne(id: string): Promise<TenantInfo | null> {
-    const tenant = await this.prisma.tenant.findUnique({
+    const tenant = await this.tenantRepository.findUnique({
       where: { id },
     });
     return tenant ? this.toTenantInfo(tenant) : null;
   }
 
   async findBySlug(slug: string): Promise<TenantInfo | null> {
-    const tenant = await this.prisma.tenant.findUnique({
+    const tenant = await this.tenantRepository.findUnique({
       where: { slug },
     });
     return tenant ? this.toTenantInfo(tenant) : null;
   }
 
-  async update(id: string, data: UpdateTenantInput): Promise<TenantInfo> {
-    const tenant = await this.prisma.tenant.update({
+  async update(
+    id: string,
+    data: Omit<TTenantUpdateRequest, 'id'>,
+  ): Promise<TenantInfo> {
+    const tenant = await this.tenantRepository.update({
       where: { id },
       data: {
         ...(data.name != null && { name: data.name }),
@@ -71,7 +70,7 @@ export class TenantService {
   }
 
   async delete(id: string): Promise<void> {
-    await this.prisma.tenant.delete({ where: { id } });
+    await this.tenantRepository.delete({ where: { id } });
   }
 
   /** Current request tenant (from CLS). */
@@ -84,12 +83,16 @@ export class TenantService {
     name: string;
     slug: string;
     allowedOrigins: string[];
+    createdAt: Date;
+    updatedAt: Date;
   }): TenantInfo {
     return {
       id: row.id,
       name: row.name,
       slug: row.slug,
       allowedOrigins: row.allowedOrigins,
+      createdAt: row.createdAt,
+      updatedAt: row.updatedAt,
     };
   }
 }

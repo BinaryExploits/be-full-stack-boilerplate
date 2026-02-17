@@ -22,7 +22,7 @@ export class GlobalCrudMongooseRepository extends MongooseBaseRepository<
     @InjectTransactionHost(ServerConstants.TransactionConnectionNames.Mongoose)
     mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
   ) {
-    super(model, mongoTxHost, { tenantScoped: false });
+    super(model, mongoTxHost);
   }
 
   protected toDomainEntity(entity: GlobalCrudMongooseEntity): GlobalCrud {

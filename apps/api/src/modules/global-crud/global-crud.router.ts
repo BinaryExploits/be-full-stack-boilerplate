@@ -13,7 +13,18 @@ import {
   ZGlobalCrudUpdateRequest,
   ZGlobalCrudUpdateResponse,
 } from './schemas/global-crud.schema';
-import type { GlobalCrud } from './schemas/global-crud.schema';
+import type {
+  TGlobalCrudCreateRequest,
+  TGlobalCrudCreateResponse,
+  TGlobalCrudFindAllRequest,
+  TGlobalCrudFindAllResponse,
+  TGlobalCrudFindOneRequest,
+  TGlobalCrudFindOneResponse,
+  TGlobalCrudUpdateRequest,
+  TGlobalCrudUpdateResponse,
+  TGlobalCrudDeleteRequest,
+  TGlobalCrudDeleteResponse,
+} from './schemas/global-crud.schema';
 import { AuthMiddleware } from '../auth/auth.middleware';
 
 @Router({ alias: 'globalCrud' })
@@ -31,8 +42,8 @@ export class GlobalCrudRouter {
     output: ZGlobalCrudCreateResponse,
   })
   async createMongo(
-    @Input() req: { content: string },
-  ): Promise<{ success: boolean; id?: string; message?: string }> {
+    @Input() req: TGlobalCrudCreateRequest,
+  ): Promise<TGlobalCrudCreateResponse> {
     const created = await this.globalCrudMongooseService.create(req);
     return {
       success: created != null,
@@ -48,14 +59,8 @@ export class GlobalCrudRouter {
     output: ZGlobalCrudFindAllResponse,
   })
   async findAllMongo(
-    @Input() req?: { limit?: number; offset?: number },
-  ): Promise<{
-    success: boolean;
-    items: GlobalCrud[];
-    total: number;
-    limit: number;
-    offset: number;
-  }> {
+    @Input() req?: TGlobalCrudFindAllRequest,
+  ): Promise<TGlobalCrudFindAllResponse> {
     const limit = req?.limit ?? 10;
     const offset = req?.offset ?? 0;
     const data = await this.globalCrudMongooseService.findAll();
@@ -72,7 +77,9 @@ export class GlobalCrudRouter {
     input: ZGlobalCrudFindOneRequest,
     output: ZGlobalCrudFindOneResponse,
   })
-  async findOneMongo(@Input() req: { id: string }): Promise<GlobalCrud | null> {
+  async findOneMongo(
+    @Input() req: TGlobalCrudFindOneRequest,
+  ): Promise<TGlobalCrudFindOneResponse> {
     return this.globalCrudMongooseService.findOne(req.id);
   }
 
@@ -82,8 +89,8 @@ export class GlobalCrudRouter {
     output: ZGlobalCrudUpdateResponse,
   })
   async updateMongo(
-    @Input() req: { id: string; data: { content: string } },
-  ): Promise<{ success: boolean; data?: GlobalCrud; message?: string }> {
+    @Input() req: TGlobalCrudUpdateRequest,
+  ): Promise<TGlobalCrudUpdateResponse> {
     const updated = await this.globalCrudMongooseService.update(
       req.id,
       req.data,
@@ -103,8 +110,8 @@ export class GlobalCrudRouter {
     output: ZGlobalCrudDeleteResponse,
   })
   async deleteMongo(
-    @Input() req: { id: string },
-  ): Promise<{ success: boolean; message?: string }> {
+    @Input() req: TGlobalCrudDeleteRequest,
+  ): Promise<TGlobalCrudDeleteResponse> {
     const deleted = await this.globalCrudMongooseService.delete(req.id);
     return {
       success: deleted != null,
@@ -122,8 +129,8 @@ export class GlobalCrudRouter {
     output: ZGlobalCrudCreateResponse,
   })
   async createPrisma(
-    @Input() req: { content: string },
-  ): Promise<{ success: boolean; id?: string; message?: string }> {
+    @Input() req: TGlobalCrudCreateRequest,
+  ): Promise<TGlobalCrudCreateResponse> {
     const created = await this.globalCrudService.create(req);
     return {
       success: created != null,
@@ -139,14 +146,8 @@ export class GlobalCrudRouter {
     output: ZGlobalCrudFindAllResponse,
   })
   async findAllPrisma(
-    @Input() req?: { limit?: number; offset?: number },
-  ): Promise<{
-    success: boolean;
-    items: GlobalCrud[];
-    total: number;
-    limit: number;
-    offset: number;
-  }> {
+    @Input() req?: TGlobalCrudFindAllRequest,
+  ): Promise<TGlobalCrudFindAllResponse> {
     const limit = req?.limit ?? 10;
     const offset = req?.offset ?? 0;
     const data = await this.globalCrudService.findAll();
@@ -164,8 +165,8 @@ export class GlobalCrudRouter {
     output: ZGlobalCrudFindOneResponse,
   })
   async findOnePrisma(
-    @Input() req: { id: string },
-  ): Promise<GlobalCrud | null> {
+    @Input() req: TGlobalCrudFindOneRequest,
+  ): Promise<TGlobalCrudFindOneResponse> {
     return this.globalCrudService.findOne(req.id);
   }
 
@@ -175,8 +176,8 @@ export class GlobalCrudRouter {
     output: ZGlobalCrudUpdateResponse,
   })
   async updatePrisma(
-    @Input() req: { id: string; data: { content: string } },
-  ): Promise<{ success: boolean; data?: GlobalCrud; message?: string }> {
+    @Input() req: TGlobalCrudUpdateRequest,
+  ): Promise<TGlobalCrudUpdateResponse> {
     const updated = await this.globalCrudService.update(req.id, req.data);
     return {
       success: updated != null,
@@ -193,8 +194,8 @@ export class GlobalCrudRouter {
     output: ZGlobalCrudDeleteResponse,
   })
   async deletePrisma(
-    @Input() req: { id: string },
-  ): Promise<{ success: boolean; message?: string }> {
+    @Input() req: TGlobalCrudDeleteRequest,
+  ): Promise<TGlobalCrudDeleteResponse> {
     const deleted = await this.globalCrudService.delete(req.id);
     return {
       success: deleted != null,
