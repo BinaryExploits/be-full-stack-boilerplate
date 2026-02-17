@@ -5,7 +5,6 @@ export const ZTenant = z.object({
   name: z.string(),
   slug: z.string(),
   allowedOrigins: z.array(z.string()),
-  isDefault: z.boolean(),
 });
 
 export const ZTenantCreateRequest = z.object({
@@ -16,7 +15,6 @@ export const ZTenantCreateRequest = z.object({
     .max(100)
     .regex(/^[a-z0-9-]+$/),
   allowedOrigins: z.array(z.string().min(1)).min(0),
-  isDefault: z.boolean().optional(),
 });
 
 export const ZTenantCreateResponse = ZTenant;
@@ -41,7 +39,6 @@ export const ZTenantUpdateRequest = z.object({
     .regex(/^[a-z0-9-]+$/)
     .optional(),
   allowedOrigins: z.array(z.string().min(1)).optional(),
-  isDefault: z.boolean().optional(),
 });
 
 export const ZTenantUpdateResponse = ZTenant;

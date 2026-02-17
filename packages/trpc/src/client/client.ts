@@ -16,7 +16,12 @@ export const queryClient = new QueryClient();
 /** Header sent so backend can resolve tenant when request is proxied (e.g. Next.js rewrite). */
 export const TENANT_ORIGIN_HEADER = "x-tenant-origin";
 
-export const createTrpcClient = (url: string, getCookies?: () => string) => {
+export const createTrpcClient = (
+  url: string,
+  getCookies?: () => string,
+  /** When set (e.g. from SSR request headers), sent as x-tenant-origin so API can resolve tenant. */
+  serverOrigin?: string,
+) => {
   return trpc.createClient({
     links: [
       httpBatchLink({
@@ -31,6 +36,8 @@ export const createTrpcClient = (url: string, getCookies?: () => string) => {
           }
           if (typeof window !== "undefined" && window.location?.origin) {
             headers.set(TENANT_ORIGIN_HEADER, window.location.origin);
+          } else if (serverOrigin) {
+            headers.set(TENANT_ORIGIN_HEADER, serverOrigin);
           }
           return Object.fromEntries(headers);
         },

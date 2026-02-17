@@ -1,6 +1,6 @@
 # Multi-tenancy
 
-The app supports **single-tenant by default** and **multi-tenant** when you add more tenants and origins.
+The app supports **multi-tenant** resolution by host/origin. **Constraint:** at least one tenant must exist (e.g. seed includes a **localhost** tenant). There is **no default tenant**; if resolution cannot resolve a tenant, **tenant-scoped requests are rejected** (403) and no data is returned.
 
 ## Ready to execute (migration + seed)
 
@@ -8,7 +8,7 @@ The app supports **single-tenant by default** and **multi-tenant** when you add 
    ```bash
    pnpm run docker:start
    ```
-2. **Run migration and seed** (creates `tenant` table, adds `crud.tenantId`, seeds three tenants: binaryexports, binaryexperiments, binaryexploits):
+2. **Run migration and seed** (creates `tenant` table, adds `crud.tenantId`, seeds four tenants: localhost, binaryexports, binaryexperiments, binaryexploits):
 
    ```bash
    pnpm run db:ready
@@ -18,7 +18,7 @@ The app supports **single-tenant by default** and **multi-tenant** when you add 
 
 3. **Env** (in `apps/api/.env`): `CORS_ORIGINS`, `SUPER_ADMIN_EMAILS`, and `BETTER_AUTH_TRUSTED_ORIGINS` should include all tenant origins (see `.env.example`). Default seed assumes super-admin emails like `anns.shahbaz@binaryexports.com` (and same for binaryexperiments / binaryexploits).
 
-4. **Launch**: `pnpm run dev` (or `dev:api` / `dev:web`). Access per-tenant locally via `http://binaryexports.localhost:3000`, `http://binaryexperiments.localhost:3000`, `http://binaryexploits.localhost:3000` (and production domains when deployed).
+4. **Launch**: `pnpm run dev` (or `dev:api` / `dev:web`). Access per-tenant locally via `http://localhost:3000` (localhost tenant), `http://binaryexports.localhost:3000`, `http://binaryexperiments.localhost:3000`, `http://binaryexploits.localhost:3000` (and production domains when deployed).
 
 ## How to verify tenant isolation
 
@@ -30,18 +30,18 @@ The app supports **single-tenant by default** and **multi-tenant** when you add 
 
 ## How it works
 
-1. **Tenant resolution** (per request): The `TenantResolutionMiddleware` reads `Host`, `Origin`, or the frontend-sent `x-tenant-origin` header and looks up a tenant by `allowedOrigins`. If none match, a tenant with `isDefault: true` is used (single-tenant mode).
-2. **Tenant context**: The resolved tenant is stored in **CLS** (request-scoped). Services and repositories never receive a tenant argument; they read from `TenantContext` or the tenant is applied automatically.
-3. **Data isolation**:
-   - **Prisma**: The `CrudPrismaRepository` injects `TenantContext` and merges `tenantId` into all Crud queries (create, findMany, findUnique, update, delete, etc.). When a tenant is resolved, `tenantId` is added to `where` and to create `data`.
-   - **Mongoose**: Repositories that opt in with `tenantScoped: true` (e.g. `CrudMongooseRepository`) automatically add `tenantId` to filters and to created documents.
+1. **Tenant resolution** (per request): The `TenantResolutionMiddleware` reads `x-tenant-origin` (or `Origin`) and `Host`, normalizes them, and looks up a tenant whose `allowedOrigins` **exactly** match one of those normalized hosts. There is **no parent-domain fallback**; only registered hosts/origins get a tenant. Unregistered subdomains (e.g. `random.localhost`) do not match the `localhost` tenant.
+2. **Require-tenant gate**: The `RequireTenantMiddleware` runs **immediately after** resolution. If no tenant was resolved, the request is **rejected with 403** before any route handler runs (except for `/api/auth`). Unregistered hosts/origins never reach tRPC or tenant-scoped logic. Debug logging: resolution logs `[TenantResolution]` with host/origin and resolved tenant; rejections log `[RequireTenant]` with path and host/origin.
+3. **Tenant context**: The resolved tenant is stored in **CLS** (request-scoped). Services and repositories never receive a tenant argument; they read from `TenantContext` or the tenant is applied automatically.
+4. **Data isolation**:
+   - **Prisma**: The `CrudPrismaRepository` injects `TenantContext` and merges `tenantId` into all Crud queries (create, findMany, findUnique, update, delete, etc.). When no tenant is resolved, the request is rejected (403).
+   - **Mongoose**: Repositories with `tenantScoped: true` (e.g. `CrudMongooseRepository`) add `tenantId` to filters and to created documents; when no tenant is resolved, the request is rejected (403).
 
 Developers writing services or repository code do **not** need to pass or check tenant; isolation is handled in middleware and in the tenant-scoped repositories (Prisma and Mongoose).
 
-## Single-tenant (default)
+## Single-tenant
 
-- Create **one** tenant with `isDefault: true` and leave `allowedOrigins` empty or set to your main app origin(s).
-- All requests use that tenant. Behavior is the same as before multi-tenancy.
+- Create **one** tenant with `allowedOrigins` set to your main app origin(s) (e.g. `["company.com", "https://company.com"]`). All requests that match that origin use that tenant. There is no fallback for unmatched origins.
 
 ## Adding more tenants (e.g. abc.company.com, xyz.company.com)
 
@@ -49,10 +49,9 @@ Developers writing services or repository code do **not** need to pass or check 
    ```bash
    cd packages/prisma-db && pnpm exec prisma migrate deploy
    ```
-2. **Create a default tenant** (for single-tenant or fallback):
-   - Use the **super-admin** tRPC route `tenant.create` with `isDefault: true` and your main origin(s), or insert one in the DB.
-3. **Create additional tenants** via super-admin:
+2. **Create tenants** via super-admin (each must have `allowedOrigins` that match how users reach the app):
    - Call `tenant.create` with `name`, `slug`, and `allowedOrigins: ["abc.company.com", "https://abc.company.com"]` (and optionally more entries).
+   - Only exact host/origin is matched; add every origin you use (e.g. company.com and subdomains) to the tenant's allowedOrigins. (e.g. unknown subdomains resolve to company.com), add `company.com` (and variants) to a “root” tenant’s `allowedOrigins`; (e.g. company.com and subdomains) to the tenant's allowedOrigins.
    - Repeat for `xyz.company.com` etc.
 4. **CORS**: Add all tenant origins to your API env so the browser allows requests:
    ```env
@@ -77,14 +76,15 @@ Developers writing services or repository code do **not** need to pass or check 
 | `SUPER_ADMIN_EMAILS`          | Comma-separated emails that can manage tenants (tenant.\* tRPC).       |
 | `BETTER_AUTH_TRUSTED_ORIGINS` | Same origins as CORS for auth/cookies (Better Auth).                   |
 
-## Default tenants (seed)
+## Seeded tenants
 
-The Prisma seed (`packages/prisma-db/seed.ts`) runs `TenantSeeder`, which upserts three tenants:
+The Prisma seed (`packages/prisma-db/seed.ts`) runs `TenantSeeder`, which upserts four tenants (including **localhost** so bare `localhost:3000` resolves). Each is resolved only when the request host/origin matches one of its `allowedOrigins` (no default tenant).
 
-| Slug                | Name               | Default | Origins (examples)                                      |
-| ------------------- | ------------------ | ------- | ------------------------------------------------------- |
-| `binaryexports`     | Binary Exports     | No      | binaryexports.com, binaryexports.localhost:3000         |
-| `binaryexperiments` | Binary Experiments | No      | binaryexperiments.com, binaryexperiments.localhost:3000 |
-| `binaryexploits`    | Binary Exploits    | **Yes** | binaryexploits.com, binaryexploits.localhost:3000       |
+| Slug                | Name               | Origins (examples)                              |
+| ------------------- | ------------------ | ----------------------------------------------- |
+| `localhost`         | Localhost          | localhost, localhost:3000, 127.0.0.1…           |
+| `binaryexports`     | Binary Exports     | binaryexports.com, binaryexports.localhost…    |
+| `binaryexperiments` | Binary Experiments | binaryexperiments.com, binaryexperiments.localhost… |
+| `binaryexploits`    | Binary Exploits    | binaryexploits.com, binaryexploits.localhost…   |
 
-Unmatched requests use the default tenant (`binaryexploits`). To change which is default, update the seed or use `tenant.update` (super-admin).
+Unmatched requests have **no tenant** (tenant-scoped APIs **reject** with 403 and return no data).

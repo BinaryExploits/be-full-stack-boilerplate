@@ -4,7 +4,6 @@ CREATE TABLE "tenant" (
     "name" VARCHAR(255) NOT NULL,
     "slug" VARCHAR(100) NOT NULL,
     "allowedOrigins" TEXT[] DEFAULT ARRAY[]::TEXT[],
-    "isDefault" BOOLEAN NOT NULL DEFAULT false,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -22,3 +21,13 @@ CREATE INDEX "crud_tenantId_idx" ON "crud"("tenantId");
 
 -- AddForeignKey
 ALTER TABLE "crud" ADD CONSTRAINT "crud_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE SET NULL ON UPDATE CASCADE;
+
+-- CreateTable: global CRUD (shared across all tenants)
+CREATE TABLE "global_crud" (
+    "id" TEXT NOT NULL,
+    "content" VARCHAR(500) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "global_crud_pkey" PRIMARY KEY ("id")
+);

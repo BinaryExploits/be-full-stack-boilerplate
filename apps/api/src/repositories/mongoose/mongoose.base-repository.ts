@@ -1,3 +1,4 @@
+import { ForbiddenException } from '@nestjs/common';
 import { IMongooseRepository } from './mongoose.repository.interface';
 import {
   InsertManyOptions,
@@ -12,6 +13,9 @@ import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { MongooseBaseEntity } from './mongoose.base-entity';
 import type { TenantContext } from '../../modules/tenant/tenant.context';
+
+const TENANT_REQUIRED_MSG =
+  'Tenant could not be resolved from request origin; tenant-scoped data is not available.';
 
 export interface MongooseBaseRepositoryOptions {
   tenantContext?: TenantContext;
@@ -255,24 +259,18 @@ export abstract class MongooseBaseRepository<
 
   protected abstract toDomainEntity(tDbEntity: TDbEntity): TDomainEntity;
 
-  /** Merge tenant filter when tenantScoped and tenantId is set. */
+  /** Merge tenant filter; when tenantScoped and no tenant resolved, reject. */
   private tenantFilter(): Record<string, unknown> {
-    if (!this.tenantScoped || !this.tenantContext?.getTenantId()) {
-      return {};
-    }
-
-    return { tenantId: this.tenantContext.getTenantId() };
+    if (!this.tenantScoped) return {};
+    const tenantId = this.tenantContext?.getTenantId();
+    if (tenantId == null) throw new ForbiddenException(TENANT_REQUIRED_MSG);
+    return { tenantId };
   }
 
   private withTenantData(data: Partial<TDbEntity>): Partial<TDbEntity> {
-    const tenantId = this.tenantScoped
-      ? this.tenantContext?.getTenantId()
-      : null;
-
-    if (tenantId) {
-      return { ...data, tenantId } as Partial<TDbEntity>;
-    }
-
-    return data;
+    if (!this.tenantScoped) return data;
+    const tenantId = this.tenantContext?.getTenantId();
+    if (tenantId == null) throw new ForbiddenException(TENANT_REQUIRED_MSG);
+    return { ...data, tenantId } as Partial<TDbEntity>;
   }
 }

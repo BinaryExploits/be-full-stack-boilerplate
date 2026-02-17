@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import {
   TransactionHost,
   InjectTransactionHost,
@@ -8,6 +8,9 @@ import { ICrudPrismaRepository } from './crud.prisma-repository.interface';
 import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
 import { ServerConstants } from '../../../../constants/server.constants';
 import { TenantContext } from '../../../tenant/tenant.context';
+
+const TENANT_REQUIRED_MSG =
+  'Tenant could not be resolved from request origin; tenant-scoped data is not available.';
 
 @Injectable()
 export class CrudPrismaRepository implements ICrudPrismaRepository {
@@ -29,6 +32,7 @@ export class CrudPrismaRepository implements ICrudPrismaRepository {
 
   createMany(args: Prisma.CrudCreateManyArgs): Promise<Prisma.BatchPayload> {
     const tenantId = this.tenantContext.getTenantId();
+    if (tenantId == null) throw new ForbiddenException(TENANT_REQUIRED_MSG);
     const data = Array.isArray(args.data)
       ? args.data.map((row) => ({ ...row, tenantId }))
       : { ...args.data, tenantId };
@@ -70,7 +74,7 @@ export class CrudPrismaRepository implements ICrudPrismaRepository {
     args: Prisma.CrudUpsertArgs,
   ): Promise<Prisma.CrudGetPayload<Prisma.CrudUpsertArgs>> {
     const tenantId = this.tenantContext.getTenantId();
-    if (tenantId == null) return this.delegate.upsert(args);
+    if (tenantId == null) throw new ForbiddenException(TENANT_REQUIRED_MSG);
     return this.delegate.upsert({
       ...args,
       where: { ...args.where, tenantId } as Prisma.CrudWhereUniqueInput,
@@ -100,15 +104,13 @@ export class CrudPrismaRepository implements ICrudPrismaRepository {
   }
 
   /**
-   * Merge tenantId into where when tenant is set.
-   * When tenant is set we always add tenantId to where (even if args is undefined),
-   * so all reads/updates/deletes are scoped to the current tenant.
+   * Merge tenantId into where. When no tenant is resolved we reject (no data exposed).
    */
   private mergeWhere<T extends { where?: Prisma.CrudWhereInput } | undefined>(
     args: T,
   ): T {
     const tenantId = this.tenantContext.getTenantId();
-    if (tenantId == null) return args;
+    if (tenantId == null) throw new ForbiddenException(TENANT_REQUIRED_MSG);
     const baseWhere: Prisma.CrudWhereInput = { tenantId };
     if (args == null) {
       return { where: baseWhere } as T;
@@ -119,10 +121,10 @@ export class CrudPrismaRepository implements ICrudPrismaRepository {
     } as T;
   }
 
-  /** Merge tenantId into create data when tenant is set. */
+  /** Merge tenantId into create data; reject when no tenant resolved. */
   private mergeData<T extends { data: Prisma.CrudCreateInput }>(args: T): T {
     const tenantId = this.tenantContext.getTenantId();
-    if (tenantId == null) return args;
+    if (tenantId == null) throw new ForbiddenException(TENANT_REQUIRED_MSG);
     return {
       ...args,
       data: { ...args.data, tenantId } as Prisma.CrudCreateInput,

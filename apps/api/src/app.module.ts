@@ -79,6 +79,8 @@ export class AppModule implements NestModule {
       .apply(LoggerMiddleware)
       .forRoutes('*')
       .apply(TenantModule.resolutionMiddleware)
+      .forRoutes('*')
+      .apply(TenantModule.requireTenantMiddleware)
       .forRoutes('*');
   }
 }

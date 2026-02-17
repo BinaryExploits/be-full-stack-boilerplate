@@ -9,7 +9,6 @@ interface TenantItem {
   name: string;
   slug: string;
   allowedOrigins: string[];
-  isDefault: boolean;
 }
 
 function parseOriginsInput(value: string): string[] {
@@ -28,12 +27,10 @@ export default function TenantDashboard() {
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
   const [originsInput, setOriginsInput] = useState("");
-  const [isDefault, setIsDefault] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editSlug, setEditSlug] = useState("");
   const [editOriginsInput, setEditOriginsInput] = useState("");
-  const [editIsDefault, setEditIsDefault] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const tenantList = trpc.tenant.findAll.useQuery(undefined, {
@@ -46,7 +43,6 @@ export default function TenantDashboard() {
       setName("");
       setSlug("");
       setOriginsInput("");
-      setIsDefault(false);
       setErrorMessage(null);
     },
     onError: (err) => setErrorMessage(err.message),
@@ -91,7 +87,6 @@ export default function TenantDashboard() {
       name: trimmedName,
       slug: trimmedSlug,
       allowedOrigins: parseOriginsInput(originsInput),
-      isDefault,
     });
   };
 
@@ -100,7 +95,6 @@ export default function TenantDashboard() {
     setEditName(t.name);
     setEditSlug(t.slug);
     setEditOriginsInput(formatOriginsForInput(t.allowedOrigins));
-    setEditIsDefault(t.isDefault);
     setErrorMessage(null);
   };
 
@@ -133,7 +127,6 @@ export default function TenantDashboard() {
       name: trimmedName,
       slug: trimmedSlug,
       allowedOrigins: parseOriginsInput(editOriginsInput),
-      isDefault: editIsDefault,
     });
   };
 
@@ -256,16 +249,6 @@ export default function TenantDashboard() {
                     onChange={(e) => setOriginsInput(e.target.value)}
                   />
                 </div>
-                <label className="flex items-center gap-2 text-slate-300 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={isDefault}
-                    onChange={(e) => setIsDefault(e.target.checked)}
-                    className="rounded border-slate-500 text-amber-500 focus:ring-amber-500"
-                  />
-                  Default tenant (used when request origin does not match any
-                  tenant)
-                </label>
                 <button
                   onClick={handleCreate}
                   disabled={
@@ -350,17 +333,6 @@ export default function TenantDashboard() {
                                 }
                               />
                             </div>
-                            <label className="flex items-center gap-2 text-slate-300 text-sm cursor-pointer">
-                              <input
-                                type="checkbox"
-                                checked={editIsDefault}
-                                onChange={(e) =>
-                                  setEditIsDefault(e.target.checked)
-                                }
-                                className="rounded border-slate-500 text-amber-500"
-                              />
-                              Default tenant
-                            </label>
                             <div className="flex gap-2">
                               <button
                                 onClick={handleUpdate}
@@ -387,11 +359,6 @@ export default function TenantDashboard() {
                                 <span className="text-slate-500 font-mono text-sm">
                                   {t.slug}
                                 </span>
-                                {t.isDefault && (
-                                  <span className="px-2 py-0.5 rounded text-xs font-medium bg-amber-900/50 text-amber-300 border border-amber-600">
-                                    Default
-                                  </span>
-                                )}
                               </div>
                               {t.allowedOrigins.length > 0 && (
                                 <p className="text-slate-400 text-sm mt-1 truncate max-w-full">

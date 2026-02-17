@@ -29,7 +29,6 @@ export class TenantRouter {
       name: string;
       slug: string;
       allowedOrigins: string[];
-      isDefault?: boolean;
     },
   ) {
     return this.tenantService.create(req);
@@ -62,7 +61,6 @@ export class TenantRouter {
       name?: string;
       slug?: string;
       allowedOrigins?: string[];
-      isDefault?: boolean;
     },
   ) {
     const { id, ...data } = req;

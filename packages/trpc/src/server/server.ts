@@ -14,13 +14,11 @@ const appRouter = t.router({
         .max(100)
         .regex(/^[a-z0-9-]+$/),
       allowedOrigins: z.array(z.string().min(1)).min(0),
-      isDefault: z.boolean().optional(),
     })).output(z.object({
       id: z.string(),
       name: z.string(),
       slug: z.string(),
       allowedOrigins: z.array(z.string()),
-      isDefault: z.boolean(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     findAll: publicProcedure.output(z.object({
       tenants: z.array(z.object({
@@ -28,7 +26,6 @@ const appRouter = t.router({
         name: z.string(),
         slug: z.string(),
         allowedOrigins: z.array(z.string()),
-        isDefault: z.boolean(),
       })),
     })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     findOne: publicProcedure.input(z.object({
@@ -38,7 +35,6 @@ const appRouter = t.router({
       name: z.string(),
       slug: z.string(),
       allowedOrigins: z.array(z.string()),
-      isDefault: z.boolean(),
     }).nullable()).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     update: publicProcedure.input(z.object({
       id: z.string(),
@@ -50,13 +46,11 @@ const appRouter = t.router({
         .regex(/^[a-z0-9-]+$/)
         .optional(),
       allowedOrigins: z.array(z.string().min(1)).optional(),
-      isDefault: z.boolean().optional(),
     })).output(z.object({
       id: z.string(),
       name: z.string(),
       slug: z.string(),
       allowedOrigins: z.array(z.string()),
-      isDefault: z.boolean(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     delete: publicProcedure.input(z.object({
       id: z.string(),

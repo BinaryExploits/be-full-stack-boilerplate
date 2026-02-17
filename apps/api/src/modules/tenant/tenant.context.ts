@@ -7,13 +7,12 @@ export interface TenantInfo {
   name: string;
   slug: string;
   allowedOrigins: string[];
-  isDefault: boolean;
 }
 
 /**
  * Request-scoped tenant context. Services and repositories use this to get the current tenant
- * without caring how it was resolved. When no tenant is set (e.g. single-tenant default),
- * getTenantId() returns null and infra may treat that as "no tenant filter" or "default tenant".
+ * without caring how it was resolved. When no tenant is set (resolution failed or no origin),
+ * getTenantId() returns null; tenant-scoped repos do not add a tenant filter (no tenant = no tenant-scoped data).
  */
 @Injectable()
 export class TenantContext {

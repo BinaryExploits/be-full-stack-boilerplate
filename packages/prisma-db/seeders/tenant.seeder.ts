@@ -5,10 +5,23 @@ type TenantSeedRecord = {
   slug: string;
   name: string;
   allowedOrigins: string[];
-  isDefault: boolean;
 };
 
 const DEFAULT_TENANTS: TenantSeedRecord[] = [
+  {
+    slug: "localhost",
+    name: "Localhost",
+    allowedOrigins: [
+      "localhost",
+      "127.0.0.1",
+      "http://localhost",
+      "https://localhost",
+      "http://localhost:3000",
+      "https://localhost:3000",
+      "http://127.0.0.1:3000",
+      "https://127.0.0.1:3000",
+    ],
+  },
   {
     slug: "binaryexports",
     name: "Binary Exports",
@@ -21,7 +34,6 @@ const DEFAULT_TENANTS: TenantSeedRecord[] = [
       "http://binaryexports.localhost:3000",
       "https://binaryexports.localhost:3000",
     ],
-    isDefault: false,
   },
   {
     slug: "binaryexperiments",
@@ -35,7 +47,6 @@ const DEFAULT_TENANTS: TenantSeedRecord[] = [
       "http://binaryexperiments.localhost:3000",
       "https://binaryexperiments.localhost:3000",
     ],
-    isDefault: false,
   },
   {
     slug: "binaryexploits",
@@ -49,7 +60,6 @@ const DEFAULT_TENANTS: TenantSeedRecord[] = [
       "http://binaryexploits.localhost:3000",
       "https://binaryexploits.localhost:3000",
     ],
-    isDefault: true,
   },
 ];
 
@@ -95,12 +105,10 @@ export class TenantSeeder extends PrismaSeeder<TenantSeedRecord> {
           name: record.name,
           slug: record.slug,
           allowedOrigins: record.allowedOrigins,
-          isDefault: record.isDefault,
         },
         update: {
           name: record.name,
           allowedOrigins: record.allowedOrigins,
-          isDefault: record.isDefault,
         },
       });
     }

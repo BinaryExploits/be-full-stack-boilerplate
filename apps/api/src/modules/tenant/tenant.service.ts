@@ -6,14 +6,12 @@ export interface CreateTenantInput {
   name: string;
   slug: string;
   allowedOrigins: string[];
-  isDefault?: boolean;
 }
 
 export interface UpdateTenantInput {
   name?: string;
   slug?: string;
   allowedOrigins?: string[];
-  isDefault?: boolean;
 }
 
 @Injectable()
@@ -24,17 +22,11 @@ export class TenantService {
   ) {}
 
   async create(data: CreateTenantInput): Promise<TenantInfo> {
-    if (data.isDefault) {
-      await this.prisma.tenant.updateMany({
-        data: { isDefault: false },
-      });
-    }
     const tenant = await this.prisma.tenant.create({
       data: {
         name: data.name,
         slug: data.slug,
         allowedOrigins: data.allowedOrigins,
-        isDefault: data.isDefault ?? false,
       },
     });
     return this.toTenantInfo(tenant);
@@ -42,7 +34,7 @@ export class TenantService {
 
   async findAll(): Promise<TenantInfo[]> {
     const list = await this.prisma.tenant.findMany({
-      orderBy: [{ isDefault: 'desc' }, { slug: 'asc' }],
+      orderBy: { slug: 'asc' },
     });
     return list.map((t) => this.toTenantInfo(t));
   }
@@ -62,11 +54,6 @@ export class TenantService {
   }
 
   async update(id: string, data: UpdateTenantInput): Promise<TenantInfo> {
-    if (data.isDefault === true) {
-      await this.prisma.tenant.updateMany({
-        data: { isDefault: false },
-      });
-    }
     const tenant = await this.prisma.tenant.update({
       where: { id },
       data: {
@@ -75,7 +62,6 @@ export class TenantService {
         ...(data.allowedOrigins != null && {
           allowedOrigins: data.allowedOrigins,
         }),
-        ...(data.isDefault != null && { isDefault: data.isDefault }),
       },
     });
     return this.toTenantInfo(tenant);
@@ -95,14 +81,12 @@ export class TenantService {
     name: string;
     slug: string;
     allowedOrigins: string[];
-    isDefault: boolean;
   }): TenantInfo {
     return {
       id: row.id,
       name: row.name,
       slug: row.slug,
       allowedOrigins: row.allowedOrigins,
-      isDefault: row.isDefault,
     };
   }
 }
