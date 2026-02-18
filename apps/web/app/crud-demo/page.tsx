@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@repo/trpc/client";
 import Link from "next/link";
+import { TenantDashboardOnly } from "../components/tenant-dashboard-only";
 
 type DbType = "mongoose" | "prisma";
 
@@ -268,6 +269,14 @@ export default function CrudDemo() {
           <p className="text-slate-500 text-sm mt-2">
             NextJs (TailwindCSS) • NestJs • tRPC • Transactions
           </p>
+          <TenantDashboardOnly>
+            <Link
+              href="/tenant-dashboard"
+              className="inline-block mt-3 text-amber-400 hover:text-amber-300 text-sm font-medium"
+            >
+              → Tenant Dashboard (super-admin)
+            </Link>
+          </TenantDashboardOnly>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

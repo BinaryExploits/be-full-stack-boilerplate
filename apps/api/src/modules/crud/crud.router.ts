@@ -16,8 +16,10 @@ import {
 } from './schemas/crud.schema';
 
 import { AuthMiddleware } from '../auth/auth.middleware';
+import { TenantResolutionMiddleware } from '../tenant/tenant-resolution.middleware';
 
 @Router({ alias: 'crud' })
+@UseMiddlewares(AuthMiddleware, TenantResolutionMiddleware)
 export class CrudRouter {
   constructor(
     private readonly crudMongooseService: CrudMongooseService,
@@ -26,7 +28,6 @@ export class CrudRouter {
 
   // ==================== MONGOOSE ENDPOINTS ====================
 
-  @UseMiddlewares(AuthMiddleware)
   @Mutation({
     input: ZCrudCreateRequest,
     output: ZCrudCreateResponse,
@@ -75,7 +76,6 @@ export class CrudRouter {
     return result ?? null;
   }
 
-  @UseMiddlewares(AuthMiddleware)
   @Mutation({
     input: ZCrudUpdateRequest,
     output: ZCrudUpdateResponse,
@@ -93,7 +93,6 @@ export class CrudRouter {
     };
   }
 
-  @UseMiddlewares(AuthMiddleware)
   @Mutation({
     input: ZCrudDeleteRequest,
     output: ZCrudDeleteResponse,
@@ -112,7 +111,6 @@ export class CrudRouter {
 
   // ==================== PRISMA ENDPOINTS ====================
 
-  @UseMiddlewares(AuthMiddleware)
   @Mutation({
     input: ZCrudCreateRequest,
     output: ZCrudCreateResponse,
@@ -161,7 +159,6 @@ export class CrudRouter {
     return result ?? null;
   }
 
-  @UseMiddlewares(AuthMiddleware)
   @Mutation({
     input: ZCrudUpdateRequest,
     output: ZCrudUpdateResponse,
@@ -179,7 +176,6 @@ export class CrudRouter {
     };
   }
 
-  @UseMiddlewares(AuthMiddleware)
   @Mutation({
     input: ZCrudDeleteRequest,
     output: ZCrudDeleteResponse,

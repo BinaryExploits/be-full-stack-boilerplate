@@ -204,6 +204,14 @@ function getFormattedTRPCError(opts: TRPCErrorOptions): FormattedError {
     return handlePrismaError(cause, opts);
   }
 
+  // Prisma tenant extension throws Error with statusCode 403 when no tenant
+  const statusCode = (cause as Error & { statusCode?: number }).statusCode;
+  if (typeof statusCode === 'number' && statusCode === 403) {
+    const result = handleGenericTRPCError(cause, 'FORBIDDEN', opts);
+    result.errorShape.data.httpStatus = 403;
+    return result;
+  }
+
   return handleGenericTRPCError(cause, error.code, opts);
 }
 

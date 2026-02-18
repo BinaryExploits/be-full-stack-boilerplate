@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PrismaModule } from '../prisma/prisma.module';
+import { TenantModule } from '../tenant/tenant.module';
 import {
   CrudMongooseEntity,
   CrudMongooseSchema,
@@ -14,6 +15,7 @@ import { CrudPrismaService } from './services/crud.prisma.service';
 @Module({
   imports: [
     PrismaModule,
+    TenantModule,
     MongooseModule.forFeature([
       { name: CrudMongooseEntity.name, schema: CrudMongooseSchema },
     ]),

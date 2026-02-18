@@ -8,6 +8,8 @@ import {
   LogLevel,
 } from "@repo/utils-core";
 import { LoggerProvider } from "@repo/ui/logger-provider";
+import { AuthClientProvider } from "./lib/auth/auth-client";
+import { AppShell } from "./components/app-shell";
 import React from "react";
 
 export const metadata: Metadata = {
@@ -24,14 +26,16 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <TrpcProvider url={process.env.NEXT_PUBLIC_TRPC_URL!}>
-          <LoggerProvider
-            logLevel={FlagExtensions.fromStringList(
-              process.env.LOG_LEVELS,
-              LogLevel,
-            )}
-          >
-            {children}
-          </LoggerProvider>
+          <AuthClientProvider>
+            <LoggerProvider
+              logLevel={FlagExtensions.fromStringList(
+                process.env.LOG_LEVELS,
+                LogLevel,
+              )}
+            >
+              <AppShell>{children}</AppShell>
+            </LoggerProvider>
+          </AuthClientProvider>
         </TrpcProvider>
       </body>
     </html>

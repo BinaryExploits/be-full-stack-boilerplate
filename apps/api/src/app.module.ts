@@ -18,6 +18,9 @@ import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { ServerConstants } from './constants/server.constants';
 import { parseNodeEnvironment } from './lib/types/environment.type';
+import { TenantModule } from './modules/tenant/tenant.module';
+import { UserProfileModule } from './modules/user-profile/user-profile.module';
+import { GlobalCrudModule } from './modules/global-crud/global-crud.module';
 
 @Module({
   imports: [
@@ -31,6 +34,8 @@ import { parseNodeEnvironment } from './lib/types/environment.type';
       errorFormatter: trpcErrorFormatter,
     }),
     PrismaModule,
+    TenantModule,
+    UserProfileModule,
     MongooseModule.forRoot(process.env.DATABASE_URL_MONGODB!),
     ClsModule.forRoot({
       global: true,
@@ -63,6 +68,7 @@ import { parseNodeEnvironment } from './lib/types/environment.type';
     }),
     LoggerModule,
     CrudModule,
+    GlobalCrudModule,
     EmailModule,
   ],
   controllers: [],

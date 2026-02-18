@@ -1,3 +1,4 @@
+import { ForbiddenException } from '@nestjs/common';
 import { IMongooseRepository } from './mongoose.repository.interface';
 import {
   InsertManyOptions,
@@ -11,6 +12,15 @@ import { BaseEntity } from '../../schemas/base.schema';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { MongooseBaseEntity } from './mongoose.base-entity';
+import type { TenantContext } from '../../modules/tenant/tenant.context';
+
+const TENANT_REQUIRED_MSG =
+  'Tenant could not be resolved from request origin; tenant-scoped data is not available.';
+
+export interface MongooseBaseRepositoryOptions {
+  /** When set, all queries and creates are scoped by tenantContext.getTenantId(); when absent, no tenant scoping. */
+  tenantContext?: TenantContext;
+}
 
 export abstract class MongooseBaseRepository<
   TDomainEntity extends BaseEntity,
@@ -18,17 +28,20 @@ export abstract class MongooseBaseRepository<
 > implements IMongooseRepository<TDomainEntity, TDbEntity> {
   protected readonly model: Model<TDbEntity>;
   protected readonly mongoTxHost: TransactionHost<TransactionalAdapterMongoose>;
+  private readonly tenantContext?: TenantContext;
 
   protected constructor(
     model: Model<TDbEntity>,
     mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
+    options?: MongooseBaseRepositoryOptions,
   ) {
     this.model = model;
     this.mongoTxHost = mongoTxHost;
+    this.tenantContext = options?.tenantContext;
   }
 
   async create(entity: Partial<TDbEntity>): Promise<TDomainEntity> {
-    const doc = new this.model(entity);
+    const doc = new this.model(this.withTenantData(entity));
     await doc.save({ session: this.mongoTxHost.tx });
     return this.toDomainEntity(doc.toObject());
   }
@@ -37,7 +50,8 @@ export abstract class MongooseBaseRepository<
     entities: Partial<TDbEntity>[],
     options?: InsertManyOptions,
   ): Promise<TDomainEntity[]> {
-    const docs = await this.model.insertMany(entities, {
+    const withTenant = entities.map((e) => this.withTenantData(e));
+    const docs = await this.model.insertMany(withTenant, {
       ...options,
       session: this.mongoTxHost.tx,
     });
@@ -50,8 +64,13 @@ export abstract class MongooseBaseRepository<
     projection?: ProjectionType<TDbEntity>,
     options?: QueryOptions<TDbEntity>,
   ): Promise<TDomainEntity[]> {
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
+
     const docs = await this.model
-      .find(filter, projection, options)
+      .find(merged, projection, options)
       .session(this.mongoTxHost.tx)
       .lean();
 
@@ -63,8 +82,13 @@ export abstract class MongooseBaseRepository<
     projection?: ProjectionType<TDbEntity>,
     options?: QueryOptions<TDbEntity>,
   ): Promise<TDomainEntity | null> {
+    const filter = {
+      ...this.tenantFilter(),
+      _id: id,
+    } as QueryFilter<TDbEntity>;
+
     const doc = await this.model
-      .findById(id, projection, options)
+      .findOne(filter, projection, options)
       .session(this.mongoTxHost.tx)
       .lean();
 
@@ -76,8 +100,13 @@ export abstract class MongooseBaseRepository<
     projection?: ProjectionType<TDbEntity>,
     options?: QueryOptions<TDbEntity>,
   ): Promise<TDomainEntity | null> {
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
+
     const doc = await this.model
-      .findOne(filter, projection, options)
+      .findOne(merged, projection, options)
       .session(this.mongoTxHost.tx)
       .lean();
 
@@ -88,15 +117,23 @@ export abstract class MongooseBaseRepository<
     id: string,
     update: UpdateQuery<TDbEntity>,
   ): Promise<boolean> {
-    return this.updateOne({ _id: id }, update);
+    return this.updateOne(
+      { _id: id, ...this.tenantFilter() } as QueryFilter<TDbEntity>,
+      update,
+    );
   }
 
   async updateOne(
     filter: QueryFilter<TDbEntity>,
     update: UpdateQuery<TDbEntity>,
   ): Promise<boolean> {
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
+
     const updateResult = await this.model
-      .updateOne(filter, update)
+      .updateOne(merged, update)
       .session(this.mongoTxHost.tx);
 
     return updateResult.modifiedCount > 0;
@@ -106,8 +143,13 @@ export abstract class MongooseBaseRepository<
     filter: QueryFilter<TDbEntity>,
     update: UpdateQuery<TDbEntity>,
   ): Promise<boolean> {
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
+
     const updateResult = await this.model
-      .updateMany(filter, update)
+      .updateMany(merged, update)
       .session(this.mongoTxHost.tx);
 
     return updateResult.modifiedCount > 0;
@@ -118,8 +160,13 @@ export abstract class MongooseBaseRepository<
     update: UpdateQuery<TDbEntity>,
     options?: QueryOptions<TDbEntity>,
   ): Promise<TDomainEntity | null> {
+    const filter = {
+      _id: id,
+      ...this.tenantFilter(),
+    } as QueryFilter<TDbEntity>;
+
     const doc = await this.model
-      .findByIdAndUpdate(id, update, { new: true, ...options })
+      .findOneAndUpdate(filter, update, { new: true, ...options })
       .session(this.mongoTxHost.tx)
       .lean();
 
@@ -131,8 +178,13 @@ export abstract class MongooseBaseRepository<
     update: UpdateQuery<TDbEntity>,
     options?: QueryOptions<TDbEntity>,
   ): Promise<TDomainEntity | null> {
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
+
     const doc = await this.model
-      .findOneAndUpdate(filter, update, { new: true, ...options })
+      .findOneAndUpdate(merged, update, { new: true, ...options })
       .session(this.mongoTxHost.tx)
       .lean();
 
@@ -140,28 +192,46 @@ export abstract class MongooseBaseRepository<
   }
 
   async deleteOneById(id: string): Promise<boolean> {
-    return this.deleteOne({ _id: id });
+    return this.deleteOne({
+      _id: id,
+      ...this.tenantFilter(),
+    } as QueryFilter<TDbEntity>);
   }
 
   async deleteOne(filter: QueryFilter<TDbEntity>): Promise<boolean> {
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
+
     const deleteResult = await this.model
-      .deleteOne(filter)
+      .deleteOne(merged)
       .session(this.mongoTxHost.tx);
 
     return deleteResult.deletedCount > 0;
   }
 
   async deleteMany(filter: QueryFilter<TDbEntity>): Promise<boolean> {
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
+
     const deleteResult = await this.model
-      .deleteMany(filter)
+      .deleteMany(merged)
       .session(this.mongoTxHost.tx);
 
     return deleteResult.deletedCount > 0;
   }
 
   async findByIdAndDelete(id: string): Promise<TDomainEntity | null> {
+    const filter = {
+      _id: id,
+      ...this.tenantFilter(),
+    } as QueryFilter<TDbEntity>;
+
     const deletedDoc = await this.model
-      .findByIdAndDelete(id)
+      .findOneAndDelete(filter)
       .session(this.mongoTxHost.tx)
       .lean();
 
@@ -171,8 +241,13 @@ export abstract class MongooseBaseRepository<
   async findOneAndDelete(
     filter: QueryFilter<TDbEntity>,
   ): Promise<TDomainEntity | null> {
+    const merged = {
+      ...this.tenantFilter(),
+      ...filter,
+    } as QueryFilter<TDbEntity>;
+
     const deletedDoc = await this.model
-      .findOneAndDelete(filter)
+      .findOneAndDelete(merged)
       .session(this.mongoTxHost.tx)
       .lean();
 
@@ -180,4 +255,19 @@ export abstract class MongooseBaseRepository<
   }
 
   protected abstract toDomainEntity(tDbEntity: TDbEntity): TDomainEntity;
+
+  /** Merge tenant filter when tenantContext is set; when no context, no scoping. */
+  private tenantFilter(): Record<string, unknown> {
+    if (this.tenantContext == null) return {};
+    const tenantId = this.tenantContext.getTenantId();
+    if (tenantId == null) throw new ForbiddenException(TENANT_REQUIRED_MSG);
+    return { tenantId };
+  }
+
+  private withTenantData(data: Partial<TDbEntity>): Partial<TDbEntity> {
+    if (this.tenantContext == null) return data;
+    const tenantId = this.tenantContext.getTenantId();
+    if (tenantId == null) throw new ForbiddenException(TENANT_REQUIRED_MSG);
+    return { ...data, tenantId } as Partial<TDbEntity>;
+  }
 }

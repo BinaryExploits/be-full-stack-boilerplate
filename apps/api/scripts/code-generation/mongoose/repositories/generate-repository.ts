@@ -4,6 +4,8 @@ import { NamingUtil } from '../../utils/naming.util';
 
 interface GeneratorConfig {
   entityName: string;
+  /** If true (default), generates tenant-scoped repository with TenantContext. Use false for global entities. */
+  tenantScoped?: boolean;
 }
 
 export class RepositoryGenerator {
@@ -12,11 +14,13 @@ export class RepositoryGenerator {
   private readonly entityNameCamel: string;
   private readonly outputDir: string;
   private readonly templatesDir: string;
+  private readonly tenantScoped: boolean;
 
   constructor(config: GeneratorConfig) {
     this.entityNameKebab = NamingUtil.toKebabCase(config.entityName);
     this.entityNamePascal = NamingUtil.toPascalCase(config.entityName);
     this.entityNameCamel = NamingUtil.toCamelCase(config.entityName);
+    this.tenantScoped = config.tenantScoped !== false;
 
     this.outputDir = path.join(
       __dirname,
@@ -36,7 +40,7 @@ export class RepositoryGenerator {
     this.generateRepository();
 
     console.log(
-      `✅ Generated repository for ${this.entityNamePascal} in ${this.outputDir}`,
+      `✅ Generated ${this.tenantScoped ? 'tenant-scoped ' : ''}repository for ${this.entityNamePascal} in ${this.outputDir}`,
     );
   }
 
@@ -50,7 +54,10 @@ export class RepositoryGenerator {
   }
 
   private generateRepository(): void {
-    const content = this.loadTemplate('repository.template.txt');
+    const templateName = this.tenantScoped
+      ? 'repository.template.txt'
+      : 'repository.global.template.txt';
+    const content = this.loadTemplate(templateName);
     const filePath = path.join(
       this.outputDir,
       `${this.entityNameKebab}.mongoose-repository.ts`,
@@ -82,17 +89,24 @@ export class RepositoryGenerator {
 if (require.main === module) {
   const args = process.argv.slice(2);
   const entityName = args[0];
+  const tenantScoped =
+    !args.includes('--no-tenant') && !args.includes('--global');
 
   if (!entityName) {
-    console.error('❌ Usage: pnpm run generate:repo:mongo <entityName>');
+    console.error(
+      '❌ Usage: pnpm run generate:repo:mongo <entityName> [--no-tenant]',
+    );
     console.error('   Example: pnpm run generate:repo:mongo crud');
-    console.error('   Example: pnpm run generate:repo:mongo data-provider');
-    console.error('   Example: pnpm run generate:repo:mongo company-data-set');
+    console.error('   Example: pnpm run generate:repo:mongo post');
+    console.error(
+      '   Example: pnpm run generate:repo:mongo global-crud --no-tenant',
+    );
     process.exit(1);
   }
 
   const generator = new RepositoryGenerator({
     entityName,
+    tenantScoped,
   });
 
   generator.generate();
