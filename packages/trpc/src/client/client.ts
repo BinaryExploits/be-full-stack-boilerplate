@@ -34,10 +34,10 @@ export const createTrpcClient = (
               headers.set("Cookie", cookies);
             }
           }
-          if (typeof window !== "undefined" && window.location?.origin) {
-            headers.set(TENANT_ORIGIN_HEADER, window.location.origin);
-          } else if (serverOrigin) {
-            headers.set(TENANT_ORIGIN_HEADER, serverOrigin);
+          const pageOrigin =
+            globalThis.window?.location?.origin ?? serverOrigin;
+          if (pageOrigin) {
+            headers.set(TENANT_ORIGIN_HEADER, pageOrigin);
           }
           return Object.fromEntries(headers);
         },
