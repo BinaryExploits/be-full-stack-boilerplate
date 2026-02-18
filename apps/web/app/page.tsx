@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { TenantDashboardOnly } from "./components/tenant-dashboard-only";
+import { TenantAdminOnly } from "./components/tenant-admin-only";
 
 export default function Home() {
   return (
@@ -128,11 +129,12 @@ export default function Home() {
                     </svg>
                   </div>
                   <h2 className="text-2xl font-bold text-white">
-                    Tenant Dashboard
+                    Platform Tenants
                   </h2>
                 </div>
                 <p className="text-slate-400 mb-6">
-                  View, add, edit, and remove tenants. Super-admin only.
+                  Create, edit, and remove tenants across the platform.
+                  Super-admin only.
                 </p>
                 <div className="flex items-center text-amber-400 font-medium group-hover:gap-3 gap-2 transition-all">
                   <span>Manage tenants</span>
@@ -153,6 +155,52 @@ export default function Home() {
               </div>
             </Link>
           </TenantDashboardOnly>
+
+          <TenantAdminOnly>
+            <Link href="/tenant-members">
+              <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-cyan-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-1">
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-14 h-14 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <svg
+                      className="w-8 h-8 text-white"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
+                      />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-white">
+                    Manage Members
+                  </h2>
+                </div>
+                <p className="text-slate-400 mb-6">
+                  Add or remove members from tenants you administer.
+                </p>
+                <div className="flex items-center text-cyan-400 font-medium group-hover:gap-3 gap-2 transition-all">
+                  <span>Manage members</span>
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 5l7 7-7 7"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </Link>
+          </TenantAdminOnly>
 
           <Link href="/auth-demo">
             <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-green-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-green-500/20 hover:-translate-y-1">
