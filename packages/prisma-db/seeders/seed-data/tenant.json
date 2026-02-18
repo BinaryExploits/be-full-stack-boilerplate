@@ -2,18 +2,9 @@
   {
     "slug": "localhost",
     "name": "Localhost",
-    "allowedOrigins": []
   },
   {
     "slug": "binaryexports",
     "name": "Binary Exports"
-  },
-  {
-    "slug": "binaryexperiments",
-    "name": "Binary Experiments"
-  },
-  {
-    "slug": "binaryexploits",
-    "name": "Binary Exploits"
   }
 ]
