@@ -10,7 +10,6 @@ import { {{ENTITY_NAME_PASCAL}}MongooseEntity } from './{{ENTITY_NAME_KEBAB}}.mo
 import { {{ENTITY_NAME_PASCAL}} } from '../../schemas/{{ENTITY_NAME_KEBAB}}.schema';
 import { ServerConstants } from '../../../../constants/server.constants';
 import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
-import { TenantContext } from '../../../tenant/tenant.context';
 
 @Injectable()
 export class {{ENTITY_NAME_PASCAL}}MongooseRepository extends MongooseBaseRepository<
@@ -22,9 +21,8 @@ export class {{ENTITY_NAME_PASCAL}}MongooseRepository extends MongooseBaseReposi
     {{ENTITY_NAME_CAMEL}}Model: Model<{{ENTITY_NAME_PASCAL}}MongooseEntity>,
     @InjectTransactionHost(ServerConstants.TransactionConnectionNames.Mongoose)
     mongoTxHost: TransactionHost<TransactionalAdapterMongoose>,
-    tenantContext: TenantContext,
   ) {
-    super({{ENTITY_NAME_CAMEL}}Model, mongoTxHost, { tenantContext });
+    super({{ENTITY_NAME_CAMEL}}Model, mongoTxHost);
   }
 
   protected toDomainEntity({{ENTITY_NAME_CAMEL}}Entity: {{ENTITY_NAME_PASCAL}}MongooseEntity): {{ENTITY_NAME_PASCAL}} {

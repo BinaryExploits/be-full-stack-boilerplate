@@ -7,12 +7,29 @@ import { Prisma } from '@repo/prisma-db';
 import { I{{ENTITY_NAME_PASCAL}}PrismaRepository } from './{{ENTITY_NAME_KEBAB}}.prisma-repository.interface';
 import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
 import { ServerConstants } from '../../../../constants/server.constants';
+import { TenantContext } from '../../../tenant/tenant.context';
+import { requireTenantId } from '../../../../lib/require-tenant';
+
+function mergeWhere<T extends { where?: Prisma.{{ENTITY_NAME_PASCAL}}WhereInput } | undefined>(
+  args: T,
+  tenantId: string,
+): T {
+  const baseWhere: Prisma.{{ENTITY_NAME_PASCAL}}WhereInput = { tenantId };
+  if (args == null) {
+    return { where: baseWhere } as T;
+  }
+  return {
+    ...args,
+    where: { ...args.where, tenantId } as Prisma.{{ENTITY_NAME_PASCAL}}WhereInput,
+  } as T;
+}
 
 @Injectable()
 export class {{ENTITY_NAME_PASCAL}}PrismaRepository implements I{{ENTITY_NAME_PASCAL}}PrismaRepository {
   constructor(
     @InjectTransactionHost(ServerConstants.TransactionConnectionNames.Prisma)
     protected readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
+    private readonly tenantContext: TenantContext,
   ) {}
 
   protected get delegate(): Prisma.{{ENTITY_NAME_PASCAL}}Delegate {
@@ -22,64 +39,95 @@ export class {{ENTITY_NAME_PASCAL}}PrismaRepository implements I{{ENTITY_NAME_PA
   create(
     args: Prisma.{{ENTITY_NAME_PASCAL}}CreateArgs,
   ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}CreateArgs>> {
-    return this.delegate.create(args);
+    const tenantId = requireTenantId(this.tenantContext.getTenantId());
+    const data = {
+      ...args.data,
+      tenantId,
+    } as unknown as Prisma.{{ENTITY_NAME_PASCAL}}CreateInput;
+    return this.delegate.create({ ...args, data });
   }
 
   createMany(args: Prisma.{{ENTITY_NAME_PASCAL}}CreateManyArgs): Promise<Prisma.BatchPayload> {
-    return this.delegate.createMany(args);
+    const tenantId = requireTenantId(this.tenantContext.getTenantId());
+    const data = Array.isArray(args.data)
+      ? args.data.map((row) => ({ ...row, tenantId }))
+      : { ...args.data, tenantId };
+    return this.delegate.createMany({
+      ...args,
+      data,
+    } as Prisma.{{ENTITY_NAME_PASCAL}}CreateManyArgs);
   }
 
   findFirst(
     args?: Prisma.{{ENTITY_NAME_PASCAL}}FindFirstArgs,
   ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}FindFirstArgs> | null> {
-    return this.delegate.findFirst(args);
+    const tenantId = requireTenantId(this.tenantContext.getTenantId());
+    return this.delegate.findFirst(mergeWhere(args, tenantId));
   }
 
   findUnique(
     args: Prisma.{{ENTITY_NAME_PASCAL}}FindUniqueArgs,
   ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}FindUniqueArgs> | null> {
-    return this.delegate.findUnique(args);
+    const tenantId = requireTenantId(this.tenantContext.getTenantId());
+    return this.delegate.findUnique(mergeWhere(args, tenantId));
   }
 
   findMany(
     args?: Prisma.{{ENTITY_NAME_PASCAL}}FindManyArgs,
   ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}FindManyArgs>[]> {
-    return this.delegate.findMany(args);
+    const tenantId = requireTenantId(this.tenantContext.getTenantId());
+    return this.delegate.findMany(mergeWhere(args, tenantId));
   }
 
   update(
     args: Prisma.{{ENTITY_NAME_PASCAL}}UpdateArgs,
   ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}UpdateArgs>> {
-    return this.delegate.update(args);
+    const tenantId = requireTenantId(this.tenantContext.getTenantId());
+    return this.delegate.update(mergeWhere(args, tenantId));
   }
 
   updateMany(args: Prisma.{{ENTITY_NAME_PASCAL}}UpdateManyArgs): Promise<Prisma.BatchPayload> {
-    return this.delegate.updateMany(args);
+    const tenantId = requireTenantId(this.tenantContext.getTenantId());
+    return this.delegate.updateMany(mergeWhere(args, tenantId));
   }
 
   upsert(
     args: Prisma.{{ENTITY_NAME_PASCAL}}UpsertArgs,
   ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}UpsertArgs>> {
-    return this.delegate.upsert(args);
+    const tenantId = requireTenantId(this.tenantContext.getTenantId());
+    const where = { ...args.where, tenantId } as Prisma.{{ENTITY_NAME_PASCAL}}WhereUniqueInput;
+    const create = {
+      ...args.create,
+      tenantId,
+    } as unknown as Prisma.{{ENTITY_NAME_PASCAL}}CreateInput;
+    const update = {
+      ...args.update,
+      tenantId,
+    } as unknown as Prisma.{{ENTITY_NAME_PASCAL}}UpdateInput;
+    return this.delegate.upsert({ ...args, where, create, update });
   }
 
   delete(
     args: Prisma.{{ENTITY_NAME_PASCAL}}DeleteArgs,
   ): Promise<Prisma.{{ENTITY_NAME_PASCAL}}GetPayload<Prisma.{{ENTITY_NAME_PASCAL}}DeleteArgs>> {
-    return this.delegate.delete(args);
+    const tenantId = requireTenantId(this.tenantContext.getTenantId());
+    return this.delegate.delete(mergeWhere(args, tenantId));
   }
 
   deleteMany(args?: Prisma.{{ENTITY_NAME_PASCAL}}DeleteManyArgs): Promise<Prisma.BatchPayload> {
-    return this.delegate.deleteMany(args);
+    const tenantId = requireTenantId(this.tenantContext.getTenantId());
+    return this.delegate.deleteMany(mergeWhere(args, tenantId));
   }
 
   count(args?: Prisma.{{ENTITY_NAME_PASCAL}}CountArgs): Promise<number> {
-    return this.delegate.count(args);
+    const tenantId = requireTenantId(this.tenantContext.getTenantId());
+    return this.delegate.count(mergeWhere(args, tenantId));
   }
 
   aggregate(
     args: Prisma.{{ENTITY_NAME_PASCAL}}AggregateArgs,
   ): Promise<Prisma.Get{{ENTITY_NAME_PASCAL}}AggregateType<Prisma.{{ENTITY_NAME_PASCAL}}AggregateArgs>> {
-    return this.delegate.aggregate(args);
+    const tenantId = requireTenantId(this.tenantContext.getTenantId());
+    return this.delegate.aggregate(mergeWhere(args, tenantId));
   }
 }
