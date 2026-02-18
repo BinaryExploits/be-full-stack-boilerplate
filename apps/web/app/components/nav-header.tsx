@@ -40,7 +40,12 @@ export function NavHeader() {
 
   const myTenantsData = myTenantsQuery.data as
     | {
-        tenants?: Array<{ id: string; name: string; slug: string; role: string }>;
+        tenants?: Array<{
+          id: string;
+          name: string;
+          slug: string;
+          role: string;
+        }>;
         singleTenantMode?: boolean;
       }
     | undefined;

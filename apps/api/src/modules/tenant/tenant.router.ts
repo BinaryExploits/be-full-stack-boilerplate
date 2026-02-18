@@ -101,8 +101,7 @@ export class TenantRouter {
     const profile = await this.userProfileService.ensureProfile(userId);
 
     const allTenants = await this.tenantService.findAll();
-    const singleTenantMode =
-      allTenants.length === 1 && allTenants[0]!.isDefault;
+    const singleTenantMode = allTenants.length === 1 && allTenants[0].isDefault;
 
     if (isSuperAdminEmail(email)) {
       return {
@@ -121,7 +120,12 @@ export class TenantRouter {
     const memberships = await this.membershipService.getTenantsForEmail(email);
     const memberTenantIds = new Set(memberships.map((m) => m.tenant.id));
 
-    type TenantEntry = { id: string; name: string; slug: string; role: 'TENANT_ADMIN' | 'TENANT_USER' };
+    type TenantEntry = {
+      id: string;
+      name: string;
+      slug: string;
+      role: 'TENANT_ADMIN' | 'TENANT_USER';
+    };
     const tenants: TenantEntry[] = memberships.map((m) => ({
       id: m.tenant.id,
       name: m.tenant.name,

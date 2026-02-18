@@ -71,11 +71,8 @@ export default function TenantMembers() {
   )?.isSuperAdmin;
 
   const allTenants: TenantInfo[] =
-    (
-      myTenantsQuery.data as
-        | { tenants?: TenantInfo[] }
-        | undefined
-    )?.tenants ?? [];
+    (myTenantsQuery.data as { tenants?: TenantInfo[] } | undefined)?.tenants ??
+    [];
 
   const adminTenants = isSuperAdmin
     ? allTenants
@@ -275,8 +272,7 @@ export default function TenantMembers() {
                 ) : (
                   <ul className="space-y-2">
                     {members.map((m) => {
-                      const isSelf =
-                        m.email.toLowerCase() === currentUserEmail;
+                      const isSelf = m.email.toLowerCase() === currentUserEmail;
                       return (
                         <li
                           key={m.id}

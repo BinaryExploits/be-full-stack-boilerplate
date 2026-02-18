@@ -7,11 +7,7 @@ import { useAuthClient } from "../lib/auth/auth-client";
  * Renders children only when the current user is a tenant admin for at least
  * one tenant (or is a super admin) AND the app is NOT in single-tenant mode.
  */
-export function TenantAdminOnly({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export function TenantAdminOnly({ children }: { children: React.ReactNode }) {
   const authClient = useAuthClient();
   const sessionResult = authClient?.useSession?.();
   const session = sessionResult?.data;

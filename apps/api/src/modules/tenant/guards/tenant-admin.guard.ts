@@ -55,7 +55,7 @@ export class TenantAdminGuard implements TRPCMiddleware {
       tenantId,
     );
 
-    if (!membership || membership.role !== 'TENANT_ADMIN') {
+    if (membership?.role !== 'TENANT_ADMIN') {
       throw new TRPCError({
         code: 'FORBIDDEN',
         message: 'Tenant admin access required for this tenant',
