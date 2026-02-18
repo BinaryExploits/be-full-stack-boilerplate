@@ -1,25 +1,33 @@
-/* eslint-disable custom/require-transactional */
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service';
 import type { UserProfile } from '@repo/prisma-db';
+import { UserProfilePrismaRepository } from './repositories/prisma/user-profile.prisma-repository';
+import { AutoTransaction } from '../../decorators/class/auto-transaction.decorator';
+import { ServerConstants } from '../../constants/server.constants';
+import { Propagation } from '@nestjs-cls/transactional';
 
 @Injectable()
+@AutoTransaction(
+  ServerConstants.TransactionConnectionNames.Prisma,
+  Propagation.Required,
+)
 export class UserProfileService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly profileRepository: UserProfilePrismaRepository,
+  ) {}
 
   async ensureProfile(userId: string): Promise<UserProfile> {
-    const existing = await this.prisma.userProfile.findUnique({
+    const existing = await this.profileRepository.findUnique({
       where: { userId },
     });
     if (existing) return existing;
 
-    return this.prisma.userProfile.create({
-      data: { userId },
+    return this.profileRepository.create({
+      data: { user: { connect: { id: userId } } },
     });
   }
 
   async getProfile(userId: string): Promise<UserProfile | null> {
-    return this.prisma.userProfile.findUnique({ where: { userId } });
+    return this.profileRepository.findUnique({ where: { userId } });
   }
 
   /**
@@ -30,10 +38,13 @@ export class UserProfileService {
     userId: string,
     tenantId: string | null,
   ): Promise<UserProfile> {
-    return this.prisma.userProfile.upsert({
+    return this.profileRepository.upsert({
       where: { userId },
       update: { selectedTenantId: tenantId },
-      create: { userId, selectedTenantId: tenantId },
+      create: {
+        user: { connect: { id: userId } },
+        ...(tenantId ? { selectedTenant: { connect: { id: tenantId } } } : {}),
+      },
     });
   }
 }

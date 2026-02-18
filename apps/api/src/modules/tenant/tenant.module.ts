@@ -11,6 +11,7 @@ import { TenantMembershipService } from './tenant-membership.service';
 import { TenantRouter } from './tenant.router';
 import { TenantService } from './tenant.service';
 import { TenantPrismaRepository } from './repositories/prisma/tenant.prisma-repository';
+import { TenantMembershipPrismaRepository } from './repositories/prisma/tenant-membership.prisma-repository';
 
 @Module({
   imports: [PrismaModule, AuthModule, UserProfileModule],
@@ -24,6 +25,7 @@ import { TenantPrismaRepository } from './repositories/prisma/tenant.prisma-repo
     TenantAdminGuard,
     TenantRouter,
     TenantPrismaRepository,
+    TenantMembershipPrismaRepository,
   ],
   exports: [
     TenantContext,
@@ -32,6 +34,7 @@ import { TenantPrismaRepository } from './repositories/prisma/tenant.prisma-repo
     TenantResolutionMiddleware,
     TenantMembershipService,
     TenantPrismaRepository,
+    TenantMembershipPrismaRepository,
   ],
 })
 export class TenantModule {}

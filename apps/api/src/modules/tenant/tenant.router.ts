@@ -52,6 +52,7 @@ import {
   TRemoveMemberResponse,
   TListMembersRequest,
   TListMembersResponse,
+  TTenantRoleValue,
 } from './tenant.schema';
 import { TRPCError } from '@trpc/server';
 import type { TenantRole } from '@repo/prisma-db';
@@ -124,13 +125,13 @@ export class TenantRouter {
       id: string;
       name: string;
       slug: string;
-      role: 'TENANT_ADMIN' | 'TENANT_USER';
+      role: TTenantRoleValue;
     };
     const tenants: TenantEntry[] = memberships.map((m) => ({
       id: m.tenant.id,
       name: m.tenant.name,
       slug: m.tenant.slug,
-      role: m.role as 'TENANT_ADMIN' | 'TENANT_USER',
+      role: m.role as TTenantRoleValue,
     }));
 
     // Add default tenants the user doesn't already have explicit membership in
@@ -274,7 +275,7 @@ export class TenantRouter {
       id: membership.id,
       email: membership.email,
       tenantId: membership.tenantId,
-      role: membership.role as 'TENANT_ADMIN' | 'TENANT_USER',
+      role: membership.role as TTenantRoleValue,
     };
   }
 
@@ -305,7 +306,7 @@ export class TenantRouter {
         id: m.id,
         email: m.email,
         tenantId: m.tenantId,
-        role: m.role as 'TENANT_ADMIN' | 'TENANT_USER',
+        role: m.role as TTenantRoleValue,
       })),
     };
   }

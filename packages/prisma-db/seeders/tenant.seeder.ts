@@ -18,8 +18,6 @@ export class TenantSeeder extends PrismaSeeder<TenantSeedRecord> {
       const t = this.records[i];
       if (!t.slug?.trim()) errors.push(`Tenant at index ${i}: slug required`);
       if (!t.name?.trim()) errors.push(`Tenant at index ${i}: name required`);
-      if (!Array.isArray(t.allowedOrigins))
-        errors.push(`Tenant at index ${i}: allowedOrigins must be array`);
     }
     if (errors.length === 0) {
       SeedLogger.success(
@@ -37,12 +35,12 @@ export class TenantSeeder extends PrismaSeeder<TenantSeedRecord> {
         create: {
           name: record.name,
           slug: record.slug,
-          allowedOrigins: record.allowedOrigins,
+          allowedOrigins: record.allowedOrigins ?? [],
           isDefault: record.isDefault ?? false,
         },
         update: {
           name: record.name,
-          allowedOrigins: record.allowedOrigins,
+          allowedOrigins: record.allowedOrigins ?? [],
           isDefault: record.isDefault ?? false,
         },
       });
