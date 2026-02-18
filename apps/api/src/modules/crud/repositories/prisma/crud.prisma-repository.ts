@@ -8,10 +8,6 @@ import { ICrudPrismaRepository } from './crud.prisma-repository.interface';
 import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
 import { ServerConstants } from '../../../../constants/server.constants';
 
-/**
- * Crud repository using the tenant-scoped Prisma client (via prisma-tenant extension).
- * All Crud operations are automatically scoped to the current tenant; no manual merge.
- */
 @Injectable()
 export class CrudPrismaRepository implements ICrudPrismaRepository {
   constructor(
