@@ -6,12 +6,79 @@ const publicProcedure = t.procedure;
 
 const appRouter = t.router({
   tenant: t.router({
-    isSuperAdmin: publicProcedure.output(TenantSchema).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    create: publicProcedure.input(TenantSchema).output(TenantSchema).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    findAll: publicProcedure.output(TenantSchema).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    findOne: publicProcedure.input(TenantSchema).output(TenantSchema).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    update: publicProcedure.input(TenantSchema).output(TenantSchema).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
-    delete: publicProcedure.input(TenantSchema).output(TenantSchema).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
+    isSuperAdmin: publicProcedure.output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      isSuperAdmin: z.boolean(),
+    })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    create: publicProcedure.input(z.object({}).extend({
+      name: z.string().min(1).max(255),
+      slug: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-]+$/),
+      allowedOrigins: z.array(z.string().min(1)).min(0),
+    })).output(z.object({
+      id: z.string(),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+    }).extend({
+      name: z.string(),
+      slug: z.string(),
+      allowedOrigins: z.array(z.string()),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    findAll: publicProcedure.output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      tenants: z.array(z.object({
+        id: z.string(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      }).extend({
+        name: z.string(),
+        slug: z.string(),
+        allowedOrigins: z.array(z.string()),
+      })),
+    })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    findOne: publicProcedure.input(z.object({}).extend({
+      id: z.string(),
+    })).output(z.object({
+      id: z.string(),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+    }).extend({
+      name: z.string(),
+      slug: z.string(),
+      allowedOrigins: z.array(z.string()),
+    }).nullable()).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    update: publicProcedure.input(z.object({}).extend({
+      id: z.string(),
+      name: z.string().min(1).max(255).optional(),
+      slug: z
+        .string()
+        .min(1)
+        .max(100)
+        .regex(/^[a-z0-9-]+$/)
+        .optional(),
+      allowedOrigins: z.array(z.string().min(1)).optional(),
+    })).output(z.object({
+      id: z.string(),
+      createdAt: z.date(),
+      updatedAt: z.date(),
+    }).extend({
+      name: z.string(),
+      slug: z.string(),
+      allowedOrigins: z.array(z.string()),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    delete: publicProcedure.input(z.object({}).extend({
+      id: z.string(),
+    })).output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
   }),
   crud: t.router({
     createCrudMongo: publicProcedure.input(z.object({}).extend({

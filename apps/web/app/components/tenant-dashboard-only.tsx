@@ -16,10 +16,12 @@ export function TenantDashboardOnly({
   const sessionResult = authClient?.useSession?.();
   const session = sessionResult?.data;
 
-  const { data } = trpc.tenant.isSuperAdmin.useQuery(undefined, {
+  const query = trpc.tenant.isSuperAdmin.useQuery(undefined, {
     enabled: !!session?.user,
   });
+  const isSuperAdmin = (query.data as { isSuperAdmin?: boolean } | undefined)
+    ?.isSuperAdmin;
 
-  if (!data?.isSuperAdmin) return null;
+  if (!isSuperAdmin) return null;
   return <>{children}</>;
 }

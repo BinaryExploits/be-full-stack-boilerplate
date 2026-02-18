@@ -7,11 +7,31 @@ import {
   UseMiddlewares,
 } from 'nestjs-trpc';
 import { AuthMiddleware } from '../auth/auth.middleware';
-import { SuperAdminGuard } from './guards/super-admin.guard';
+import { SuperAdminGuard, isSuperAdminEmail } from './guards/super-admin.guard';
 import { TenantService } from './tenant.service';
-import { isSuperAdminEmail } from './guards/super-admin.guard';
 import { AppContextType } from '../../app.context';
-import * as TenantSchema from './tenant.schema';
+import {
+  ZTenantMetaIsSuperAdminResponse,
+  ZTenantCreateRequest,
+  ZTenantCreateResponse,
+  ZTenantFindAllResponse,
+  ZTenantFindOneRequest,
+  ZTenantUpdateRequest,
+  ZTenantUpdateResponse,
+  ZTenantFindOneResponse,
+  ZTenantDeleteRequest,
+  ZTenantDeleteResponse,
+  TTenantMetaIsSuperAdminResponse,
+  TTenantCreateRequest,
+  TTenantCreateResponse,
+  TTenantFindAllResponse,
+  TTenantFindOneRequest,
+  TTenantFindOneResponse,
+  TTenantUpdateRequest,
+  TTenantUpdateResponse,
+  TTenantDeleteRequest,
+  TTenantDeleteResponse,
+} from './tenant.schema';
 
 @Router({ alias: 'tenant' })
 @UseMiddlewares(AuthMiddleware)
@@ -19,11 +39,11 @@ export class TenantRouter {
   constructor(private readonly tenantService: TenantService) {}
 
   @Query({
-    output: TenantSchema.ZTenantMetaIsSuperAdminResponse,
+    output: ZTenantMetaIsSuperAdminResponse,
   })
   isSuperAdmin(
     @Ctx() ctx: AppContextType,
-  ): Promise<TenantSchema.TTenantMetaIsSuperAdminResponse> {
+  ): Promise<TTenantMetaIsSuperAdminResponse> {
     return Promise.resolve({
       success: true,
       isSuperAdmin: isSuperAdminEmail(ctx.user?.email),
@@ -32,55 +52,55 @@ export class TenantRouter {
 
   @UseMiddlewares(SuperAdminGuard)
   @Mutation({
-    input: TenantSchema.ZTenantCreateRequest,
-    output: TenantSchema.ZTenantCreateResponse,
+    input: ZTenantCreateRequest,
+    output: ZTenantCreateResponse,
   })
   async create(
-    @Input() req: TenantSchema.TTenantCreateRequest,
-  ): Promise<TenantSchema.TTenantCreateResponse> {
+    @Input() req: TTenantCreateRequest,
+  ): Promise<TTenantCreateResponse> {
     return this.tenantService.create(req);
   }
 
   @UseMiddlewares(SuperAdminGuard)
   @Query({
-    output: TenantSchema.ZTenantFindAllResponse,
+    output: ZTenantFindAllResponse,
   })
-  async findAll(): Promise<TenantSchema.TTenantFindAllResponse> {
+  async findAll(): Promise<TTenantFindAllResponse> {
     const tenants = await this.tenantService.findAll();
     return { success: true, tenants };
   }
 
   @UseMiddlewares(SuperAdminGuard)
   @Query({
-    input: TenantSchema.ZTenantFindOneRequest,
-    output: TenantSchema.ZTenantFindOneResponse,
+    input: ZTenantFindOneRequest,
+    output: ZTenantFindOneResponse,
   })
   async findOne(
-    @Input() req: TenantSchema.TTenantFindOneRequest,
-  ): Promise<TenantSchema.TTenantFindOneResponse> {
+    @Input() req: TTenantFindOneRequest,
+  ): Promise<TTenantFindOneResponse> {
     return this.tenantService.findOne(req.id);
   }
 
   @UseMiddlewares(SuperAdminGuard)
   @Mutation({
-    input: TenantSchema.ZTenantUpdateRequest,
-    output: TenantSchema.ZTenantUpdateResponse,
+    input: ZTenantUpdateRequest,
+    output: ZTenantUpdateResponse,
   })
   async update(
-    @Input() req: TenantSchema.TTenantUpdateRequest,
-  ): Promise<TenantSchema.TTenantUpdateResponse> {
+    @Input() req: TTenantUpdateRequest,
+  ): Promise<TTenantUpdateResponse> {
     const { id, ...data } = req;
     return this.tenantService.update(id, data);
   }
 
   @UseMiddlewares(SuperAdminGuard)
   @Mutation({
-    input: TenantSchema.ZTenantDeleteRequest,
-    output: TenantSchema.ZTenantDeleteResponse,
+    input: ZTenantDeleteRequest,
+    output: ZTenantDeleteResponse,
   })
   async delete(
-    @Input() req: TenantSchema.TTenantDeleteRequest,
-  ): Promise<TenantSchema.TTenantDeleteResponse> {
+    @Input() req: TTenantDeleteRequest,
+  ): Promise<TTenantDeleteResponse> {
     await this.tenantService.delete(req.id);
     return { success: true };
   }
