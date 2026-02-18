@@ -14,17 +14,50 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// Multi-tenant: resolve by allowedOrigins (parent-domain fallback in app logic)
+enum TenantRole {
+  TENANT_ADMIN
+  TENANT_USER
+}
+
 model Tenant {
   id             String   @id @default(uuid())
   name           String   @db.VarChar(255)
   slug           String   @unique @db.VarChar(100)
-  allowedOrigins String[] // e.g. ["abc.company.com", "https://abc.company.com"]
+  allowedOrigins String[]
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   crud           Crud[]
 
+  memberships        TenantMembership[]
+  selectedByProfiles UserProfile[]      @relation("selectedTenant")
+
   @@map("tenant")
+}
+
+model UserProfile {
+  id               String   @id @default(uuid())
+  userId           String   @unique
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  selectedTenantId String?
+  selectedTenant   Tenant?  @relation("selectedTenant", fields: [selectedTenantId], references: [id], onDelete: SetNull)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("user_profile")
+}
+
+model TenantMembership {
+  id        String     @id @default(uuid())
+  email     String
+  tenantId  String
+  tenant    Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  role      TenantRole
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@unique([email, tenantId])
+  @@index([email])
+  @@map("tenant_membership")
 }
 
 model Crud {
@@ -50,15 +83,16 @@ model GlobalCrud {
 }
 
 model User {
-  id            String    @id
+  id            String       @id
   name          String
   email         String
-  emailVerified Boolean   @default(false)
+  emailVerified Boolean      @default(false)
   image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @default(now()) @updatedAt
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @default(now()) @updatedAt
   sessions      Session[]
   accounts      Account[]
+  userProfile   UserProfile?
 
   @@unique([email])
   @@map("user")

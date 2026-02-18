@@ -12,6 +12,28 @@ const appRouter = t.router({
     }).extend({
       isSuperAdmin: z.boolean(),
     })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    myTenants: publicProcedure.output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      tenants: z.array(
+        z.object({
+          id: z.string(),
+          name: z.string(),
+          slug: z.string(),
+          role: z.enum(['TENANT_ADMIN', 'TENANT_USER']),
+        }),
+      ),
+      selectedTenantId: z.string().nullable(),
+    })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    switchTenant: publicProcedure.input(z.object({}).extend({
+      tenantId: z.string(),
+    })).output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      selectedTenantId: z.string(),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     create: publicProcedure.input(z.object({}).extend({
       name: z.string().min(1).max(255),
       slug: z
@@ -78,7 +100,42 @@ const appRouter = t.router({
     })).output(z.object({
       success: z.boolean(),
       message: z.string().optional(),
-    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    addMember: publicProcedure.input(z.object({}).extend({
+      email: z.string().email(),
+      tenantId: z.string(),
+      role: z.enum(['TENANT_ADMIN', 'TENANT_USER']),
+    })).output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      id: z.string(),
+      email: z.string(),
+      tenantId: z.string(),
+      role: z.enum(['TENANT_ADMIN', 'TENANT_USER']),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    removeMember: publicProcedure.input(z.object({}).extend({
+      email: z.string().email(),
+      tenantId: z.string(),
+    })).output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    listMembers: publicProcedure.input(z.object({}).extend({
+      tenantId: z.string(),
+    })).output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      members: z.array(
+        z.object({
+          id: z.string(),
+          email: z.string(),
+          tenantId: z.string(),
+          role: z.enum(['TENANT_ADMIN', 'TENANT_USER']),
+        }),
+      ),
+    })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
   }),
   crud: t.router({
     createCrudMongo: publicProcedure.input(z.object({}).extend({

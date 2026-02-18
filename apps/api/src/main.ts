@@ -67,7 +67,7 @@ function bootstrap(app: INestApplication) {
     },
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
-    allowedHeaders: 'Content-Type, Accept, Authorization, x-tenant-origin',
+    allowedHeaders: 'Content-Type, Accept, Authorization',
     maxAge: 3600,
   });
 }

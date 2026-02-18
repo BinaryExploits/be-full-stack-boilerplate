@@ -3,7 +3,10 @@
 import { Logger } from "@repo/utils-core";
 import Link from "next/link";
 import { useState } from "react";
-import { authClient as authClientDefault, useAuthClient } from "../lib/auth/auth-client";
+import {
+  authClient as authClientDefault,
+  useAuthClient,
+} from "../lib/auth/auth-client";
 import { AuthDemoLoadingShell } from "./AuthDemoLoadingShell";
 
 type AuthStep =

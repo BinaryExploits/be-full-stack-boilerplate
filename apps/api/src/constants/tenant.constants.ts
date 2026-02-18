@@ -11,4 +11,4 @@ export type TenantClsKey =
 
 /** Message thrown when tenant-scoped data is accessed without a resolved tenant. */
 export const TENANT_REQUIRED_MESSAGE =
-  'Tenant could not be resolved from request origin; tenant-scoped data is not available.';
+  'Tenant not resolved. The user must select a tenant before accessing tenant-scoped data.';

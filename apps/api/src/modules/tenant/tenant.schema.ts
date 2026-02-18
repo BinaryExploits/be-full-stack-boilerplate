@@ -5,6 +5,8 @@ import {
   ZBaseResponse,
 } from '../../schemas/base.schema';
 
+// ─── Tenant CRUD ────────────────────────────────────────────────
+
 export const ZTenant = ZBaseEntity.extend({
   name: z.string(),
   slug: z.string(),
@@ -57,6 +59,67 @@ export const ZTenantMetaIsSuperAdminResponse = ZBaseResponse.extend({
   isSuperAdmin: z.boolean(),
 });
 
+// ─── Tenant Membership ──────────────────────────────────────────
+
+export const ZTenantRole = z.enum(['TENANT_ADMIN', 'TENANT_USER']);
+
+export const ZMyTenantsResponse = ZBaseResponse.extend({
+  tenants: z.array(
+    z.object({
+      id: z.string(),
+      name: z.string(),
+      slug: z.string(),
+      role: ZTenantRole,
+    }),
+  ),
+  selectedTenantId: z.string().nullable(),
+});
+
+export const ZSwitchTenantRequest = ZBaseRequest.extend({
+  tenantId: z.string(),
+});
+
+export const ZSwitchTenantResponse = ZBaseResponse.extend({
+  selectedTenantId: z.string(),
+});
+
+export const ZAddMemberRequest = ZBaseRequest.extend({
+  email: z.string().email(),
+  tenantId: z.string(),
+  role: ZTenantRole,
+});
+
+export const ZAddMemberResponse = ZBaseResponse.extend({
+  id: z.string(),
+  email: z.string(),
+  tenantId: z.string(),
+  role: ZTenantRole,
+});
+
+export const ZRemoveMemberRequest = ZBaseRequest.extend({
+  email: z.string().email(),
+  tenantId: z.string(),
+});
+
+export const ZRemoveMemberResponse = ZBaseResponse;
+
+export const ZListMembersRequest = ZBaseRequest.extend({
+  tenantId: z.string(),
+});
+
+export const ZListMembersResponse = ZBaseResponse.extend({
+  members: z.array(
+    z.object({
+      id: z.string(),
+      email: z.string(),
+      tenantId: z.string(),
+      role: ZTenantRole,
+    }),
+  ),
+});
+
+// ─── Types ──────────────────────────────────────────────────────
+
 export type Tenant = z.infer<typeof ZTenant>;
 export type TTenantCreateRequest = z.infer<typeof ZTenantCreateRequest>;
 export type TTenantCreateResponse = z.infer<typeof ZTenantCreateResponse>;
@@ -70,3 +133,12 @@ export type TTenantDeleteResponse = z.infer<typeof ZTenantDeleteResponse>;
 export type TTenantMetaIsSuperAdminResponse = z.infer<
   typeof ZTenantMetaIsSuperAdminResponse
 >;
+export type TMyTenantsResponse = z.infer<typeof ZMyTenantsResponse>;
+export type TSwitchTenantRequest = z.infer<typeof ZSwitchTenantRequest>;
+export type TSwitchTenantResponse = z.infer<typeof ZSwitchTenantResponse>;
+export type TAddMemberRequest = z.infer<typeof ZAddMemberRequest>;
+export type TAddMemberResponse = z.infer<typeof ZAddMemberResponse>;
+export type TRemoveMemberRequest = z.infer<typeof ZRemoveMemberRequest>;
+export type TRemoveMemberResponse = z.infer<typeof ZRemoveMemberResponse>;
+export type TListMembersRequest = z.infer<typeof ZListMembersRequest>;
+export type TListMembersResponse = z.infer<typeof ZListMembersResponse>;

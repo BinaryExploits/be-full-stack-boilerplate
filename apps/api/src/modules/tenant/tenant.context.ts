@@ -4,9 +4,9 @@ import { Tenant } from '@repo/prisma-db';
 import { TENANT_CLS_KEYS } from '../../constants/tenant.constants';
 
 /**
- * Request-scoped tenant context. Services and repositories use this to get the current tenant
- * without caring how it was resolved. When no tenant is set (resolution failed or no origin),
- * getTenantId() returns null; tenant-scoped repos do not add a tenant filter (no tenant = no tenant-scoped data).
+ * Request-scoped tenant context backed by CLS. Services and repositories use this to get the
+ * current tenant without caring how it was resolved. The tenant is set by
+ * TenantResolutionMiddleware (tRPC) from the user's persisted selectedTenantId.
  */
 @Injectable()
 export class TenantContext {
@@ -25,7 +25,7 @@ export class TenantContext {
     this.cls.set(TENANT_CLS_KEYS.TENANT, tenant);
   }
 
-  /** True when a tenant was explicitly resolved (by origin/host). */
+  /** True when a tenant was explicitly resolved for this request. */
   hasTenant(): boolean {
     return this.getTenantId() != null;
   }
