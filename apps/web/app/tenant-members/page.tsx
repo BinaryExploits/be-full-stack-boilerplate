@@ -97,6 +97,8 @@ export default function TenantMembers() {
     });
   };
 
+  const currentUserEmail = session?.user?.email?.toLowerCase() ?? "";
+
   const handleRemoveMember = (email: string) => {
     if (!selectedTenantId) return;
     removeMember.mutate({ email, tenantId: selectedTenantId });
@@ -272,41 +274,52 @@ export default function TenantMembers() {
                   </p>
                 ) : (
                   <ul className="space-y-2">
-                    {members.map((m) => (
-                      <li
-                        key={m.id}
-                        className="flex items-center justify-between bg-slate-700/50 rounded-lg px-4 py-3"
-                      >
-                        <div className="min-w-0">
-                          <p className="text-sm text-white truncate">
-                            {m.email}
-                          </p>
-                          <p className="text-xs text-slate-500">
-                            {m.role === "TENANT_ADMIN" ? "Admin" : "User"}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => handleRemoveMember(m.email)}
-                          disabled={removeMember.isPending}
-                          className="shrink-0 ml-3 p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-600 rounded transition-colors disabled:opacity-50"
-                          title="Remove member"
+                    {members.map((m) => {
+                      const isSelf =
+                        m.email.toLowerCase() === currentUserEmail;
+                      return (
+                        <li
+                          key={m.id}
+                          className="flex items-center justify-between bg-slate-700/50 rounded-lg px-4 py-3"
                         >
-                          <svg
-                            className="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M6 18L18 6M6 6l12 12"
-                            />
-                          </svg>
-                        </button>
-                      </li>
-                    ))}
+                          <div className="min-w-0">
+                            <p className="text-sm text-white truncate flex items-center gap-2">
+                              {m.email}
+                              {isSelf && (
+                                <span className="text-[10px] font-semibold uppercase tracking-wide bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded">
+                                  You
+                                </span>
+                              )}
+                            </p>
+                            <p className="text-xs text-slate-500">
+                              {m.role === "TENANT_ADMIN" ? "Admin" : "User"}
+                            </p>
+                          </div>
+                          {!isSelf && (
+                            <button
+                              onClick={() => handleRemoveMember(m.email)}
+                              disabled={removeMember.isPending}
+                              className="shrink-0 ml-3 p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-600 rounded transition-colors disabled:opacity-50"
+                              title="Remove member"
+                            >
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M6 18L18 6M6 6l12 12"
+                                />
+                              </svg>
+                            </button>
+                          )}
+                        </li>
+                      );
+                    })}
                   </ul>
                 )}
               </div>

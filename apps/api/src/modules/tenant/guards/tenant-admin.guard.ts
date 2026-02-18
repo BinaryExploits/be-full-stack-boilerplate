@@ -9,6 +9,9 @@ import { isSuperAdminEmail } from './super-admin.guard';
  * Allows access if the caller is a Super Admin (env-based) OR has TENANT_ADMIN role
  * for the target tenant. The target tenant is inferred from `input.tenantId`.
  * Requires AuthMiddleware to run first so ctx.user is set.
+ *
+ * NOTE: tRPC v11 exposes raw input via `getRawInput()` (async), not `rawInput`.
+ * nestjs-trpc's MiddlewareOptions type is stale, so we cast to access it.
  */
 @Injectable()
 export class TenantAdminGuard implements TRPCMiddleware {
@@ -29,7 +32,15 @@ export class TenantAdminGuard implements TRPCMiddleware {
       return opts.next({ ctx });
     }
 
-    const input = opts.rawInput as { tenantId?: string } | undefined;
+    // tRPC v11: rawInput is accessed via getRawInput() (async), not opts.rawInput
+    const runtimeOpts = opts as unknown as {
+      getRawInput?: () => Promise<unknown>;
+      rawInput?: unknown;
+    };
+    const rawInput = runtimeOpts.getRawInput
+      ? await runtimeOpts.getRawInput()
+      : runtimeOpts.rawInput;
+    const input = rawInput as { tenantId?: string } | undefined;
     const tenantId = input?.tenantId;
 
     if (!tenantId) {
