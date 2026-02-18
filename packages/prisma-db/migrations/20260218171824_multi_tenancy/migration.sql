@@ -2,7 +2,20 @@
 CREATE TYPE "TenantRole" AS ENUM ('TENANT_ADMIN', 'TENANT_USER');
 
 -- AlterTable
-ALTER TABLE "tenant" ALTER COLUMN "allowedOrigins" DROP DEFAULT;
+ALTER TABLE "crud" ADD COLUMN     "tenantId" TEXT;
+
+-- CreateTable
+CREATE TABLE "tenant" (
+    "id" TEXT NOT NULL,
+    "name" VARCHAR(255) NOT NULL,
+    "slug" VARCHAR(100) NOT NULL,
+    "allowedOrigins" TEXT[],
+    "isDefault" BOOLEAN NOT NULL DEFAULT false,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "tenant_pkey" PRIMARY KEY ("id")
+);
 
 -- CreateTable
 CREATE TABLE "user_profile" (
@@ -27,6 +40,19 @@ CREATE TABLE "tenant_membership" (
     CONSTRAINT "tenant_membership_pkey" PRIMARY KEY ("id")
 );
 
+-- CreateTable
+CREATE TABLE "global_crud" (
+    "id" TEXT NOT NULL,
+    "content" VARCHAR(500) NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "global_crud_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateIndex
+CREATE UNIQUE INDEX "tenant_slug_key" ON "tenant"("slug");
+
 -- CreateIndex
 CREATE UNIQUE INDEX "user_profile_userId_key" ON "user_profile"("userId");
 
@@ -36,6 +62,9 @@ CREATE INDEX "tenant_membership_email_idx" ON "tenant_membership"("email");
 -- CreateIndex
 CREATE UNIQUE INDEX "tenant_membership_email_tenantId_key" ON "tenant_membership"("email", "tenantId");
 
+-- CreateIndex
+CREATE INDEX "crud_tenantId_idx" ON "crud"("tenantId");
+
 -- AddForeignKey
 ALTER TABLE "user_profile" ADD CONSTRAINT "user_profile_userId_fkey" FOREIGN KEY ("userId") REFERENCES "user"("id") ON DELETE CASCADE ON UPDATE CASCADE;
 
@@ -44,3 +73,6 @@ ALTER TABLE "user_profile" ADD CONSTRAINT "user_profile_selectedTenantId_fkey" F
 
 -- AddForeignKey
 ALTER TABLE "tenant_membership" ADD CONSTRAINT "tenant_membership_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE CASCADE ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "crud" ADD CONSTRAINT "crud_tenantId_fkey" FOREIGN KEY ("tenantId") REFERENCES "tenant"("id") ON DELETE SET NULL ON UPDATE CASCADE;
