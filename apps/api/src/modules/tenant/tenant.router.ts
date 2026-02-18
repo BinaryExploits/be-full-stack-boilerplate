@@ -88,6 +88,8 @@ export class TenantRouter {
   /**
    * Returns the tenants the current user has membership in (by email), plus their
    * selectedTenantId. Super Admins get ALL tenants with implicit TENANT_ADMIN role.
+   * Default tenants (isDefault) are included for ALL users as TENANT_USER.
+   * singleTenantMode is true when there is exactly one tenant in the system and it is default.
    * This is the FIRST call after login — it MUST work without a resolved tenant.
    */
   @Query({
@@ -98,8 +100,11 @@ export class TenantRouter {
     const userId = ctx.user!.id;
     const profile = await this.userProfileService.ensureProfile(userId);
 
+    const allTenants = await this.tenantService.findAll();
+    const singleTenantMode =
+      allTenants.length === 1 && allTenants[0]!.isDefault;
+
     if (isSuperAdminEmail(email)) {
-      const allTenants = await this.tenantService.findAll();
       return {
         success: true,
         tenants: allTenants.map((t) => ({
@@ -109,19 +114,38 @@ export class TenantRouter {
           role: 'TENANT_ADMIN' as const,
         })),
         selectedTenantId: profile.selectedTenantId,
+        singleTenantMode,
       };
     }
 
     const memberships = await this.membershipService.getTenantsForEmail(email);
+    const memberTenantIds = new Set(memberships.map((m) => m.tenant.id));
+
+    type TenantEntry = { id: string; name: string; slug: string; role: 'TENANT_ADMIN' | 'TENANT_USER' };
+    const tenants: TenantEntry[] = memberships.map((m) => ({
+      id: m.tenant.id,
+      name: m.tenant.name,
+      slug: m.tenant.slug,
+      role: m.role as 'TENANT_ADMIN' | 'TENANT_USER',
+    }));
+
+    // Add default tenants the user doesn't already have explicit membership in
+    for (const t of allTenants) {
+      if (t.isDefault && !memberTenantIds.has(t.id)) {
+        tenants.push({
+          id: t.id,
+          name: t.name,
+          slug: t.slug,
+          role: 'TENANT_USER',
+        });
+      }
+    }
+
     return {
       success: true,
-      tenants: memberships.map((m) => ({
-        id: m.tenant.id,
-        name: m.tenant.name,
-        slug: m.tenant.slug,
-        role: m.role as 'TENANT_ADMIN' | 'TENANT_USER',
-      })),
+      tenants,
       selectedTenantId: profile.selectedTenantId,
+      singleTenantMode,
     };
   }
 
@@ -148,7 +172,7 @@ export class TenantRouter {
       });
     }
 
-    if (!isSuperAdminEmail(email)) {
+    if (!isSuperAdminEmail(email) && !tenant.isDefault) {
       const hasMembership = await this.membershipService.hasMembership(
         email,
         req.tenantId,

@@ -38,6 +38,7 @@ export function TenantSwitcher() {
     | {
         tenants?: TenantInfo[];
         selectedTenantId?: string | null;
+        singleTenantMode?: boolean;
       }
     | undefined;
 
@@ -45,7 +46,7 @@ export function TenantSwitcher() {
   const selectedTenantId = data?.selectedTenantId ?? null;
   const currentTenant = tenants.find((t) => t.id === selectedTenantId);
 
-  if (tenants.length === 0) return null;
+  if (tenants.length === 0 || data?.singleTenantMode) return null;
 
   const handleSwitch = (tenantId: string) => {
     if (tenantId === selectedTenantId) {

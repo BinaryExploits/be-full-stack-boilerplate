@@ -38,17 +38,19 @@ export function NavHeader() {
     isSuperAdminQuery.data as { isSuperAdmin?: boolean } | undefined
   )?.isSuperAdmin;
 
-  const myTenants =
-    (
-      myTenantsQuery.data as
-        | {
-            tenants?: Array<{ id: string; name: string; slug: string; role: string }>;
-          }
-        | undefined
-    )?.tenants ?? [];
+  const myTenantsData = myTenantsQuery.data as
+    | {
+        tenants?: Array<{ id: string; name: string; slug: string; role: string }>;
+        singleTenantMode?: boolean;
+      }
+    | undefined;
+
+  const myTenants = myTenantsData?.tenants ?? [];
+  const singleTenantMode = myTenantsData?.singleTenantMode ?? false;
 
   const hasAdminTenant =
-    isSuperAdmin || myTenants.some((t) => t.role === "TENANT_ADMIN");
+    !singleTenantMode &&
+    (isSuperAdmin || myTenants.some((t) => t.role === "TENANT_ADMIN"));
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-40 bg-slate-900/80 backdrop-blur border-b border-slate-700/50">
@@ -103,7 +105,7 @@ export function NavHeader() {
                   </div>
 
                   <div className="py-1">
-                    {isSuperAdmin && (
+                    {isSuperAdmin && !singleTenantMode && (
                       <Link
                         href="/tenant-dashboard"
                         onClick={() => setOpen(false)}

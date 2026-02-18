@@ -25,6 +25,7 @@ const appRouter = t.router({
         }),
       ),
       selectedTenantId: z.string().nullable(),
+      singleTenantMode: z.boolean(),
     })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     switchTenant: publicProcedure.input(z.object({}).extend({
       tenantId: z.string(),
@@ -41,7 +42,7 @@ const appRouter = t.router({
         .min(1)
         .max(100)
         .regex(/^[a-z0-9-]+$/),
-      allowedOrigins: z.array(z.string().min(1)).min(0),
+      allowedOrigins: z.array(z.string().min(1)).optional().default([]),
     })).output(z.object({
       id: z.string(),
       createdAt: z.date(),

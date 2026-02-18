@@ -6,27 +6,31 @@
       "127.0.0.1",
       "http://localhost:3000",
       "http://127.0.0.1:3000"
-    ]
+    ],
+    "isDefault": false
   },
   {
     "slug": "binaryexports",
     "name": "Binary Exports",
     "allowedOrigins": [
       "http://binaryexports.localhost:3000"
-    ]
+    ],
+    "isDefault": false
   },
   {
     "slug": "binaryexperiments",
     "name": "Binary Experiments",
     "allowedOrigins": [
       "http://binaryexperiments.localhost:3000"
-    ]
+    ],
+    "isDefault": false
   },
   {
     "slug": "binaryexploits",
     "name": "Binary Exploits",
     "allowedOrigins": [
       "http://binaryexploits.localhost:3000"
-    ]
+    ],
+    "isDefault": false
   }
 ]

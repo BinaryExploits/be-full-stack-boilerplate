@@ -44,9 +44,23 @@ export class TenantResolutionService {
       });
     }
 
-    const isSuperAdmin = isSuperAdminEmail(userEmail);
+    const tenant = await this.tenantRepository.findUnique({
+      where: { id: profile.selectedTenantId },
+    });
 
-    if (!isSuperAdmin) {
+    if (!tenant) {
+      await this.userProfileService.setSelectedTenant(userId, null);
+      throw new TRPCError({
+        code: 'PRECONDITION_FAILED',
+        message:
+          'The selected tenant no longer exists. Please select another tenant.',
+      });
+    }
+
+    // Default tenants grant implicit access to all authenticated users.
+    // Super Admins also bypass the membership check.
+    const isSuperAdmin = isSuperAdminEmail(userEmail);
+    if (!isSuperAdmin && !tenant.isDefault) {
       const hasMembership = await this.membershipService.hasMembership(
         userEmail,
         profile.selectedTenantId,
@@ -60,19 +74,6 @@ export class TenantResolutionService {
             'You no longer have access to this tenant. Please select another tenant.',
         });
       }
-    }
-
-    const tenant = await this.tenantRepository.findUnique({
-      where: { id: profile.selectedTenantId },
-    });
-
-    if (!tenant) {
-      await this.userProfileService.setSelectedTenant(userId, null);
-      throw new TRPCError({
-        code: 'PRECONDITION_FAILED',
-        message:
-          'The selected tenant no longer exists. Please select another tenant.',
-      });
     }
 
     this.tenantContext.setTenant(tenant);

@@ -20,7 +20,7 @@ export const ZTenantCreateRequest = ZBaseRequest.extend({
     .min(1)
     .max(100)
     .regex(/^[a-z0-9-]+$/),
-  allowedOrigins: z.array(z.string().min(1)).min(0),
+  allowedOrigins: z.array(z.string().min(1)).optional().default([]),
 });
 
 export const ZTenantCreateResponse = ZTenant;
@@ -73,6 +73,7 @@ export const ZMyTenantsResponse = ZBaseResponse.extend({
     }),
   ),
   selectedTenantId: z.string().nullable(),
+  singleTenantMode: z.boolean(),
 });
 
 export const ZSwitchTenantRequest = ZBaseRequest.extend({

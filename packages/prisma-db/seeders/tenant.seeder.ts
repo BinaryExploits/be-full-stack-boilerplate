@@ -5,6 +5,7 @@ type TenantSeedRecord = {
   slug: string;
   name: string;
   allowedOrigins: string[];
+  isDefault?: boolean;
 };
 
 export class TenantSeeder extends PrismaSeeder<TenantSeedRecord> {
@@ -37,10 +38,12 @@ export class TenantSeeder extends PrismaSeeder<TenantSeedRecord> {
           name: record.name,
           slug: record.slug,
           allowedOrigins: record.allowedOrigins,
+          isDefault: record.isDefault ?? false,
         },
         update: {
           name: record.name,
           allowedOrigins: record.allowedOrigins,
+          isDefault: record.isDefault ?? false,
         },
       });
     }

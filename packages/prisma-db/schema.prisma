@@ -24,6 +24,7 @@ model Tenant {
   name           String   @db.VarChar(255)
   slug           String   @unique @db.VarChar(100)
   allowedOrigins String[]
+  isDefault      Boolean  @default(false)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   crud           Crud[]

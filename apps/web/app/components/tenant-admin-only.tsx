@@ -5,7 +5,7 @@ import { useAuthClient } from "../lib/auth/auth-client";
 
 /**
  * Renders children only when the current user is a tenant admin for at least
- * one tenant, or is a super admin. Use to conditionally show member management links.
+ * one tenant (or is a super admin) AND the app is NOT in single-tenant mode.
  */
 export function TenantAdminOnly({
   children,
@@ -28,12 +28,14 @@ export function TenantAdminOnly({
     isSuperAdminQuery.data as { isSuperAdmin?: boolean } | undefined
   )?.isSuperAdmin;
 
-  const tenants =
-    (
-      myTenantsQuery.data as
-        | { tenants?: Array<{ role: string }> }
-        | undefined
-    )?.tenants ?? [];
+  const myTenantsData = myTenantsQuery.data as
+    | { tenants?: Array<{ role: string }>; singleTenantMode?: boolean }
+    | undefined;
+
+  const tenants = myTenantsData?.tenants ?? [];
+  const singleTenantMode = myTenantsData?.singleTenantMode ?? false;
+
+  if (singleTenantMode) return null;
 
   const hasAdminAccess =
     isSuperAdmin || tenants.some((t) => t.role === "TENANT_ADMIN");

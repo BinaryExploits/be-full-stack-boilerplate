@@ -8,29 +8,15 @@ interface TenantItem {
   id: string;
   name: string;
   slug: string;
-  allowedOrigins: string[];
-}
-
-function parseOriginsInput(value: string): string[] {
-  return value
-    .split(/[\n,]/)
-    .map((s) => s.trim())
-    .filter(Boolean);
-}
-
-function formatOriginsForInput(origins: string[]): string {
-  return origins.join("\n");
 }
 
 export default function TenantDashboard() {
   const utils = trpc.useUtils();
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
-  const [originsInput, setOriginsInput] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
   const [editSlug, setEditSlug] = useState("");
-  const [editOriginsInput, setEditOriginsInput] = useState("");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const tenantList = trpc.tenant.findAll.useQuery(undefined, {
@@ -44,7 +30,6 @@ export default function TenantDashboard() {
       void utils.tenant.findAll.invalidate();
       setName("");
       setSlug("");
-      setOriginsInput("");
       setErrorMessage(null);
     },
     onError: (err) => setErrorMessage(err.message),
@@ -88,7 +73,6 @@ export default function TenantDashboard() {
     createTenant.mutate({
       name: trimmedName,
       slug: trimmedSlug,
-      allowedOrigins: parseOriginsInput(originsInput),
     });
   };
 
@@ -96,7 +80,6 @@ export default function TenantDashboard() {
     setEditingId(t.id);
     setEditName(t.name);
     setEditSlug(t.slug);
-    setEditOriginsInput(formatOriginsForInput(t.allowedOrigins));
     setErrorMessage(null);
   };
 
@@ -128,7 +111,6 @@ export default function TenantDashboard() {
       id: editingId,
       name: trimmedName,
       slug: trimmedSlug,
-      allowedOrigins: parseOriginsInput(editOriginsInput),
     });
   };
 
@@ -242,19 +224,6 @@ export default function TenantDashboard() {
                     />
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm text-slate-400 mb-1">
-                    Allowed origins (one per line or comma-separated)
-                  </label>
-                  <textarea
-                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500 min-h-[80px] font-mono text-sm"
-                    placeholder={
-                      "acme.com\nhttps://acme.com\nhttp://acme.localhost:3000"
-                    }
-                    value={originsInput}
-                    onChange={(e) => setOriginsInput(e.target.value)}
-                  />
-                </div>
                 <button
                   onClick={handleCreate}
                   disabled={
@@ -325,18 +294,6 @@ export default function TenantDashboard() {
                               />
                             </div>
                           </div>
-                          <div>
-                            <label className="block text-xs text-slate-500 mb-1">
-                              Allowed origins
-                            </label>
-                            <textarea
-                              className="w-full bg-slate-600 border border-slate-500 rounded px-2 py-1 text-white text-sm min-h-[60px] font-mono"
-                              value={editOriginsInput}
-                              onChange={(e) =>
-                                setEditOriginsInput(e.target.value)
-                              }
-                            />
-                          </div>
                           <div className="flex gap-2">
                             <button
                               onClick={handleUpdate}
@@ -364,13 +321,6 @@ export default function TenantDashboard() {
                                 {t.slug}
                               </span>
                             </div>
-                            {t.allowedOrigins.length > 0 && (
-                              <p className="text-slate-400 text-sm mt-1 truncate max-w-full">
-                                {t.allowedOrigins.slice(0, 3).join(", ")}
-                                {t.allowedOrigins.length > 3 &&
-                                  ` +${t.allowedOrigins.length - 3} more`}
-                              </p>
-                            )}
                           </div>
                           <div className="flex items-center gap-2 shrink-0">
                             <button
