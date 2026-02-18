@@ -89,13 +89,18 @@ export class RepositoryGenerator {
 if (require.main === module) {
   const args = process.argv.slice(2);
   const entityName = args[0];
-  const tenantScoped = !args.includes('--no-tenant') && !args.includes('--global');
+  const tenantScoped =
+    !args.includes('--no-tenant') && !args.includes('--global');
 
   if (!entityName) {
-    console.error('❌ Usage: pnpm run generate:repo:prisma <entityName> [--no-tenant]');
+    console.error(
+      '❌ Usage: pnpm run generate:repo:prisma <entityName> [--no-tenant]',
+    );
     console.error('   Example: pnpm run generate:repo:prisma crud');
     console.error('   Example: pnpm run generate:repo:prisma post');
-    console.error('   Example: pnpm run generate:repo:prisma global-crud --no-tenant');
+    console.error(
+      '   Example: pnpm run generate:repo:prisma global-crud --no-tenant',
+    );
     process.exit(1);
   }
 
