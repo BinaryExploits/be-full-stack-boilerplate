@@ -25,7 +25,9 @@ export class GlobalCrudPrismaRepository implements IGlobalCrudPrismaRepository {
     return this.delegate.create(args);
   }
 
-  createMany(args: Prisma.GlobalCrudCreateManyArgs): Promise<Prisma.BatchPayload> {
+  createMany(
+    args: Prisma.GlobalCrudCreateManyArgs,
+  ): Promise<Prisma.BatchPayload> {
     return this.delegate.createMany(args);
   }
 
@@ -53,7 +55,9 @@ export class GlobalCrudPrismaRepository implements IGlobalCrudPrismaRepository {
     return this.delegate.update(args);
   }
 
-  updateMany(args: Prisma.GlobalCrudUpdateManyArgs): Promise<Prisma.BatchPayload> {
+  updateMany(
+    args: Prisma.GlobalCrudUpdateManyArgs,
+  ): Promise<Prisma.BatchPayload> {
     return this.delegate.updateMany(args);
   }
 
@@ -69,7 +73,9 @@ export class GlobalCrudPrismaRepository implements IGlobalCrudPrismaRepository {
     return this.delegate.delete(args);
   }
 
-  deleteMany(args?: Prisma.GlobalCrudDeleteManyArgs): Promise<Prisma.BatchPayload> {
+  deleteMany(
+    args?: Prisma.GlobalCrudDeleteManyArgs,
+  ): Promise<Prisma.BatchPayload> {
     return this.delegate.deleteMany(args);
   }
 
@@ -79,7 +85,9 @@ export class GlobalCrudPrismaRepository implements IGlobalCrudPrismaRepository {
 
   aggregate(
     args: Prisma.GlobalCrudAggregateArgs,
-  ): Promise<Prisma.GetGlobalCrudAggregateType<Prisma.GlobalCrudAggregateArgs>> {
+  ): Promise<
+    Prisma.GetGlobalCrudAggregateType<Prisma.GlobalCrudAggregateArgs>
+  > {
     return this.delegate.aggregate(args);
   }
 }

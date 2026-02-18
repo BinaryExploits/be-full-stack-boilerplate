@@ -4,7 +4,9 @@ export interface IGlobalCrudPrismaRepository {
   create(
     args: Prisma.GlobalCrudCreateArgs,
   ): Promise<Prisma.GlobalCrudGetPayload<Prisma.GlobalCrudCreateArgs>>;
-  createMany(args: Prisma.GlobalCrudCreateManyArgs): Promise<Prisma.BatchPayload>;
+  createMany(
+    args: Prisma.GlobalCrudCreateManyArgs,
+  ): Promise<Prisma.BatchPayload>;
 
   findFirst(
     args?: Prisma.GlobalCrudFindFirstArgs,
@@ -19,7 +21,9 @@ export interface IGlobalCrudPrismaRepository {
   update(
     args: Prisma.GlobalCrudUpdateArgs,
   ): Promise<Prisma.GlobalCrudGetPayload<Prisma.GlobalCrudUpdateArgs>>;
-  updateMany(args: Prisma.GlobalCrudUpdateManyArgs): Promise<Prisma.BatchPayload>;
+  updateMany(
+    args: Prisma.GlobalCrudUpdateManyArgs,
+  ): Promise<Prisma.BatchPayload>;
   upsert(
     args: Prisma.GlobalCrudUpsertArgs,
   ): Promise<Prisma.GlobalCrudGetPayload<Prisma.GlobalCrudUpsertArgs>>;
@@ -27,7 +31,9 @@ export interface IGlobalCrudPrismaRepository {
   delete(
     args: Prisma.GlobalCrudDeleteArgs,
   ): Promise<Prisma.GlobalCrudGetPayload<Prisma.GlobalCrudDeleteArgs>>;
-  deleteMany(args?: Prisma.GlobalCrudDeleteManyArgs): Promise<Prisma.BatchPayload>;
+  deleteMany(
+    args?: Prisma.GlobalCrudDeleteManyArgs,
+  ): Promise<Prisma.BatchPayload>;
 
   count(args?: Prisma.GlobalCrudCountArgs): Promise<number>;
   aggregate(
