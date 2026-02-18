@@ -8,3 +8,7 @@ export const TENANT_CLS_KEYS = {
 
 export type TenantClsKey =
   (typeof TENANT_CLS_KEYS)[keyof typeof TENANT_CLS_KEYS];
+
+/** Message thrown when tenant-scoped data is accessed without a resolved tenant. */
+export const TENANT_REQUIRED_MESSAGE =
+  'Tenant could not be resolved from request origin; tenant-scoped data is not available.';
