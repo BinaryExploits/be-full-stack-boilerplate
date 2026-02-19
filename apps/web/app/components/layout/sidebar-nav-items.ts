@@ -7,7 +7,6 @@ import {
   BarChart3,
   Building2,
   Users,
-  ShieldCheck,
   UserCircle,
 } from "lucide-react";
 
@@ -40,24 +39,28 @@ export const navSections: NavSection[] = [
         href: "/grids",
         icon: LayoutGrid,
         children: [
-          { label: "CRUD Grid", href: "/grids?tab=crud", icon: LayoutGrid },
           {
-            label: "Global CRUD Grid",
+            label: "Crud Records",
+            href: "/grids?tab=crud",
+            icon: LayoutGrid,
+          },
+          {
+            label: "Global Crud Records",
             href: "/grids?tab=global-crud",
             icon: LayoutGrid,
           },
           {
-            label: "Tenants Grid",
+            label: "Tenants",
             href: "/grids?tab=tenants",
             icon: LayoutGrid,
           },
           {
-            label: "Read-Only Grid",
+            label: "Metrics (Demo)",
             href: "/grids?tab=read-only",
             icon: LayoutGrid,
           },
           {
-            label: "Advanced Grid",
+            label: "Tasks (Demo)",
             href: "/grids?tab=advanced",
             icon: LayoutGrid,
           },
@@ -73,7 +76,11 @@ export const navSections: NavSection[] = [
             href: "/charts#line-area",
             icon: BarChart3,
           },
-          { label: "Time Series", href: "/charts#bar-column", icon: BarChart3 },
+          {
+            label: "Time Series",
+            href: "/charts#bar-column",
+            icon: BarChart3,
+          },
           {
             label: "Distribution Charts",
             href: "/charts#pie-donut",
@@ -102,7 +109,6 @@ export const navSections: NavSection[] = [
         icon: Building2,
       },
       { label: "Tenant Members", href: "/tenant-members", icon: Users },
-      { label: "Auth Demo", href: "/auth-demo", icon: ShieldCheck },
     ],
   },
   {

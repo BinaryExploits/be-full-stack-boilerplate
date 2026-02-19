@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
-import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
+import { useSearchParams, useRouter } from "next/navigation";
 import {
   Disclosure,
   DisclosureButton,
@@ -37,55 +37,95 @@ import {
 } from "./_data/mock-data";
 import { Plus, Trash2, Download, RefreshCw, ChevronRight } from "lucide-react";
 
-const tabs = ["CRUD", "Global CRUD", "Tenants", "Read-Only", "Advanced"];
+const TAB_KEYS = [
+  "crud",
+  "global-crud",
+  "tenants",
+  "read-only",
+  "advanced",
+] as const;
+type TabKey = (typeof TAB_KEYS)[number];
+
+const TAB_LABELS: Record<TabKey, string> = {
+  crud: "Crud Records",
+  "global-crud": "Global Crud Records",
+  tenants: "Tenants",
+  "read-only": "Metrics (Demo)",
+  advanced: "Tasks (Demo)",
+};
+
+const TAB_DESCRIPTIONS: Record<TabKey, string> = {
+  crud: "Editable grid showing Crud entity records. Uses the same shape as the app's tenant-scoped CRUD model.",
+  "global-crud":
+    "Bulk operations on Global Crud records. Row selection, multi-sort, and batch actions.",
+  tenants:
+    "Tenant management view grouped by plan tier. Uses the app's Tenant model shape.",
+  "read-only":
+    "Read-only analytics metrics. Demo data — numbers are illustrative, not from a live API.",
+  advanced:
+    "Rich cell renderers with tags, avatars, priority icons, and expandable details. Demo data.",
+};
 
 export default function GridsPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const tabParam = searchParams.get("tab") as TabKey | null;
+  const activeTab = tabParam && TAB_KEYS.includes(tabParam) ? tabParam : "crud";
+
+  const setActiveTab = useCallback(
+    (key: TabKey) => {
+      router.push(`/grids?tab=${key}`, { scroll: false });
+    },
+    [router],
+  );
+
   return (
     <div className="max-w-[1400px] mx-auto">
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white">Data Grids</h1>
         <p className="text-sm text-slate-400 mt-1">
-          Five grid scenarios powered by TanStack Table v8, each demonstrating
-          different capabilities of the same base component.
+          Grid scenarios powered by TanStack Table v8. Grids marked{" "}
+          <Badge variant="info" className="text-[10px] align-middle">
+            Demo
+          </Badge>{" "}
+          use illustrative dummy data.
         </p>
       </div>
 
-      <TabGroup>
-        <TabList className="flex gap-1 rounded-lg bg-slate-800 p-1 mb-6">
-          {tabs.map((t) => (
-            <Tab
-              key={t}
-              className="rounded-md px-4 py-2 text-sm font-medium transition-colors focus:outline-none data-[selected]:bg-slate-700 data-[selected]:text-white text-slate-400 hover:text-slate-200"
-            >
-              {t}
-            </Tab>
-          ))}
-        </TabList>
+      {/* Tab bar */}
+      <div className="flex gap-1 rounded-lg bg-slate-800 p-1 mb-6 overflow-x-auto">
+        {TAB_KEYS.map((key) => (
+          <button
+            key={key}
+            onClick={() => setActiveTab(key)}
+            className={`rounded-md px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap focus:outline-none ${
+              activeTab === key
+                ? "bg-slate-700 text-white"
+                : "text-slate-400 hover:text-slate-200"
+            }`}
+          >
+            {TAB_LABELS[key]}
+          </button>
+        ))}
+      </div>
 
-        <TabPanels>
-          <TabPanel>
-            <CrudGrid />
-          </TabPanel>
-          <TabPanel>
-            <GlobalCrudGrid />
-          </TabPanel>
-          <TabPanel>
-            <TenantsGrid />
-          </TabPanel>
-          <TabPanel>
-            <ReadOnlyGrid />
-          </TabPanel>
-          <TabPanel>
-            <AdvancedGrid />
-          </TabPanel>
-        </TabPanels>
-      </TabGroup>
+      {/* Description */}
+      <p className="text-xs text-slate-400 mb-3">
+        {TAB_DESCRIPTIONS[activeTab]}
+      </p>
+
+      {/* Panels */}
+      {activeTab === "crud" && <CrudGrid />}
+      {activeTab === "global-crud" && <GlobalCrudGrid />}
+      {activeTab === "tenants" && <TenantsGrid />}
+      {activeTab === "read-only" && <ReadOnlyGrid />}
+      {activeTab === "advanced" && <AdvancedGrid />}
     </div>
   );
 }
 
 /* ================================================================== */
-/* Scenario A — CRUD Grid (Fully Editable)                            */
+/* Scenario A — CRUD Records (Fully Editable)                         */
 /* ================================================================== */
 function CrudGrid() {
   const [data, setData] = useState<Person[]>(() => [...initialPeople]);
@@ -159,9 +199,9 @@ function CrudGrid() {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs text-slate-400">
-          Fully editable grid — click any cell to edit, add or delete rows.
-        </p>
+        <Badge variant="info">
+          Modeled after Crud entity ({data.length} records)
+        </Badge>
         <div className="flex items-center gap-2">
           {modified && <Badge variant="warning">Unsaved changes</Badge>}
           <Button variant="secondary" size="sm" onClick={handleAdd}>
@@ -184,7 +224,7 @@ function CrudGrid() {
 }
 
 /* ================================================================== */
-/* Scenario B — Global CRUD Grid (Multi-record batch operations)      */
+/* Scenario B — Global CRUD Records (Multi-record batch operations)   */
 /* ================================================================== */
 function GlobalCrudGrid() {
   const [data, setData] = useState<Person[]>(() => [...initialRecords]);
@@ -258,9 +298,9 @@ function GlobalCrudGrid() {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <p className="text-xs text-slate-400">
-          Select rows for bulk operations. Hold Shift to multi-sort columns.
-        </p>
+        <Badge variant="info">
+          Modeled after GlobalCrud entity ({data.length} records)
+        </Badge>
         {selectedCount > 0 && (
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-300">
@@ -373,9 +413,9 @@ function TenantsGrid() {
 
   return (
     <div>
-      <p className="text-xs text-slate-400 mb-3">
-        Grouped by plan tier with expandable rows. Read-only management view.
-      </p>
+      <Badge variant="info" className="mb-3">
+        Modeled after Tenant entity ({tenants.length} records)
+      </Badge>
       {groupedByPlan.map((plan) => {
         const planTenants = tenants.filter((t) => t.plan === plan);
         return (
@@ -478,10 +518,9 @@ function ReadOnlyGrid() {
 
   return (
     <div>
-      <p className="text-xs text-slate-400 mb-3">
-        Pure display mode — no editing, zebra striping, formatted numbers, and
-        color-coded change indicators.
-      </p>
+      <Badge variant="warning" className="mb-3">
+        Demo data — not from a live API
+      </Badge>
       <DataTable
         data={metrics}
         columns={columns}
@@ -538,10 +577,9 @@ function AdvancedGrid() {
 
   return (
     <div>
-      <p className="text-xs text-slate-400 mb-3">
-        Rich cell renderers — tags, avatars, priority icons, expandable detail
-        panels, and overdue highlighting.
-      </p>
+      <Badge variant="warning" className="mb-3">
+        Demo data — not from a live API
+      </Badge>
       <DataTable
         data={tasks}
         columns={columns}

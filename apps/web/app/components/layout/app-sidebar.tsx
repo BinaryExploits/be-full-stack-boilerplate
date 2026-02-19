@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, Fragment } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
   Disclosure,
   DisclosureButton,
@@ -27,10 +27,15 @@ const STORAGE_KEY = "sidebar-collapsed";
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const authClient = useAuthClient();
   const sessionResult = authClient?.useSession?.();
   const session = sessionResult?.data;
   const user = session?.user;
+
+  const currentUrl = searchParams.toString()
+    ? `${pathname}?${searchParams.toString()}`
+    : pathname;
 
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -73,7 +78,13 @@ export function AppSidebar() {
 
   function isActive(href: string) {
     if (href === "/") return pathname === "/";
-    return pathname === href || pathname.startsWith(href.split("?")[0]! + "/");
+    if (href.includes("?")) {
+      return currentUrl === href;
+    }
+    if (href.includes("#")) {
+      return pathname === href.split("#")[0];
+    }
+    return pathname === href || pathname.startsWith(href + "/");
   }
 
   function isGroupActive(item: NavItem) {
@@ -83,21 +94,18 @@ export function AppSidebar() {
 
   const sidebarContent = (
     <div className="flex h-full flex-col bg-slate-900 border-r border-slate-700/50">
-      {/* Header */}
-      <div className="flex h-14 items-center gap-2 border-b border-slate-700/50 px-3">
-        <Link href="/" className="flex items-center gap-2 min-w-0">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-cyan-400">
-            <span className="text-xs font-bold text-slate-900">BE</span>
-          </div>
-          {!collapsed && (
-            <span className="truncate text-sm font-semibold text-white">
-              Full Stack
-            </span>
-          )}
-        </Link>
+      {/* Collapse toggle */}
+      <div
+        className={`hidden lg:flex items-center px-3 py-2 border-b border-slate-700/50 ${collapsed ? "justify-center" : "justify-between"}`}
+      >
+        {!collapsed && (
+          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+            Navigation
+          </span>
+        )}
         <button
           onClick={toggleCollapsed}
-          className="ml-auto hidden shrink-0 rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white lg:block"
+          className="rounded p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? (
@@ -106,9 +114,13 @@ export function AppSidebar() {
             <PanelLeftClose className="h-4 w-4" />
           )}
         </button>
+      </div>
+
+      {/* Mobile close button */}
+      <div className="flex items-center justify-end px-2 py-2 border-b border-slate-700/50 lg:hidden">
         <button
           onClick={() => setMobileOpen(false)}
-          className="ml-auto shrink-0 rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white lg:hidden"
+          className="rounded p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
           aria-label="Close sidebar"
         >
           <X className="h-4 w-4" />
@@ -138,7 +150,9 @@ export function AppSidebar() {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className={`flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors ${
+                      className={`flex items-center rounded-lg px-2 py-1.5 text-sm transition-colors ${
+                        collapsed ? "justify-center" : "gap-2"
+                      } ${
                         isActive(item.href)
                           ? "bg-slate-700/60 font-medium text-white"
                           : "text-slate-400 hover:bg-slate-800 hover:text-white"
@@ -158,7 +172,7 @@ export function AppSidebar() {
         ))}
       </nav>
 
-      {/* Footer */}
+      {/* Footer — user info */}
       {user && (
         <div className="border-t border-slate-700/50 p-3">
           <div className="flex items-center gap-2">
@@ -192,10 +206,10 @@ export function AppSidebar() {
 
   return (
     <>
-      {/* Mobile hamburger */}
+      {/* Mobile hamburger — positioned below the top navbar */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed left-3 top-3 z-50 rounded-lg bg-slate-800 p-2 text-slate-300 shadow-lg hover:bg-slate-700 lg:hidden"
+        className="fixed left-3 top-16 z-50 rounded-lg bg-slate-800 p-2 text-slate-300 shadow-lg hover:bg-slate-700 lg:hidden"
         aria-label="Open navigation"
       >
         <Menu className="h-5 w-5" />
@@ -208,19 +222,19 @@ export function AppSidebar() {
         className="relative z-50 lg:hidden"
       >
         <DialogBackdrop className="fixed inset-0 bg-black/50 transition-opacity" />
-        <div className="fixed inset-0 flex">
+        <div className="fixed inset-0 top-14 flex">
           <DialogPanel className="relative w-64 max-w-[80vw] transition-transform">
             {sidebarContent}
           </DialogPanel>
         </div>
       </Dialog>
 
-      {/* Desktop sidebar */}
+      {/* Desktop sidebar — sits below the top navbar */}
       <aside
         className={`hidden lg:flex lg:shrink-0 transition-all duration-200 ${collapsed ? "w-16" : "w-64"}`}
       >
         <div
-          className={`fixed top-0 left-0 h-screen ${collapsed ? "w-16" : "w-64"} transition-all duration-200`}
+          className={`fixed top-14 left-0 h-[calc(100vh-3.5rem)] ${collapsed ? "w-16" : "w-64"} transition-all duration-200`}
         >
           {sidebarContent}
         </div>

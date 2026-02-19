@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, Fragment } from "react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -161,9 +161,8 @@ export function DataTable<T>({
             </TableRow>
           ) : (
             table.getRowModel().rows.map((row, idx) => (
-              <>
+              <Fragment key={row.id}>
                 <TableRow
-                  key={row.id}
                   data-state={row.getIsSelected() ? "selected" : undefined}
                   className={
                     row.getIsSelected()
@@ -183,13 +182,13 @@ export function DataTable<T>({
                   ))}
                 </TableRow>
                 {enableExpanding && row.getIsExpanded() && renderSubRow && (
-                  <TableRow key={`${row.id}-expanded`}>
+                  <TableRow>
                     <TableCell colSpan={columns.length} className="p-0">
                       {renderSubRow(row.original)}
                     </TableCell>
                   </TableRow>
                 )}
-              </>
+              </Fragment>
             ))
           )}
         </TableBody>

@@ -35,11 +35,14 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <AppSidebar />
-      <main className="flex-1 min-w-0 lg:ml-0">
-        <div className="p-4 pt-14 lg:pt-6">{children}</div>
-      </main>
-    </div>
+    <>
+      <NavHeader />
+      <div className="flex min-h-screen pt-14 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+        <AppSidebar />
+        <main className="flex-1 min-w-0">
+          <div className="p-4 lg:p-6">{children}</div>
+        </main>
+      </div>
+    </>
   );
 }

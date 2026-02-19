@@ -1,6 +1,7 @@
 "use client";
 
-import Plot from "../components/charts/plot-wrapper";
+import { useRef, useState, useEffect, type ReactNode } from "react";
+import dynamic from "next/dynamic";
 import { ChartCard } from "../components/charts/chart-card";
 import {
   userGrowthData,
@@ -23,6 +24,13 @@ import {
   plotConfig,
   baseLayout,
 } from "../components/charts/chart-data";
+
+const Plot = dynamic(() => import("../components/charts/plot-wrapper"), {
+  ssr: false,
+  loading: () => (
+    <div className="animate-pulse rounded-lg bg-slate-700 h-80 w-full" />
+  ),
+});
 
 const sectionNav = [
   { id: "line-area", label: "Line & Area" },
@@ -61,7 +69,7 @@ export default function ChartsPage() {
       </div>
 
       {/* Section 1: Line & Area */}
-      <Section id="line-area" title="Line & Area Charts">
+      <LazySection id="line-area" title="Line & Area Charts">
         <ChartCard
           title="User Growth Over Time"
           description="24-month trend of new, active, and churned users."
@@ -142,10 +150,10 @@ export default function ChartsPage() {
             className="w-full"
           />
         </ChartCard>
-      </Section>
+      </LazySection>
 
       {/* Section 2: Bar & Column */}
-      <Section id="bar-column" title="Bar & Column Charts">
+      <LazySection id="bar-column" title="Bar & Column Charts">
         <ChartCard
           title="Monthly Active Users by Region"
           description="Grouped bar chart comparing four regions over 12 months."
@@ -238,10 +246,10 @@ export default function ChartsPage() {
             className="w-full"
           />
         </ChartCard>
-      </Section>
+      </LazySection>
 
       {/* Section 3: Pie, Donut & Sunburst */}
-      <Section id="pie-donut" title="Pie, Donut & Sunburst">
+      <LazySection id="pie-donut" title="Pie, Donut & Sunburst">
         <ChartCard
           title="Tenant Plan Distribution"
           description="Donut chart showing the breakdown of tenants by plan tier."
@@ -285,10 +293,10 @@ export default function ChartsPage() {
             className="w-full"
           />
         </ChartCard>
-      </Section>
+      </LazySection>
 
       {/* Section 4: Scatter & Bubble */}
-      <Section id="scatter-bubble" title="Scatter & Bubble Charts">
+      <LazySection id="scatter-bubble" title="Scatter & Bubble Charts">
         <ChartCard
           title="Session Duration vs. Actions Taken"
           description="Color-encoded by user tier. Hover for details."
@@ -370,10 +378,10 @@ export default function ChartsPage() {
             className="w-full"
           />
         </ChartCard>
-      </Section>
+      </LazySection>
 
       {/* Section 5: Statistical */}
-      <Section id="statistical" title="Statistical Charts">
+      <LazySection id="statistical" title="Statistical Charts">
         <ChartCard
           title="Response Time Distribution by Service"
           description="Box plot showing latency spread across five API services."
@@ -422,16 +430,20 @@ export default function ChartsPage() {
                 color: "#94a3b8",
                 gridcolor: "#1e293b",
               },
-              yaxis: { title: "Count", color: "#94a3b8", gridcolor: "#1e293b" },
+              yaxis: {
+                title: "Count",
+                color: "#94a3b8",
+                gridcolor: "#1e293b",
+              },
             }}
             config={plotConfig}
             className="w-full"
           />
         </ChartCard>
-      </Section>
+      </LazySection>
 
       {/* Section 6: Heatmap & Timeline */}
-      <Section id="heatmap-timeline" title="Heatmap & Timeline">
+      <LazySection id="heatmap-timeline" title="Heatmap & Timeline">
         <ChartCard
           title="Activity by Hour and Day of Week"
           description="7x24 heatmap showing event density. Viridis colorscale."
@@ -484,17 +496,21 @@ export default function ChartsPage() {
             layout={{
               ...baseLayout,
               height: 400,
-              xaxis: { type: "date", color: "#94a3b8", gridcolor: "#1e293b" },
+              xaxis: {
+                type: "date",
+                color: "#94a3b8",
+                gridcolor: "#1e293b",
+              },
               barmode: "stack",
             }}
             config={plotConfig}
             className="w-full"
           />
         </ChartCard>
-      </Section>
+      </LazySection>
 
       {/* Section 7: 3D Charts (full width) */}
-      <Section id="3d-charts" title="3D Charts (WebGL)" fullWidth>
+      <LazySection id="3d-charts" title="3D Charts (WebGL)" fullWidth>
         <ChartCard
           title="3D User Engagement Clustering"
           description="WebGL-rendered 3D scatter: sessions x avg duration x revenue, colored by cluster tier."
@@ -558,10 +574,10 @@ export default function ChartsPage() {
             className="w-full"
           />
         </ChartCard>
-      </Section>
+      </LazySection>
 
       {/* Section 8: Mixed / Combo */}
-      <Section id="mixed-combo" title="Mixed / Combo Charts">
+      <LazySection id="mixed-combo" title="Mixed / Combo Charts">
         <ChartCard
           title="Revenue vs. User Growth"
           description="Bar chart (revenue) with line overlay (user count) on secondary y-axis."
@@ -637,10 +653,10 @@ export default function ChartsPage() {
             className="w-full"
           />
         </ChartCard>
-      </Section>
+      </LazySection>
 
       {/* Section 9: Plotly Table */}
-      <Section id="plotly-table" title="Plotly Table" fullWidth>
+      <LazySection id="plotly-table" title="Plotly Table" fullWidth>
         <ChartCard
           title="Top 10 Tenants — Plotly Table Trace"
           description="This is a Plotly trace, not TanStack Table — compare the two on the Grids page."
@@ -677,12 +693,15 @@ export default function ChartsPage() {
             className="w-full"
           />
         </ChartCard>
-      </Section>
+      </LazySection>
     </div>
   );
 }
 
-function Section({
+/* ================================================================== */
+/* LazySection — renders children only when scrolled into view         */
+/* ================================================================== */
+function LazySection({
   id,
   title,
   children,
@@ -690,16 +709,41 @@ function Section({
 }: {
   id: string;
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
   fullWidth?: boolean;
 }) {
+  const ref = useRef<HTMLElement>(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          setVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" },
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <section id={id} className="mb-10 scroll-mt-6">
+    <section id={id} ref={ref} className="mb-10 scroll-mt-6">
       <h2 className="text-lg font-semibold text-white mb-4">{title}</h2>
       <div
         className={`grid gap-6 ${fullWidth ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-2"}`}
       >
-        {children}
+        {visible ? (
+          children
+        ) : (
+          <div className="animate-pulse rounded-xl bg-slate-800 h-96 col-span-full" />
+        )}
       </div>
     </section>
   );
