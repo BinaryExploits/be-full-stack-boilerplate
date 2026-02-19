@@ -91,15 +91,17 @@ export class EmailService {
       text: renderedEmail.text,
     });
 
-    if (!sendEmailResponse) {
-      Logger.instance.critical(`No response from ${Resend.name} send call`);
-      return;
-    }
-
     if (error) {
       Logger.instance.critical(
         `Failed to send email (${templateName}) to ${to}:`,
         error,
+      );
+      return;
+    }
+
+    if (!sendEmailResponse) {
+      Logger.instance.critical(
+        `No response from ${Resend.name} send call for (${templateName}) to ${to}`,
       );
       return;
     }
