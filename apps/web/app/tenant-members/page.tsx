@@ -208,7 +208,9 @@ export default function TenantMembers() {
                     >
                       <span className="font-medium truncate">{t.name}</span>
                       <span className="shrink-0 ml-2 text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">
-                        {t.role === "TENANT_ADMIN" ? LL.Common.roleAdmin() : LL.Common.roleUser()}
+                        {t.role === "TENANT_ADMIN"
+                          ? LL.Common.roleAdmin()
+                          : LL.Common.roleUser()}
                       </span>
                     </button>
                   </li>
@@ -249,15 +251,21 @@ export default function TenantMembers() {
                         )
                       }
                     >
-                      <option value="TENANT_USER">{LL.Common.roleUser()}</option>
-                      <option value="TENANT_ADMIN">{LL.Common.roleAdmin()}</option>
+                      <option value="TENANT_USER">
+                        {LL.Common.roleUser()}
+                      </option>
+                      <option value="TENANT_ADMIN">
+                        {LL.Common.roleAdmin()}
+                      </option>
                     </select>
                     <button
                       onClick={handleAddMember}
                       disabled={addMember.isPending || !newMemberEmail.trim()}
                       className="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed px-5 py-2 rounded-lg text-white text-sm font-medium transition-colors"
                     >
-                      {addMember.isPending ? LL.Common.adding() : LL.Common.add()}
+                      {addMember.isPending
+                        ? LL.Common.adding()
+                        : LL.Common.add()}
                     </button>
                   </div>
                 </div>
@@ -290,7 +298,9 @@ export default function TenantMembers() {
                               )}
                             </p>
                             <p className="text-xs text-slate-500">
-                              {m.role === "TENANT_ADMIN" ? LL.Common.roleAdmin() : LL.Common.roleUser()}
+                              {m.role === "TENANT_ADMIN"
+                                ? LL.Common.roleAdmin()
+                                : LL.Common.roleUser()}
                             </p>
                           </div>
                           {!isSelf && (

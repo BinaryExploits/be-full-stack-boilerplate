@@ -86,9 +86,7 @@ function VerifyEmailContent() {
         <h1 className="text-2xl font-bold text-gray-900 mb-3">
           {LL.Auth.emailVerified()}
         </h1>
-        <p className="text-gray-600 mb-6">
-          {LL.Auth.emailVerifiedMessage()}
-        </p>
+        <p className="text-gray-600 mb-6">{LL.Auth.emailVerifiedMessage()}</p>
         <Link
           href="/"
           className="text-blue-600 hover:text-blue-700 font-medium"

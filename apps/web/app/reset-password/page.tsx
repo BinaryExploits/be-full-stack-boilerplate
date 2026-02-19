@@ -100,8 +100,7 @@ function ResetPasswordContent() {
     }
 
     router.push(
-      "/sign-in?success=" +
-        encodeURIComponent(LL.Auth.passwordSetSuccess()),
+      "/sign-in?success=" + encodeURIComponent(LL.Auth.passwordSetSuccess()),
     );
   };
 
@@ -113,9 +112,7 @@ function ResetPasswordContent() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
               {LL.Auth.setYourPassword()}
             </h1>
-            <p className="text-gray-600">
-              {LL.Auth.setPasswordSubtitle()}
-            </p>
+            <p className="text-gray-600">{LL.Auth.setPasswordSubtitle()}</p>
           </div>
 
           {error && (

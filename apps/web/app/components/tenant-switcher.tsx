@@ -124,7 +124,9 @@ export function TenantSwitcher() {
                     </div>
                   </div>
                   <span className="shrink-0 ml-2 text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">
-                    {t.role === "TENANT_ADMIN" ? LL.Common.roleAdmin() : LL.Common.roleUser()}
+                    {t.role === "TENANT_ADMIN"
+                      ? LL.Common.roleAdmin()
+                      : LL.Common.roleUser()}
                   </span>
                 </button>
               </li>

@@ -224,7 +224,9 @@ export default function TenantDashboard() {
                   }
                   className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed px-6 py-2 rounded-lg text-white font-semibold transition-all"
                 >
-                  {createTenant.isPending ? LL.Common.adding() : LL.Dashboard.addTenant()}
+                  {createTenant.isPending
+                    ? LL.Common.adding()
+                    : LL.Dashboard.addTenant()}
                 </button>
               </div>
             </div>
@@ -292,7 +294,9 @@ export default function TenantDashboard() {
                               disabled={updateTenant.isPending}
                               className="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 rounded text-white text-sm font-medium"
                             >
-                              {updateTenant.isPending ? LL.Common.saving() : LL.Common.save()}
+                              {updateTenant.isPending
+                                ? LL.Common.saving()
+                                : LL.Common.save()}
                             </button>
                             <button
                               onClick={cancelEdit}
@@ -369,7 +373,9 @@ export default function TenantDashboard() {
                 disabled={tenantList.isRefetching}
                 className="bg-slate-700 hover:bg-slate-600 disabled:opacity-50 px-4 py-2 rounded-lg text-slate-200 font-medium transition-colors"
               >
-                {tenantList.isRefetching ? LL.Common.refreshing() : LL.Dashboard.refreshList()}
+                {tenantList.isRefetching
+                  ? LL.Common.refreshing()
+                  : LL.Dashboard.refreshList()}
               </button>
             </div>
           </>

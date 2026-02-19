@@ -22,7 +22,10 @@ function validateName(
   return null;
 }
 
-function validateEmail(value: string, E: TranslationFunctions["Errors"]): string | null {
+function validateEmail(
+  value: string,
+  E: TranslationFunctions["Errors"],
+): string | null {
   const trimmed = value.trim();
   if (!trimmed) return E.emailRequired();
   if (!EMAIL_REGEX.test(trimmed)) return E.emailInvalid();

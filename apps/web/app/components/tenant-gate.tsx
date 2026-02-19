@@ -72,7 +72,9 @@ export function TenantGate({ children }: { children: React.ReactNode }) {
             className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-b-blue-400 border-transparent"
             aria-hidden
           />
-          <p className="mt-4 text-slate-400 text-sm">{LL.Errors.loadingYourTenants()}</p>
+          <p className="mt-4 text-slate-400 text-sm">
+            {LL.Errors.loadingYourTenants()}
+          </p>
         </div>
       </div>
     );
@@ -104,9 +106,7 @@ export function TenantGate({ children }: { children: React.ReactNode }) {
           <h1 className="text-2xl font-bold text-white mb-3">
             {LL.Errors.noTenantsAssigned()}
           </h1>
-          <p className="text-slate-400">
-            {LL.Errors.noTenantsMessage()}
-          </p>
+          <p className="text-slate-400">{LL.Errors.noTenantsMessage()}</p>
         </div>
       </div>
     );

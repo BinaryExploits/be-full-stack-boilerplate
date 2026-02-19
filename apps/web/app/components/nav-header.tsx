@@ -26,7 +26,9 @@ export function NavHeader() {
             <div className="w-7 h-7 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 flex items-center justify-center">
               <span className="text-slate-900 font-bold text-xs">BE</span>
             </div>
-            <span className="hidden sm:inline text-sm">{LL.Navigation.fullStack()}</span>
+            <span className="hidden sm:inline text-sm">
+              {LL.Navigation.fullStack()}
+            </span>
           </Link>
 
           <div className="flex items-center gap-3">

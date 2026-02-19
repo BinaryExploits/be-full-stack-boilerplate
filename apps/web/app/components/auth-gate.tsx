@@ -68,10 +68,10 @@ function AuthGateLogin() {
         <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 flex items-center justify-center">
           <span className="text-slate-900 font-bold text-xl">BE</span>
         </div>
-        <h1 className="text-2xl font-bold text-white mb-3">{LL.Auth.signInRequired()}</h1>
-        <p className="text-slate-400 mb-8">
-          {LL.Auth.signInRequiredMessage()}
-        </p>
+        <h1 className="text-2xl font-bold text-white mb-3">
+          {LL.Auth.signInRequired()}
+        </h1>
+        <p className="text-slate-400 mb-8">{LL.Auth.signInRequiredMessage()}</p>
         <a
           href="/sign-in"
           className="inline-block bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 px-8 py-3 rounded-lg text-white font-semibold transition-all"

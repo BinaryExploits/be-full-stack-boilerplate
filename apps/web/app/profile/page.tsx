@@ -84,7 +84,10 @@ export default function ProfilePage() {
     if (!authClient) return;
 
     if (newPassword !== confirmPassword) {
-      setPasswordMessage({ type: "error", text: LL.Errors.passwordsDoNotMatch() });
+      setPasswordMessage({
+        type: "error",
+        text: LL.Errors.passwordsDoNotMatch(),
+      });
       return;
     }
     if (newPassword.length < 8) {
@@ -181,10 +184,10 @@ export default function ProfilePage() {
           {LL.Common.backToHome()}
         </Link>
 
-        <h1 className="text-3xl font-bold text-white mb-2">{LL.Settings.profileTitle()}</h1>
-        <p className="text-slate-400 mb-8">
-          {LL.Settings.profileSubtitle()}
-        </p>
+        <h1 className="text-3xl font-bold text-white mb-2">
+          {LL.Settings.profileTitle()}
+        </h1>
+        <p className="text-slate-400 mb-8">{LL.Settings.profileSubtitle()}</p>
 
         {/* Email verification warning */}
         {!user.emailVerified && (
@@ -252,13 +255,17 @@ export default function ProfilePage() {
             {!user.image && (
               <>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400 text-sm">{LL.Forms.name()}</span>
+                  <span className="text-slate-400 text-sm">
+                    {LL.Forms.name()}
+                  </span>
                   <span className="text-white font-medium">
                     {user.name || "—"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400 text-sm">{LL.Forms.email()}</span>
+                  <span className="text-slate-400 text-sm">
+                    {LL.Forms.email()}
+                  </span>
                   <span className="text-white font-medium">{user.email}</span>
                 </div>
               </>
@@ -303,9 +310,13 @@ export default function ProfilePage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-white text-sm font-medium">{LL.Settings.google()}</p>
+                    <p className="text-white text-sm font-medium">
+                      {LL.Settings.google()}
+                    </p>
                     {hasGoogle && (
-                      <p className="text-slate-400 text-xs">{LL.Settings.connected()}</p>
+                      <p className="text-slate-400 text-xs">
+                        {LL.Settings.connected()}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -347,7 +358,9 @@ export default function ProfilePage() {
                       {LL.Settings.emailAndPassword()}
                     </p>
                     {hasCredential && (
-                      <p className="text-slate-400 text-xs">{LL.Settings.passwordSet()}</p>
+                      <p className="text-slate-400 text-xs">
+                        {LL.Settings.passwordSet()}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -368,7 +381,9 @@ export default function ProfilePage() {
 
         {/* Password Management */}
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">{LL.Settings.passwordTitle()}</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">
+            {LL.Settings.passwordTitle()}
+          </h2>
 
           {passwordMessage && (
             <div
@@ -463,7 +478,9 @@ export default function ProfilePage() {
                       disabled={passwordLoading}
                       className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                     >
-                      {passwordLoading ? LL.Common.saving() : LL.Settings.savePassword()}
+                      {passwordLoading
+                        ? LL.Common.saving()
+                        : LL.Settings.savePassword()}
                     </button>
                     <button
                       type="button"
@@ -497,7 +514,9 @@ export default function ProfilePage() {
                   disabled={settingPassword}
                   className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                 >
-                  {settingPassword ? LL.Common.sending() : LL.Auth.setPassword()}
+                  {settingPassword
+                    ? LL.Common.sending()
+                    : LL.Auth.setPassword()}
                 </button>
               )}
             </div>
