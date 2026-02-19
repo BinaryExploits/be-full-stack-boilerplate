@@ -4,18 +4,75 @@ import Link from "next/link";
 import { useState } from "react";
 import { useAuthClient } from "../lib/auth/auth-client";
 
+const NAME_REGEX = /^[a-zA-Z\s'-]+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+function validateName(value: string, label: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return `${label} is required.`;
+  if (trimmed.length < 2) return `${label} must be at least 2 characters.`;
+  if (!NAME_REGEX.test(trimmed))
+    return `${label} can only contain letters, spaces, hyphens, and apostrophes.`;
+  return null;
+}
+
+function validateEmail(value: string): string | null {
+  const trimmed = value.trim();
+  if (!trimmed) return "Email is required.";
+  if (!EMAIL_REGEX.test(trimmed)) return "Please enter a valid email address.";
+  return null;
+}
+
+function validatePassword(value: string): string | null {
+  if (!value) return "Password is required.";
+  if (value.length < 8) return "Password must be at least 8 characters.";
+  if (value.length > 128) return "Password must be at most 128 characters.";
+  if (!/[A-Z]/.test(value))
+    return "Password must contain at least one uppercase letter.";
+  if (!/[a-z]/.test(value))
+    return "Password must contain at least one lowercase letter.";
+  if (!/[0-9]/.test(value))
+    return "Password must contain at least one number.";
+  if (!/[^A-Za-z0-9]/.test(value))
+    return "Password must contain at least one special character.";
+  return null;
+}
+
 export default function SignUpPage() {
   const authClient = useAuthClient();
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
+
+  const validate = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    const firstErr = validateName(firstName, "First name");
+    if (firstErr) errors.firstName = firstErr;
+
+    const lastErr = validateName(lastName, "Last name");
+    if (lastErr) errors.lastName = lastErr;
+
+    const emailErr = validateEmail(email);
+    if (emailErr) errors.email = emailErr;
+
+    const pwErr = validatePassword(password);
+    if (pwErr) errors.password = pwErr;
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!authClient) return;
+
+    if (!validate()) return;
 
     setLoading(true);
     setError(null);
@@ -25,8 +82,10 @@ export default function SignUpPage() {
         ? `${window.location.origin}/verify-email`
         : "/verify-email";
 
+    const fullName = `${firstName.trim()} ${lastName.trim()}`;
+
     const { error: err } = await authClient.signUp.email({
-      name: name.trim(),
+      name: fullName,
       email: email.trim(),
       password,
       callbackURL,
@@ -131,22 +190,65 @@ export default function SignUpPage() {
             }}
             className="space-y-4"
           >
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-gray-700 mb-2"
-              >
-                Name
-              </label>
-              <input
-                type="text"
-                id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-                placeholder="Your name"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-              />
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="first-name"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  First Name
+                </label>
+                <input
+                  type="text"
+                  id="first-name"
+                  value={firstName}
+                  onChange={(e) => {
+                    setFirstName(e.target.value);
+                    if (fieldErrors.firstName)
+                      setFieldErrors((p) => {
+                        const { firstName: _, ...rest } = p;
+                        return rest;
+                      });
+                  }}
+                  required
+                  placeholder="John"
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${fieldErrors.firstName ? "border-red-400" : "border-gray-300"}`}
+                />
+                {fieldErrors.firstName && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {fieldErrors.firstName}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label
+                  htmlFor="last-name"
+                  className="block text-sm font-medium text-gray-700 mb-2"
+                >
+                  Last Name
+                </label>
+                <input
+                  type="text"
+                  id="last-name"
+                  value={lastName}
+                  onChange={(e) => {
+                    setLastName(e.target.value);
+                    if (fieldErrors.lastName)
+                      setFieldErrors((p) => {
+                        const { lastName: _, ...rest } = p;
+                        return rest;
+                      });
+                  }}
+                  required
+                  placeholder="Doe"
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${fieldErrors.lastName ? "border-red-400" : "border-gray-300"}`}
+                />
+                {fieldErrors.lastName && (
+                  <p className="mt-1 text-xs text-red-600">
+                    {fieldErrors.lastName}
+                  </p>
+                )}
+              </div>
             </div>
             <div>
               <label
@@ -159,30 +261,58 @@ export default function SignUpPage() {
                 type="email"
                 id="email"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (fieldErrors.email)
+                    setFieldErrors((p) => {
+                      const { email: _, ...rest } = p;
+                      return rest;
+                    });
+                }}
                 required
                 placeholder="you@example.com"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${fieldErrors.email ? "border-red-400" : "border-gray-300"}`}
               />
+              {fieldErrors.email && (
+                <p className="mt-1 text-xs text-red-600">
+                  {fieldErrors.email}
+                </p>
+              )}
             </div>
             <div suppressHydrationWarning>
               <label
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Password (min 8 characters)
+                Password
               </label>
               <input
                 type="password"
                 id="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (fieldErrors.password)
+                    setFieldErrors((p) => {
+                      const { password: _, ...rest } = p;
+                      return rest;
+                    });
+                }}
                 required
-                minLength={8}
                 maxLength={128}
                 placeholder="••••••••"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${fieldErrors.password ? "border-red-400" : "border-gray-300"}`}
               />
+              {fieldErrors.password ? (
+                <p className="mt-1 text-xs text-red-600">
+                  {fieldErrors.password}
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-gray-500">
+                  Min 8 characters with uppercase, lowercase, number, and
+                  special character.
+                </p>
+              )}
             </div>
             <button
               type="submit"
