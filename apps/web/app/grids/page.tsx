@@ -8,6 +8,7 @@ import {
   DisclosurePanel,
 } from "@headlessui/react";
 import type { ColumnDef } from "@tanstack/react-table";
+import { trpc } from "@repo/trpc/client";
 import { DataTable } from "../components/grid/data-table";
 import {
   EditableCell,
@@ -35,9 +36,20 @@ import {
   type Metric,
   type Task,
 } from "./_data/mock-data";
-import { Plus, Trash2, Download, RefreshCw, ChevronRight } from "lucide-react";
+import {
+  Plus,
+  Trash2,
+  Download,
+  RefreshCw,
+  ChevronRight,
+  Loader2,
+  AlertCircle,
+  Database,
+} from "lucide-react";
 
 const TAB_KEYS = [
+  "crud-live",
+  "global-crud-live",
   "crud",
   "global-crud",
   "tenants",
@@ -47,30 +59,37 @@ const TAB_KEYS = [
 type TabKey = (typeof TAB_KEYS)[number];
 
 const TAB_LABELS: Record<TabKey, string> = {
-  crud: "Crud Records",
-  "global-crud": "Global Crud Records",
-  tenants: "Tenants",
+  "crud-live": "Crud Records",
+  "global-crud-live": "Global Crud Records",
+  crud: "Editable People (Demo)",
+  "global-crud": "Batch Operations (Demo)",
+  tenants: "Tenants (Demo)",
   "read-only": "Metrics (Demo)",
   advanced: "Tasks (Demo)",
 };
 
 const TAB_DESCRIPTIONS: Record<TabKey, string> = {
-  crud: "Editable grid showing Crud entity records. Uses the same shape as the app's tenant-scoped CRUD model.",
+  "crud-live":
+    "Live read-only view of Crud records fetched from the API (Prisma). Reflects actual database state.",
+  "global-crud-live":
+    "Live read-only view of Global Crud records fetched from the API (Prisma). No tenant scoping.",
+  crud: "Demo: Editable grid with in-memory data modeled after the Crud entity shape.",
   "global-crud":
-    "Bulk operations on Global Crud records. Row selection, multi-sort, and batch actions.",
+    "Demo: Bulk operations with row selection, multi-sort, and batch actions on in-memory data.",
   tenants:
-    "Tenant management view grouped by plan tier. Uses the app's Tenant model shape.",
+    "Demo: Tenant management view grouped by plan tier with expandable sub-rows.",
   "read-only":
-    "Read-only analytics metrics. Demo data — numbers are illustrative, not from a live API.",
+    "Demo: Read-only analytics metrics. Illustrative dummy data, not from a live API.",
   advanced:
-    "Rich cell renderers with tags, avatars, priority icons, and expandable details. Demo data.",
+    "Demo: Rich cell renderers with tags, avatars, priority icons, and expandable details.",
 };
 
 export default function GridsPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tabParam = searchParams.get("tab") as TabKey | null;
-  const activeTab = tabParam && TAB_KEYS.includes(tabParam) ? tabParam : "crud";
+  const activeTab =
+    tabParam && TAB_KEYS.includes(tabParam) ? tabParam : "crud-live";
 
   const setActiveTab = useCallback(
     (key: TabKey) => {
@@ -85,10 +104,14 @@ export default function GridsPage() {
         <h1 className="text-2xl font-bold text-white">Data Grids</h1>
         <p className="text-sm text-slate-400 mt-1">
           Grid scenarios powered by TanStack Table v8. Grids marked{" "}
-          <Badge variant="info" className="text-[10px] align-middle">
+          <Badge variant="warning" className="text-[10px] align-middle">
             Demo
           </Badge>{" "}
-          use illustrative dummy data.
+          use illustrative dummy data. Grids marked{" "}
+          <Badge variant="success" className="text-[10px] align-middle">
+            Live
+          </Badge>{" "}
+          fetch real data from the API.
         </p>
       </div>
 
@@ -115,6 +138,8 @@ export default function GridsPage() {
       </p>
 
       {/* Panels */}
+      {activeTab === "crud-live" && <CrudLiveGrid />}
+      {activeTab === "global-crud-live" && <GlobalCrudLiveGrid />}
       {activeTab === "crud" && <CrudGrid />}
       {activeTab === "global-crud" && <GlobalCrudGrid />}
       {activeTab === "tenants" && <TenantsGrid />}
@@ -125,7 +150,174 @@ export default function GridsPage() {
 }
 
 /* ================================================================== */
-/* Scenario A — CRUD Records (Fully Editable)                         */
+/* Live Crud Records — fetched from API via tRPC                      */
+/* ================================================================== */
+interface CrudRecord {
+  id: string;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+function CrudLiveGrid() {
+  const query = trpc.crud.findAllPrisma.useQuery(
+    {},
+    { refetchOnWindowFocus: false },
+  );
+
+  const data: CrudRecord[] =
+    (query.data as { cruds?: CrudRecord[] } | undefined)?.cruds ?? [];
+
+  const columns: ColumnDef<CrudRecord, unknown>[] = [
+    { accessorKey: "id", header: "ID", cell: ReadOnlyCell },
+    { accessorKey: "content", header: "Content", cell: ReadOnlyCell },
+    {
+      accessorKey: "createdAt",
+      header: "Created At",
+      cell: DateCell,
+    },
+    {
+      accessorKey: "updatedAt",
+      header: "Updated At",
+      cell: DateCell,
+    },
+  ];
+
+  if (query.isLoading) {
+    return (
+      <div className="flex items-center justify-center gap-2 py-20 text-slate-400">
+        <Loader2 className="h-5 w-5 animate-spin" />
+        <span>Loading Crud records…</span>
+      </div>
+    );
+  }
+
+  if (query.error) {
+    return (
+      <div className="flex items-center justify-center gap-2 py-20 text-red-400">
+        <AlertCircle className="h-5 w-5" />
+        <span>Failed to load: {query.error.message}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-3">
+        <Badge variant="success">
+          <Database className="h-3 w-3 mr-1 inline" />
+          Live — Prisma
+        </Badge>
+        <span className="text-xs text-slate-400">
+          {data.length} record{data.length !== 1 && "s"}
+        </span>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => void query.refetch()}
+          className="ml-auto"
+        >
+          <RefreshCw
+            className={`h-3.5 w-3.5 ${query.isFetching ? "animate-spin" : ""}`}
+          />
+          Refresh
+        </Button>
+      </div>
+      <DataTable
+        data={data}
+        columns={columns}
+        readOnly
+        enableSearch
+        enablePagination
+        enableColumnVisibility
+        zebraStripe
+      />
+    </div>
+  );
+}
+
+/* ================================================================== */
+/* Live Global Crud Records — fetched from API via tRPC               */
+/* ================================================================== */
+function GlobalCrudLiveGrid() {
+  const query = trpc.globalCrud.findAllPrisma.useQuery(
+    {},
+    { refetchOnWindowFocus: false },
+  );
+
+  const data: CrudRecord[] =
+    (query.data as { items?: CrudRecord[] } | undefined)?.items ?? [];
+
+  const columns: ColumnDef<CrudRecord, unknown>[] = [
+    { accessorKey: "id", header: "ID", cell: ReadOnlyCell },
+    { accessorKey: "content", header: "Content", cell: ReadOnlyCell },
+    {
+      accessorKey: "createdAt",
+      header: "Created At",
+      cell: DateCell,
+    },
+    {
+      accessorKey: "updatedAt",
+      header: "Updated At",
+      cell: DateCell,
+    },
+  ];
+
+  if (query.isLoading) {
+    return (
+      <div className="flex items-center justify-center gap-2 py-20 text-slate-400">
+        <Loader2 className="h-5 w-5 animate-spin" />
+        <span>Loading Global Crud records…</span>
+      </div>
+    );
+  }
+
+  if (query.error) {
+    return (
+      <div className="flex items-center justify-center gap-2 py-20 text-red-400">
+        <AlertCircle className="h-5 w-5" />
+        <span>Failed to load: {query.error.message}</span>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <div className="flex items-center gap-2 mb-3">
+        <Badge variant="success">
+          <Database className="h-3 w-3 mr-1 inline" />
+          Live — Prisma
+        </Badge>
+        <span className="text-xs text-slate-400">
+          {data.length} record{data.length !== 1 && "s"}
+        </span>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={() => void query.refetch()}
+          className="ml-auto"
+        >
+          <RefreshCw
+            className={`h-3.5 w-3.5 ${query.isFetching ? "animate-spin" : ""}`}
+          />
+          Refresh
+        </Button>
+      </div>
+      <DataTable
+        data={data}
+        columns={columns}
+        readOnly
+        enableSearch
+        enablePagination
+        enableColumnVisibility
+        zebraStripe
+      />
+    </div>
+  );
+}
+
+/* ================================================================== */
+/* Demo A — Editable People (Demo)                                    */
 /* ================================================================== */
 function CrudGrid() {
   const [data, setData] = useState<Person[]>(() => [...initialPeople]);
@@ -199,9 +391,7 @@ function CrudGrid() {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <Badge variant="info">
-          Modeled after Crud entity ({data.length} records)
-        </Badge>
+        <Badge variant="warning">Demo — in-memory data</Badge>
         <div className="flex items-center gap-2">
           {modified && <Badge variant="warning">Unsaved changes</Badge>}
           <Button variant="secondary" size="sm" onClick={handleAdd}>
@@ -224,7 +414,7 @@ function CrudGrid() {
 }
 
 /* ================================================================== */
-/* Scenario B — Global CRUD Records (Multi-record batch operations)   */
+/* Demo B — Batch Operations (Demo)                                   */
 /* ================================================================== */
 function GlobalCrudGrid() {
   const [data, setData] = useState<Person[]>(() => [...initialRecords]);
@@ -298,9 +488,7 @@ function GlobalCrudGrid() {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <Badge variant="info">
-          Modeled after GlobalCrud entity ({data.length} records)
-        </Badge>
+        <Badge variant="warning">Demo — in-memory data</Badge>
         {selectedCount > 0 && (
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-300">
@@ -343,7 +531,7 @@ function GlobalCrudGrid() {
 }
 
 /* ================================================================== */
-/* Scenario C — Tenants Grid (Grouped / Nested, Read-Only)            */
+/* Demo C — Tenants (Demo)                                            */
 /* ================================================================== */
 function TenantsGrid() {
   const groupedByPlan = ["Enterprise", "Pro", "Free"] as const;
@@ -413,8 +601,8 @@ function TenantsGrid() {
 
   return (
     <div>
-      <Badge variant="info" className="mb-3">
-        Modeled after Tenant entity ({tenants.length} records)
+      <Badge variant="warning" className="mb-3">
+        Demo — dummy data ({tenants.length} records)
       </Badge>
       {groupedByPlan.map((plan) => {
         const planTenants = tenants.filter((t) => t.plan === plan);
@@ -476,7 +664,7 @@ function TenantsGrid() {
 }
 
 /* ================================================================== */
-/* Scenario D — Read-Only Grid (Display / Report)                     */
+/* Demo D — Metrics (Demo)                                            */
 /* ================================================================== */
 function ReadOnlyGrid() {
   const columns: ColumnDef<Metric, unknown>[] = [
@@ -519,7 +707,7 @@ function ReadOnlyGrid() {
   return (
     <div>
       <Badge variant="warning" className="mb-3">
-        Demo data — not from a live API
+        Demo — dummy data
       </Badge>
       <DataTable
         data={metrics}
@@ -534,7 +722,7 @@ function ReadOnlyGrid() {
 }
 
 /* ================================================================== */
-/* Scenario E — Advanced / Multi-Select Grid                          */
+/* Demo E — Tasks (Demo)                                              */
 /* ================================================================== */
 function AdvancedGrid() {
   const today = new Date("2026-02-19");
@@ -578,7 +766,7 @@ function AdvancedGrid() {
   return (
     <div>
       <Badge variant="warning" className="mb-3">
-        Demo data — not from a live API
+        Demo — dummy data
       </Badge>
       <DataTable
         data={tasks}

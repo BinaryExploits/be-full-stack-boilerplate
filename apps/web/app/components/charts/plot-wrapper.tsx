@@ -21,5 +21,12 @@ export default function Plot(
     data: Record<string, unknown>[];
   },
 ) {
-  return <RawPlot {...(props as any)} />;
+  const height = (props.layout?.height as number) || 400;
+  return (
+    <RawPlot
+      {...(props as any)}
+      useResizeHandler
+      style={{ width: "100%", height }}
+    />
+  );
 }

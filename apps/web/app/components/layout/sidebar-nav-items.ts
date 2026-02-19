@@ -41,16 +41,26 @@ export const navSections: NavSection[] = [
         children: [
           {
             label: "Crud Records",
-            href: "/grids?tab=crud",
+            href: "/grids?tab=crud-live",
             icon: LayoutGrid,
           },
           {
             label: "Global Crud Records",
+            href: "/grids?tab=global-crud-live",
+            icon: LayoutGrid,
+          },
+          {
+            label: "Editable People (Demo)",
+            href: "/grids?tab=crud",
+            icon: LayoutGrid,
+          },
+          {
+            label: "Batch Ops (Demo)",
             href: "/grids?tab=global-crud",
             icon: LayoutGrid,
           },
           {
-            label: "Tenants",
+            label: "Tenants (Demo)",
             href: "/grids?tab=tenants",
             icon: LayoutGrid,
           },
