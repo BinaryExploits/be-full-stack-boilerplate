@@ -13,14 +13,19 @@
     "i18n:generate": "typesafe-i18n"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.9",
     "@repo/trpc": "workspace:*",
     "@repo/ui": "workspace:*",
     "@repo/utils-core": "workspace:*",
     "@tanstack/react-query": "5.76.1",
+    "@tanstack/react-table": "^8.21.3",
     "@trpc/react-query": "11.8.1",
+    "lucide-react": "^0.574.0",
     "next": "^16.1.4",
+    "plotly.js": "^3.3.1",
     "react": "^19.2.3",
-    "react-dom": "^19.2.3"
+    "react-dom": "^19.2.3",
+    "react-plotly.js": "^2.6.0"
   },
   "devDependencies": {
     "@repo/eslint-config": "workspace:*",
@@ -29,6 +34,7 @@
     "@types/node": "^22.15.3",
     "@types/react": "19.2.8",
     "@types/react-dom": "19.1.1",
+    "@types/react-plotly.js": "^2.6.4",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.34.0",
     "eslint-config-next": "^15.5.6",
