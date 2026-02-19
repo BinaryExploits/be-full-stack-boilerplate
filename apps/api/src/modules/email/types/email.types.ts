@@ -1,3 +1,19 @@
+export enum EmailProvider {
+  RESEND = 'resend',
+  AWS_SES = 'aws_ses',
+}
+
+export interface SendEmailOptions {
+  to: string | string[];
+  subject: string;
+  html: string;
+  text?: string;
+  from?: string;
+  provider: EmailProvider;
+}
+
+export type EmailPayload = Omit<SendEmailOptions, 'provider'>;
+
 export interface BaseEmailData {
   companyName: string;
   productName: string;
@@ -31,6 +47,7 @@ export interface SendEmailArgs<T extends EmailTemplateName> {
   to: string;
   templateName: T;
   templateData: EmailTemplateData<T>;
+  provider: EmailProvider;
 }
 
 export interface EmailTemplateMeta {

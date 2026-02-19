@@ -59,6 +59,15 @@ export default function SignUpPage() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
 
+  const clearFieldError = (field: string) => {
+    setFieldErrors((prev) => {
+      if (!(field in prev)) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
+
   const validate = (): boolean => {
     const errors: Record<string, string> = {};
 
@@ -214,11 +223,7 @@ export default function SignUpPage() {
                   value={firstName}
                   onChange={(e) => {
                     setFirstName(e.target.value);
-                    if (fieldErrors.firstName)
-                      setFieldErrors((p) => {
-                        const { firstName: _, ...rest } = p;
-                        return rest;
-                      });
+                    if (fieldErrors.firstName) clearFieldError("firstName");
                   }}
                   required
                   placeholder="John"
@@ -243,11 +248,7 @@ export default function SignUpPage() {
                   value={lastName}
                   onChange={(e) => {
                     setLastName(e.target.value);
-                    if (fieldErrors.lastName)
-                      setFieldErrors((p) => {
-                        const { lastName: _, ...rest } = p;
-                        return rest;
-                      });
+                    if (fieldErrors.lastName) clearFieldError("lastName");
                   }}
                   required
                   placeholder="Doe"
@@ -273,11 +274,7 @@ export default function SignUpPage() {
                 value={email}
                 onChange={(e) => {
                   setEmail(e.target.value);
-                  if (fieldErrors.email)
-                    setFieldErrors((p) => {
-                      const { email: _, ...rest } = p;
-                      return rest;
-                    });
+                  if (fieldErrors.email) clearFieldError("email");
                 }}
                 required
                 placeholder="you@example.com"
@@ -300,11 +297,7 @@ export default function SignUpPage() {
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
-                  if (fieldErrors.password)
-                    setFieldErrors((p) => {
-                      const { password: _, ...rest } = p;
-                      return rest;
-                    });
+                  if (fieldErrors.password) clearFieldError("password");
                 }}
                 required
                 maxLength={128}

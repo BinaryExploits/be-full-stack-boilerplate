@@ -4,6 +4,7 @@ import { expo } from '@better-auth/expo';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { PrismaClient } from '@repo/prisma-db';
 import { EmailService } from '../email/email.service';
+import { EmailProvider } from '../email/types/email.types';
 import { BetterAuthLogger } from '../logger/logger-better-auth';
 import {
   NodeEnvironment,
@@ -29,8 +30,12 @@ export const createBetterAuth = (
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,
-      sendResetPassword: ({ user, url }) => {
-        void emailService.sendPasswordResetEmail(user.email, url);
+      sendResetPassword: async ({ user, url }) => {
+        await emailService.sendPasswordResetEmail(
+          user.email,
+          url,
+          EmailProvider.AWS_SES,
+        );
       },
     },
     account: {
@@ -61,8 +66,12 @@ export const createBetterAuth = (
     emailVerification: {
       autoSignInAfterVerification: true,
       sendOnSignUp: true,
-      sendVerificationEmail: ({ user, url }) => {
-        void emailService.sendEmailVerificationEmail(user.email, url);
+      sendVerificationEmail: async ({ user, url }) => {
+        await emailService.sendEmailVerificationEmail(
+          user.email,
+          url,
+          EmailProvider.AWS_SES,
+        );
       },
     },
     plugins: [
@@ -70,7 +79,12 @@ export const createBetterAuth = (
       emailOTP({
         async sendVerificationOTP({ email, otp, type }) {
           if (type === 'sign-in') {
-            await emailService.sendVerificationEmail(email, otp, type);
+            await emailService.sendVerificationEmail(
+              email,
+              otp,
+              type,
+              EmailProvider.AWS_SES,
+            );
           }
         },
       }),
