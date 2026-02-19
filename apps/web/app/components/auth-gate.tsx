@@ -3,7 +3,14 @@
 import { usePathname } from "next/navigation";
 import { useAuthClient } from "../lib/auth/auth-client";
 
-const PUBLIC_PATHS = ["/auth-demo"];
+const PUBLIC_PATHS = [
+  "/auth-demo",
+  "/sign-in",
+  "/sign-up",
+  "/forgot-password",
+  "/reset-password",
+  "/verify-email",
+];
 
 /**
  * Gate that blocks rendering of children until the user is authenticated.
@@ -69,7 +76,7 @@ function AuthGateLogin() {
           You need to be authenticated to access this application.
         </p>
         <a
-          href="/auth-demo"
+          href="/sign-in"
           className="inline-block bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 px-8 py-3 rounded-lg text-white font-semibold transition-all"
         >
           Sign in

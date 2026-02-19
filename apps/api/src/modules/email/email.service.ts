@@ -6,77 +6,128 @@ import {
   PRODUCT_NAME,
   SUPPORT_EMAIL,
 } from '@repo/utils-core';
-import { Resend } from 'resend';
 import {
+  EmailProvider,
   EmailTemplateName,
   RenderedEmail,
   SendEmailArgs,
 } from './types/email.types';
 import { renderEmail } from './email.renderer';
+import { ResendProvider } from './resend.provider';
+import { AwsSesProvider } from './aws-ses.provider';
 
 @Injectable()
 export class EmailService {
-  private readonly resend: Resend;
-  private readonly fromEmail: string;
-
-  constructor() {
-    this.fromEmail = process.env.RESEND_FROM_EMAIL!;
-    this.resend = new Resend(process.env.RESEND_API_KEY || '');
-  }
+  constructor(
+    private readonly resendProvider: ResendProvider,
+    private readonly awsSesProvider: AwsSesProvider,
+  ) {}
 
   async sendVerificationEmail(
     to: string,
     otp: string,
     type: 'sign-in',
+    provider: EmailProvider,
   ): Promise<void> {
     if (type === 'sign-in') {
       await this.sendEmail({
-        to: to,
+        to,
         templateName: 'sign-in-otp',
         templateData: {
-          otp: otp,
+          otp,
           companyName: COMPANY_NAME,
           productName: PRODUCT_NAME,
           supportEmail: SUPPORT_EMAIL,
         },
+        provider,
       });
     } else {
       Logger.instance.critical('Unsupported email type', type);
     }
   }
 
+  async sendEmailVerificationEmail(
+    to: string,
+    verificationUrl: string,
+    provider: EmailProvider,
+  ): Promise<void> {
+    await this.sendEmail({
+      to,
+      templateName: 'email-verification',
+      templateData: {
+        verificationUrl,
+        companyName: COMPANY_NAME,
+        productName: PRODUCT_NAME,
+        supportEmail: SUPPORT_EMAIL,
+      },
+      provider,
+    });
+  }
+
+  async sendPasswordResetEmail(
+    to: string,
+    resetUrl: string,
+    provider: EmailProvider,
+  ): Promise<void> {
+    await this.sendEmail({
+      to,
+      templateName: 'password-reset',
+      templateData: {
+        resetUrl,
+        companyName: COMPANY_NAME,
+        productName: PRODUCT_NAME,
+        supportEmail: SUPPORT_EMAIL,
+      },
+      provider,
+    });
+  }
+
   private async sendEmail<T extends EmailTemplateName>(
     sendEmailArgs: SendEmailArgs<T>,
   ): Promise<void> {
-    const { to, templateName, templateData } = sendEmailArgs;
+    const { to, templateName, templateData, provider } = sendEmailArgs;
+
+    if (!provider) {
+      throw new Error('Email provider must be explicitly specified.');
+    }
+
     const renderedEmail: RenderedEmail = await renderEmail(
       templateName,
       templateData,
     );
 
-    const { data: sendEmailResponse, error } = await this.resend.emails.send({
-      from: this.fromEmail,
-      to: to,
-      subject: renderedEmail.subject,
-      html: renderedEmail.html,
-      text: renderedEmail.text,
-    });
+    try {
+      let messageId: string;
 
-    if (!sendEmailResponse) {
-      Logger.instance.critical(`No response from ${Resend.name} send call`);
-      return;
-    }
+      switch (provider) {
+        case EmailProvider.RESEND:
+          messageId = await this.resendProvider.send({
+            to,
+            subject: renderedEmail.subject,
+            html: renderedEmail.html,
+            text: renderedEmail.text,
+          });
+          break;
+        case EmailProvider.AWS_SES:
+          messageId = await this.awsSesProvider.send({
+            to,
+            subject: renderedEmail.subject,
+            html: renderedEmail.html,
+            text: renderedEmail.text,
+          });
+          break;
+        default:
+          throw new Error(`Unsupported email provider: ${String(provider)}`);
+      }
 
-    if (error) {
+      Logger.instance.info(
+        `Email (${templateName}) sent successfully to ${to} via ${provider}. ID: ${messageId}`,
+      );
+    } catch (error) {
       Logger.instance.critical(
-        `Failed to send email (${templateName}) to ${to}:`,
+        `Failed to send email (${templateName}) to ${to} via ${provider}:`,
         error,
       );
-      return;
     }
-
-    Logger.instance.info(
-      `Email (${templateName}) sent successfully to ${to}. Email UUID: ${sendEmailResponse.id}`,
-    );
   }
 }

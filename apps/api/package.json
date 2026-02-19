@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@andeanwide/nestjs-rollbar": "^1.0.0",
+    "@aws-sdk/client-ses": "^3.993.0",
     "@better-auth/expo": "1.4.9",
     "@nestjs-cls/transactional": "^3.1.1",
     "@nestjs-cls/transactional-adapter-mongoose": "^1.1.25",
