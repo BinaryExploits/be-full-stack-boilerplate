@@ -9,6 +9,9 @@ import { Suspense, useEffect } from "react";
  *
  * Better-auth verifies the token server-side via GET /api/auth/verify-email,
  * then redirects here. On success: no query params. On failure: ?error=...
+ *
+ * With autoSignInAfterVerification enabled, the user already has a session
+ * on success, so we redirect to home (not sign-in).
  */
 function VerifyEmailContent() {
   const router = useRouter();
@@ -17,7 +20,7 @@ function VerifyEmailContent() {
 
   useEffect(() => {
     if (!errorParam) {
-      const timer = setTimeout(() => router.push("/sign-in"), 3000);
+      const timer = setTimeout(() => router.push("/"), 3000);
       return () => clearTimeout(timer);
     }
   }, [errorParam, router]);
@@ -82,13 +85,13 @@ function VerifyEmailContent() {
           Email Verified!
         </h1>
         <p className="text-gray-600 mb-6">
-          Your email has been verified successfully. Redirecting to sign in...
+          Your email has been verified successfully. Redirecting to home...
         </p>
         <Link
-          href="/sign-in"
+          href="/"
           className="text-blue-600 hover:text-blue-700 font-medium"
         >
-          Go to Sign In now
+          Go to Home now
         </Link>
       </div>
     </div>

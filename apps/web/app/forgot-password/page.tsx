@@ -1,11 +1,22 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuthClient } from "../lib/auth/auth-client";
 
 export default function ForgotPasswordPage() {
   const authClient = useAuthClient();
+  const router = useRouter();
+  const sessionResult = authClient?.useSession?.();
+  const session = sessionResult?.data;
+
+  useEffect(() => {
+    if (session?.user) {
+      router.replace("/");
+    }
+  }, [session, router]);
+
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);

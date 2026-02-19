@@ -3,7 +3,7 @@
 import { Logger } from "@repo/utils-core";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Suspense, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import {
   authClient as authClientDefault,
   useAuthClient,
@@ -30,6 +30,14 @@ function SignInContent() {
   const authClient = useAuthClient();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const sessionResult = authClient?.useSession?.();
+  const session = sessionResult?.data;
+
+  useEffect(() => {
+    if (session?.user) {
+      router.replace("/");
+    }
+  }, [session, router]);
 
   const [view, setView] = useState<AuthView>("choose");
   const [email, setEmail] = useState("");

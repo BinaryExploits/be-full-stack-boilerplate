@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuthClient } from "../lib/auth/auth-client";
 
 const NAME_REGEX = /^[a-zA-Z\s'-]+$/;
@@ -40,6 +41,16 @@ function validatePassword(value: string): string | null {
 
 export default function SignUpPage() {
   const authClient = useAuthClient();
+  const router = useRouter();
+  const sessionResult = authClient?.useSession?.();
+  const session = sessionResult?.data;
+
+  useEffect(() => {
+    if (session?.user) {
+      router.replace("/");
+    }
+  }, [session, router]);
+
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
