@@ -23,13 +23,16 @@ export const createBetterAuth = (
   betterAuthLogger: BetterAuthLogger,
 ) => {
   // noinspection JSUnusedGlobalSymbols
+  const isDevelopment =
+    parseNodeEnvironment(process.env.NODE_ENV) === NodeEnvironment.Development;
+
   return betterAuth({
     trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',') || [],
     basePath: '/api/auth',
     database: createDatabaseAdapter(),
     emailAndPassword: {
       enabled: true,
-      requireEmailVerification: true,
+      requireEmailVerification: !isDevelopment,
       sendResetPassword: async ({ user, url }) => {
         await emailService.sendPasswordResetEmail(
           user.email,
@@ -65,7 +68,7 @@ export const createBetterAuth = (
     },
     emailVerification: {
       autoSignInAfterVerification: true,
-      sendOnSignUp: true,
+      sendOnSignUp: !isDevelopment,
       sendVerificationEmail: async ({ user, url }) => {
         await emailService.sendEmailVerificationEmail(
           user.email,

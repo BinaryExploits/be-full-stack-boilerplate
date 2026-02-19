@@ -1,12 +1,16 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { trpc } from "@repo/trpc/client";
 import { useAuthClient } from "../lib/auth/auth-client";
 import { useI18n } from "../hooks/useI18n";
 
+const TENANT_EXEMPT_PATHS = ["/profile"];
+
 export function TenantGate({ children }: { children: React.ReactNode }) {
   const { LL } = useI18n();
+  const pathname = usePathname();
   const authClient = useAuthClient();
   const sessionResult = authClient?.useSession?.();
   const session = sessionResult?.data;
@@ -61,6 +65,13 @@ export function TenantGate({ children }: { children: React.ReactNode }) {
   }, [tenants, selectedTenantId, switchTenant]);
 
   if (!isAuthenticated) {
+    return <>{children}</>;
+  }
+
+  const isTenantExempt = TENANT_EXEMPT_PATHS.some(
+    (p) => pathname === p || pathname.startsWith(p + "/"),
+  );
+  if (isTenantExempt) {
     return <>{children}</>;
   }
 
