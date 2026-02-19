@@ -1,8 +1,13 @@
+"use client";
+
 import Link from "next/link";
 import { TenantDashboardOnly } from "./components/tenant-dashboard-only";
 import { TenantAdminOnly } from "./components/tenant-admin-only";
+import { useI18n } from "./hooks/useI18n";
 
 export default function Home() {
+  const { LL } = useI18n();
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-8">
       <div className="max-w-4xl w-full">
@@ -12,12 +17,10 @@ export default function Home() {
               <span className="text-slate-900 font-bold text-2xl">BE</span>
             </div>
             <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-              Full Stack Boilerplate
+              {LL.Home.title()}
             </h1>
           </div>
-          <p className="text-slate-400 text-lg">
-            NextJs (Tailwind CSS), NestJs, Expo, tRPC, Better Auth
-          </p>
+          <p className="text-slate-400 text-lg">{LL.Home.subtitle()}</p>
         </div>
 
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -39,14 +42,15 @@ export default function Home() {
                     />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-white">CRUD Demo</h2>
+                <h2 className="text-2xl font-bold text-white">
+                  {LL.Home.crudDemoTitle()}
+                </h2>
               </div>
               <p className="text-slate-400 mb-6">
-                Test Create, Read, Update, Delete operations with tRPC and
-                Prisma integration. Full-stack type safety demonstration.
+                {LL.Home.crudDemoDescription()}
               </p>
               <div className="flex items-center text-blue-400 font-medium group-hover:gap-3 gap-2 transition-all">
-                <span>Try it out</span>
+                <span>{LL.Home.tryItOut()}</span>
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -83,15 +87,14 @@ export default function Home() {
                   </svg>
                 </div>
                 <h2 className="text-2xl font-bold text-white">
-                  Global CRUD Demo
+                  {LL.Home.globalCrudDemoTitle()}
                 </h2>
               </div>
               <p className="text-slate-400 mb-6">
-                Same as CRUD but shared across all tenants. Everyone sees and
-                edits the same data.
+                {LL.Home.globalCrudDemoDescription()}
               </p>
               <div className="flex items-center text-amber-400 font-medium group-hover:gap-3 gap-2 transition-all">
-                <span>Try it out</span>
+                <span>{LL.Home.tryItOut()}</span>
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -129,15 +132,14 @@ export default function Home() {
                     </svg>
                   </div>
                   <h2 className="text-2xl font-bold text-white">
-                    Platform Tenants
+                    {LL.Home.platformTenantsTitle()}
                   </h2>
                 </div>
                 <p className="text-slate-400 mb-6">
-                  Create, edit, and remove tenants across the platform.
-                  Super-admin only.
+                  {LL.Home.platformTenantsDescription()}
                 </p>
                 <div className="flex items-center text-amber-400 font-medium group-hover:gap-3 gap-2 transition-all">
-                  <span>Manage tenants</span>
+                  <span>{LL.Home.manageTenants()}</span>
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -176,14 +178,14 @@ export default function Home() {
                     </svg>
                   </div>
                   <h2 className="text-2xl font-bold text-white">
-                    Manage Members
+                    {LL.Home.manageMembersTitle()}
                   </h2>
                 </div>
                 <p className="text-slate-400 mb-6">
-                  Add or remove members from tenants you administer.
+                  {LL.Home.manageMembersDescription()}
                 </p>
                 <div className="flex items-center text-cyan-400 font-medium group-hover:gap-3 gap-2 transition-all">
-                  <span>Manage members</span>
+                  <span>{LL.Home.manageMembers()}</span>
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -220,14 +222,15 @@ export default function Home() {
                     />
                   </svg>
                 </div>
-                <h2 className="text-2xl font-bold text-white">Auth Demo</h2>
+                <h2 className="text-2xl font-bold text-white">
+                  {LL.Home.authDemoTitle()}
+                </h2>
               </div>
               <p className="text-slate-400 mb-6">
-                Test authentication with Better Auth. OAuth integration with
-                Google, session management, and protected routes.
+                {LL.Home.authDemoDescription()}
               </p>
               <div className="flex items-center text-green-400 font-medium group-hover:gap-3 gap-2 transition-all">
-                <span>Try it out</span>
+                <span>{LL.Home.tryItOut()}</span>
                 <svg
                   className="w-5 h-5"
                   fill="none"
@@ -247,9 +250,7 @@ export default function Home() {
         </div>
 
         <div className="mt-16 text-center">
-          <p className="text-slate-500 text-sm">
-            Built with modern tools for rapid development
-          </p>
+          <p className="text-slate-500 text-sm">{LL.Home.footer()}</p>
         </div>
       </div>
     </main>

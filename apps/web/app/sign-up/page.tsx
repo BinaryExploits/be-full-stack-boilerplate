@@ -4,41 +4,50 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthClient } from "../lib/auth/auth-client";
+import { useI18n } from "../hooks/useI18n";
+import type { TranslationFunctions } from "../../i18n/i18n-types";
 
 const NAME_REGEX = /^[a-zA-Z\s'-]+$/;
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-function validateName(value: string, label: string): string | null {
+function validateName(
+  value: string,
+  label: string,
+  E: TranslationFunctions["Errors"],
+): string | null {
   const trimmed = value.trim();
-  if (!trimmed) return `${label} is required.`;
-  if (trimmed.length < 2) return `${label} must be at least 2 characters.`;
-  if (!NAME_REGEX.test(trimmed))
-    return `${label} can only contain letters, spaces, hyphens, and apostrophes.`;
+  if (!trimmed) return E.nameRequired({ label });
+  if (trimmed.length < 2) return E.nameMinLength({ label });
+  if (!NAME_REGEX.test(trimmed)) return E.nameInvalidChars({ label });
   return null;
 }
 
-function validateEmail(value: string): string | null {
+function validateEmail(
+  value: string,
+  E: TranslationFunctions["Errors"],
+): string | null {
   const trimmed = value.trim();
-  if (!trimmed) return "Email is required.";
-  if (!EMAIL_REGEX.test(trimmed)) return "Please enter a valid email address.";
+  if (!trimmed) return E.emailRequired();
+  if (!EMAIL_REGEX.test(trimmed)) return E.emailInvalid();
   return null;
 }
 
-function validatePassword(value: string): string | null {
-  if (!value) return "Password is required.";
-  if (value.length < 8) return "Password must be at least 8 characters.";
-  if (value.length > 128) return "Password must be at most 128 characters.";
-  if (!/[A-Z]/.test(value))
-    return "Password must contain at least one uppercase letter.";
-  if (!/[a-z]/.test(value))
-    return "Password must contain at least one lowercase letter.";
-  if (!/[0-9]/.test(value)) return "Password must contain at least one number.";
-  if (!/[^A-Za-z0-9]/.test(value))
-    return "Password must contain at least one special character.";
+function validatePassword(
+  value: string,
+  E: TranslationFunctions["Errors"],
+): string | null {
+  if (!value) return E.passwordRequired();
+  if (value.length < 8) return E.passwordMinLength();
+  if (value.length > 128) return E.passwordMaxLength();
+  if (!/[A-Z]/.test(value)) return E.passwordUppercase();
+  if (!/[a-z]/.test(value)) return E.passwordLowercase();
+  if (!/[0-9]/.test(value)) return E.passwordNumber();
+  if (!/[^A-Za-z0-9]/.test(value)) return E.passwordSpecialChar();
   return null;
 }
 
 export default function SignUpPage() {
+  const { LL } = useI18n();
   const authClient = useAuthClient();
   const router = useRouter();
   const sessionResult = authClient?.useSession?.();
@@ -70,17 +79,18 @@ export default function SignUpPage() {
 
   const validate = (): boolean => {
     const errors: Record<string, string> = {};
+    const E = LL.Errors;
 
-    const firstErr = validateName(firstName, "First name");
+    const firstErr = validateName(firstName, LL.Forms.firstName(), E);
     if (firstErr) errors.firstName = firstErr;
 
-    const lastErr = validateName(lastName, "Last name");
+    const lastErr = validateName(lastName, LL.Forms.lastName(), E);
     if (lastErr) errors.lastName = lastErr;
 
-    const emailErr = validateEmail(email);
+    const emailErr = validateEmail(email, E);
     if (emailErr) errors.email = emailErr;
 
-    const pwErr = validatePassword(password);
+    const pwErr = validatePassword(password, E);
     if (pwErr) errors.password = pwErr;
 
     setFieldErrors(errors);
@@ -117,11 +127,9 @@ export default function SignUpPage() {
         err.message?.toLowerCase().includes("user already exists") ||
         err.message?.toLowerCase().includes("already in use")
       ) {
-        setError(
-          "An account with this email already exists. Try signing in instead — if you used Google or OTP, you can set a password from your profile.",
-        );
+        setError(LL.Errors.accountAlreadyExists());
       } else {
-        setError(err.message ?? "Sign up failed. Please try again.");
+        setError(err.message ?? LL.Errors.signUpFailed());
       }
       return;
     }
@@ -149,19 +157,16 @@ export default function SignUpPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-3">
-            Check your inbox
+            {LL.Auth.checkYourInbox()}
           </h1>
           <p className="text-gray-600 mb-6">
-            We&apos;ve sent a verification email to{" "}
-            <span className="font-medium text-gray-900">{email}</span>. Please
-            check your inbox and click the link to verify your account before
-            signing in.
+            {LL.Auth.checkInboxMessage({ email })}
           </p>
           <Link
             href="/sign-in"
             className="inline-block text-blue-600 hover:text-blue-700 font-medium transition-colors"
           >
-            Go to Sign In
+            {LL.Auth.goToSignIn()}
           </Link>
         </div>
       </div>
@@ -174,11 +179,9 @@ export default function SignUpPage() {
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Create an account
+              {LL.Auth.signUpTitle()}
             </h1>
-            <p className="text-gray-600">
-              Sign up with your email and password
-            </p>
+            <p className="text-gray-600">{LL.Auth.signUpSubtitle()}</p>
           </div>
 
           {error && (
@@ -215,7 +218,7 @@ export default function SignUpPage() {
                   htmlFor="first-name"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  First Name
+                  {LL.Forms.firstName()}
                 </label>
                 <input
                   type="text"
@@ -226,7 +229,7 @@ export default function SignUpPage() {
                     if (fieldErrors.firstName) clearFieldError("firstName");
                   }}
                   required
-                  placeholder="John"
+                  placeholder={LL.Forms.firstNamePlaceholder()}
                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${fieldErrors.firstName ? "border-red-400" : "border-gray-300"}`}
                 />
                 {fieldErrors.firstName && (
@@ -240,7 +243,7 @@ export default function SignUpPage() {
                   htmlFor="last-name"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Last Name
+                  {LL.Forms.lastName()}
                 </label>
                 <input
                   type="text"
@@ -251,7 +254,7 @@ export default function SignUpPage() {
                     if (fieldErrors.lastName) clearFieldError("lastName");
                   }}
                   required
-                  placeholder="Doe"
+                  placeholder={LL.Forms.lastNamePlaceholder()}
                   className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${fieldErrors.lastName ? "border-red-400" : "border-gray-300"}`}
                 />
                 {fieldErrors.lastName && (
@@ -266,7 +269,7 @@ export default function SignUpPage() {
                 htmlFor="email"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Email
+                {LL.Forms.email()}
               </label>
               <input
                 type="email"
@@ -277,7 +280,7 @@ export default function SignUpPage() {
                   if (fieldErrors.email) clearFieldError("email");
                 }}
                 required
-                placeholder="you@example.com"
+                placeholder={LL.Forms.emailPlaceholder()}
                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${fieldErrors.email ? "border-red-400" : "border-gray-300"}`}
               />
               {fieldErrors.email && (
@@ -289,7 +292,7 @@ export default function SignUpPage() {
                 htmlFor="password"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Password
+                {LL.Forms.password()}
               </label>
               <input
                 type="password"
@@ -301,7 +304,7 @@ export default function SignUpPage() {
                 }}
                 required
                 maxLength={128}
-                placeholder="••••••••"
+                placeholder={LL.Forms.passwordPlaceholder()}
                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${fieldErrors.password ? "border-red-400" : "border-gray-300"}`}
               />
               {fieldErrors.password ? (
@@ -310,8 +313,7 @@ export default function SignUpPage() {
                 </p>
               ) : (
                 <p className="mt-1 text-xs text-gray-500">
-                  Min 8 characters with uppercase, lowercase, number, and
-                  special character.
+                  {LL.Auth.passwordMinChars()}
                 </p>
               )}
             </div>
@@ -320,17 +322,17 @@ export default function SignUpPage() {
               disabled={loading}
               className="w-full px-4 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Creating account..." : "Sign up"}
+              {loading ? LL.Auth.creatingAccount() : LL.Auth.signUp()}
             </button>
           </form>
 
           <p className="mt-6 text-center text-sm text-gray-600">
-            Already have an account?{" "}
+            {LL.Auth.alreadyHaveAccount()}{" "}
             <Link
               href="/sign-in"
               className="text-blue-600 hover:text-blue-700 font-medium"
             >
-              Sign in
+              {LL.Auth.signIn()}
             </Link>
           </p>
         </div>

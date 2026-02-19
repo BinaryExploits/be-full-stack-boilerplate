@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthClient } from "../lib/auth/auth-client";
+import { useI18n } from "../hooks/useI18n";
 
 export default function ForgotPasswordPage() {
+  const { LL } = useI18n();
   const authClient = useAuthClient();
   const router = useRouter();
   const sessionResult = authClient?.useSession?.();
@@ -47,12 +49,12 @@ export default function ForgotPasswordPage() {
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Forgot Password
+              {LL.Auth.forgotPasswordTitle()}
             </h1>
             <p className="text-gray-600">
               {submitted
-                ? "Check your inbox"
-                : "Enter your email to receive a password reset link"}
+                ? LL.Auth.checkYourInbox()
+                : LL.Auth.forgotPasswordSubtitle()}
             </p>
           </div>
 
@@ -74,14 +76,13 @@ export default function ForgotPasswordPage() {
                 </svg>
               </div>
               <p className="text-gray-600 mb-6">
-                If an account exists with this email, you&apos;ll receive a link
-                to set your password.
+                {LL.Auth.resetLinkSentMessage()}
               </p>
               <Link
                 href="/sign-in"
                 className="text-blue-600 hover:text-blue-700 font-medium"
               >
-                Back to Sign In
+                {LL.Auth.backToSignIn()}
               </Link>
             </div>
           ) : (
@@ -97,7 +98,7 @@ export default function ForgotPasswordPage() {
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Email Address
+                  {LL.Forms.emailAddress()}
                 </label>
                 <input
                   type="email"
@@ -105,7 +106,7 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  placeholder="you@example.com"
+                  placeholder={LL.Forms.emailPlaceholder()}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -114,14 +115,14 @@ export default function ForgotPasswordPage() {
                 disabled={loading}
                 className="w-full px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Sending..." : "Send Reset Link"}
+                {loading ? LL.Common.sending() : LL.Auth.sendResetLink()}
               </button>
               <p className="text-center text-sm text-gray-600">
                 <Link
                   href="/sign-in"
                   className="text-blue-600 hover:text-blue-700 font-medium"
                 >
-                  Back to Sign In
+                  {LL.Auth.backToSignIn()}
                 </Link>
               </p>
             </form>

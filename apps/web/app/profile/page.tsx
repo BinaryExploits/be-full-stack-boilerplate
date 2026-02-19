@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useAuthClient } from "../lib/auth/auth-client";
+import { useI18n } from "../hooks/useI18n";
 
 interface AccountInfo {
   id: string;
@@ -11,6 +12,7 @@ interface AccountInfo {
 }
 
 export default function ProfilePage() {
+  const { LL } = useI18n();
   const authClient = useAuthClient();
   const sessionResult = authClient?.useSession?.();
   const session = sessionResult?.data;
@@ -82,13 +84,16 @@ export default function ProfilePage() {
     if (!authClient) return;
 
     if (newPassword !== confirmPassword) {
-      setPasswordMessage({ type: "error", text: "Passwords do not match." });
+      setPasswordMessage({
+        type: "error",
+        text: LL.Errors.passwordsDoNotMatch(),
+      });
       return;
     }
     if (newPassword.length < 8) {
       setPasswordMessage({
         type: "error",
-        text: "Password must be at least 8 characters.",
+        text: LL.Errors.passwordMinLength(),
       });
       return;
     }
@@ -107,14 +112,14 @@ export default function ProfilePage() {
     if (error) {
       setPasswordMessage({
         type: "error",
-        text: error.message ?? "Failed to change password.",
+        text: error.message ?? LL.Errors.failedChangePassword(),
       });
       return;
     }
 
     setPasswordMessage({
       type: "success",
-      text: "Password changed successfully.",
+      text: LL.Errors.passwordChangedSuccess(),
     });
     setCurrentPassword("");
     setNewPassword("");
@@ -176,13 +181,13 @@ export default function ProfilePage() {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          Back to Home
+          {LL.Common.backToHome()}
         </Link>
 
-        <h1 className="text-3xl font-bold text-white mb-2">Profile</h1>
-        <p className="text-slate-400 mb-8">
-          Manage your account security and linked sign-in methods.
-        </p>
+        <h1 className="text-3xl font-bold text-white mb-2">
+          {LL.Settings.profileTitle()}
+        </h1>
+        <p className="text-slate-400 mb-8">{LL.Settings.profileSubtitle()}</p>
 
         {/* Email verification warning */}
         {!user.emailVerified && (
@@ -203,14 +208,14 @@ export default function ProfilePage() {
               </svg>
               <div className="flex-1">
                 <p className="text-amber-200 font-medium text-sm">
-                  Your email is not verified
+                  {LL.Settings.emailNotVerified()}
                 </p>
                 <p className="text-amber-300/70 text-sm mt-1">
-                  Please verify your email to access all features.
+                  {LL.Settings.verifyEmailPrompt()}
                 </p>
                 {verificationSent ? (
                   <p className="text-emerald-400 text-sm mt-2">
-                    Verification email sent! Check your inbox.
+                    {LL.Auth.verificationEmailSent()}
                   </p>
                 ) : (
                   <button
@@ -219,8 +224,8 @@ export default function ProfilePage() {
                     className="mt-2 text-sm font-medium text-amber-300 hover:text-amber-200 underline disabled:opacity-50"
                   >
                     {resendingVerification
-                      ? "Sending..."
-                      : "Resend verification email"}
+                      ? LL.Common.sending()
+                      : LL.Auth.resendVerificationEmail()}
                   </button>
                 )}
               </div>
@@ -231,14 +236,14 @@ export default function ProfilePage() {
         {/* User info */}
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6">
           <h2 className="text-lg font-semibold text-white mb-4">
-            Account Info
+            {LL.Settings.accountInfo()}
           </h2>
           <div className="space-y-3">
             {user.image && (
               <div className="flex items-center gap-4">
                 <img
                   src={user.image}
-                  alt="Profile"
+                  alt={LL.Settings.profileTitle()}
                   className="w-12 h-12 rounded-full border-2 border-slate-600"
                 />
                 <div>
@@ -250,13 +255,17 @@ export default function ProfilePage() {
             {!user.image && (
               <>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400 text-sm">Name</span>
+                  <span className="text-slate-400 text-sm">
+                    {LL.Forms.name()}
+                  </span>
                   <span className="text-white font-medium">
                     {user.name || "—"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400 text-sm">Email</span>
+                  <span className="text-slate-400 text-sm">
+                    {LL.Forms.email()}
+                  </span>
                   <span className="text-white font-medium">{user.email}</span>
                 </div>
               </>
@@ -267,13 +276,13 @@ export default function ProfilePage() {
         {/* Linked Accounts */}
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6">
           <h2 className="text-lg font-semibold text-white mb-4">
-            Linked Accounts
+            {LL.Settings.linkedAccounts()}
           </h2>
 
           {loadingAccounts ? (
             <div className="flex items-center gap-2 text-slate-400 text-sm">
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-b-blue-400 border-transparent" />
-              Loading...
+              {LL.Common.loading()}
             </div>
           ) : (
             <div className="space-y-4">
@@ -301,23 +310,27 @@ export default function ProfilePage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-white text-sm font-medium">Google</p>
+                    <p className="text-white text-sm font-medium">
+                      {LL.Settings.google()}
+                    </p>
                     {hasGoogle && (
-                      <p className="text-slate-400 text-xs">Connected</p>
+                      <p className="text-slate-400 text-xs">
+                        {LL.Settings.connected()}
+                      </p>
                     )}
                   </div>
                 </div>
                 {hasGoogle ? (
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-900/40 text-emerald-400 border border-emerald-700/50">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    Connected
+                    {LL.Settings.connected()}
                   </span>
                 ) : (
                   <button
                     onClick={handleConnectGoogle}
                     className="px-3 py-1.5 text-xs font-medium text-blue-400 border border-blue-500/50 rounded-lg hover:bg-blue-500/10 transition-colors"
                   >
-                    Connect Google
+                    {LL.Settings.connectGoogle()}
                   </button>
                 )}
               </div>
@@ -342,21 +355,23 @@ export default function ProfilePage() {
                   </div>
                   <div>
                     <p className="text-white text-sm font-medium">
-                      Email &amp; Password
+                      {LL.Settings.emailAndPassword()}
                     </p>
                     {hasCredential && (
-                      <p className="text-slate-400 text-xs">Password set</p>
+                      <p className="text-slate-400 text-xs">
+                        {LL.Settings.passwordSet()}
+                      </p>
                     )}
                   </div>
                 </div>
                 {hasCredential ? (
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-900/40 text-emerald-400 border border-emerald-700/50">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    Connected
+                    {LL.Settings.connected()}
                   </span>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-700 text-slate-400 border border-slate-600">
-                    Not set
+                    {LL.Settings.notSet()}
                   </span>
                 )}
               </div>
@@ -366,7 +381,9 @@ export default function ProfilePage() {
 
         {/* Password Management */}
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">Password</h2>
+          <h2 className="text-lg font-semibold text-white mb-4">
+            {LL.Settings.passwordTitle()}
+          </h2>
 
           {passwordMessage && (
             <div
@@ -390,7 +407,7 @@ export default function ProfilePage() {
                   }}
                   className="px-4 py-2 text-sm font-medium text-blue-400 border border-blue-500/50 rounded-lg hover:bg-blue-500/10 transition-colors"
                 >
-                  Change Password
+                  {LL.Settings.changePassword()}
                 </button>
               ) : (
                 <form
@@ -405,7 +422,7 @@ export default function ProfilePage() {
                       htmlFor="current-pw"
                       className="block text-sm text-slate-400 mb-1"
                     >
-                      Current Password
+                      {LL.Settings.currentPassword()}
                     </label>
                     <input
                       type="password"
@@ -414,7 +431,7 @@ export default function ProfilePage() {
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       required
                       className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      placeholder="••••••••"
+                      placeholder={LL.Forms.passwordPlaceholder()}
                     />
                   </div>
                   <div>
@@ -422,7 +439,7 @@ export default function ProfilePage() {
                       htmlFor="new-pw"
                       className="block text-sm text-slate-400 mb-1"
                     >
-                      New Password (min 8 characters)
+                      {LL.Settings.newPasswordLabel()}
                     </label>
                     <input
                       type="password"
@@ -433,7 +450,7 @@ export default function ProfilePage() {
                       minLength={8}
                       maxLength={128}
                       className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      placeholder="••••••••"
+                      placeholder={LL.Forms.passwordPlaceholder()}
                     />
                   </div>
                   <div>
@@ -441,7 +458,7 @@ export default function ProfilePage() {
                       htmlFor="confirm-pw"
                       className="block text-sm text-slate-400 mb-1"
                     >
-                      Confirm New Password
+                      {LL.Settings.confirmNewPassword()}
                     </label>
                     <input
                       type="password"
@@ -452,7 +469,7 @@ export default function ProfilePage() {
                       minLength={8}
                       maxLength={128}
                       className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                      placeholder="••••••••"
+                      placeholder={LL.Forms.passwordPlaceholder()}
                     />
                   </div>
                   <div className="flex gap-3">
@@ -461,7 +478,9 @@ export default function ProfilePage() {
                       disabled={passwordLoading}
                       className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                     >
-                      {passwordLoading ? "Saving..." : "Save Password"}
+                      {passwordLoading
+                        ? LL.Common.saving()
+                        : LL.Settings.savePassword()}
                     </button>
                     <button
                       type="button"
@@ -474,7 +493,7 @@ export default function ProfilePage() {
                       }}
                       className="px-4 py-2 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
                     >
-                      Cancel
+                      {LL.Common.cancel()}
                     </button>
                   </div>
                 </form>
@@ -483,11 +502,11 @@ export default function ProfilePage() {
           ) : (
             <div>
               <p className="text-slate-400 text-sm mb-3">
-                Add a password to sign in without Google or OTP.
+                {LL.Settings.addPasswordDescription()}
               </p>
               {setPasswordSent ? (
                 <p className="text-emerald-400 text-sm">
-                  Check your inbox to set your password.
+                  {LL.Settings.checkInboxForPassword()}
                 </p>
               ) : (
                 <button
@@ -495,7 +514,9 @@ export default function ProfilePage() {
                   disabled={settingPassword}
                   className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                 >
-                  {settingPassword ? "Sending..." : "Set Password"}
+                  {settingPassword
+                    ? LL.Common.sending()
+                    : LL.Auth.setPassword()}
                 </button>
               )}
             </div>

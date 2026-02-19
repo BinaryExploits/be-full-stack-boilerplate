@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { trpc } from "@repo/trpc/client";
+import { useI18n } from "../hooks/useI18n";
 
 interface TenantInfo {
   id: string;
@@ -11,6 +12,7 @@ interface TenantInfo {
 }
 
 export function TenantSwitcher() {
+  const { LL } = useI18n();
   const utils = trpc.useUtils();
   const myTenants = trpc.tenant.myTenants.useQuery(undefined, {
     refetchOnWindowFocus: false,
@@ -79,8 +81,8 @@ export function TenantSwitcher() {
         </svg>
         <span className="max-w-[140px] truncate">
           {switchTenant.isPending
-            ? "Switching..."
-            : (currentTenant?.name ?? "Select tenant")}
+            ? LL.Navigation.switching()
+            : (currentTenant?.name ?? LL.Navigation.selectTenant())}
         </span>
         <svg
           className={`w-3 h-3 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
@@ -101,7 +103,7 @@ export function TenantSwitcher() {
         <div className="absolute right-0 top-full mt-1 z-50 w-64 bg-slate-800 border border-slate-600 rounded-lg shadow-xl overflow-hidden">
           <div className="px-3 py-2 border-b border-slate-700">
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
-              Switch tenant
+              {LL.Navigation.switchTenant()}
             </p>
           </div>
           <ul className="max-h-60 overflow-y-auto py-1">
@@ -122,7 +124,9 @@ export function TenantSwitcher() {
                     </div>
                   </div>
                   <span className="shrink-0 ml-2 text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">
-                    {t.role === "TENANT_ADMIN" ? "Admin" : "User"}
+                    {t.role === "TENANT_ADMIN"
+                      ? LL.Common.roleAdmin()
+                      : LL.Common.roleUser()}
                   </span>
                 </button>
               </li>

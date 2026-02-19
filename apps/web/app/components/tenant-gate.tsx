@@ -3,15 +3,10 @@
 import { useEffect, useRef } from "react";
 import { trpc } from "@repo/trpc/client";
 import { useAuthClient } from "../lib/auth/auth-client";
+import { useI18n } from "../hooks/useI18n";
 
-/**
- * After auth, loads the user's tenants via myTenants (auth-only tier — no tenant required).
- * If the user has tenants but none selected, auto-selects the first one before rendering children.
- * If the user has no tenants and is a Super Admin, lets them through (so they can create tenants).
- * If the user has no tenants and is NOT a Super Admin, shows a message.
- * If the user is NOT authenticated, passes through (AuthGate handles that).
- */
 export function TenantGate({ children }: { children: React.ReactNode }) {
+  const { LL } = useI18n();
   const authClient = useAuthClient();
   const sessionResult = authClient?.useSession?.();
   const session = sessionResult?.data;
@@ -65,7 +60,6 @@ export function TenantGate({ children }: { children: React.ReactNode }) {
     }
   }, [tenants, selectedTenantId, switchTenant]);
 
-  // Not authenticated — let AuthGate handle it; don't block on tenants.
   if (!isAuthenticated) {
     return <>{children}</>;
   }
@@ -78,7 +72,9 @@ export function TenantGate({ children }: { children: React.ReactNode }) {
             className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-b-blue-400 border-transparent"
             aria-hidden
           />
-          <p className="mt-4 text-slate-400 text-sm">Loading your tenants...</p>
+          <p className="mt-4 text-slate-400 text-sm">
+            {LL.Errors.loadingYourTenants()}
+          </p>
         </div>
       </div>
     );
@@ -108,12 +104,9 @@ export function TenantGate({ children }: { children: React.ReactNode }) {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-white mb-3">
-            No tenants assigned
+            {LL.Errors.noTenantsAssigned()}
           </h1>
-          <p className="text-slate-400">
-            You don&apos;t have access to any tenants yet. Please contact an
-            administrator to get added to a tenant.
-          </p>
+          <p className="text-slate-400">{LL.Errors.noTenantsMessage()}</p>
         </div>
       </div>
     );
@@ -128,7 +121,7 @@ export function TenantGate({ children }: { children: React.ReactNode }) {
             aria-hidden
           />
           <p className="mt-4 text-slate-400 text-sm">
-            Setting up your tenant...
+            {LL.Errors.settingUpTenant()}
           </p>
         </div>
       </div>

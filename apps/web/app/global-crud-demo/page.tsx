@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@repo/trpc/client";
 import Link from "next/link";
+import { useI18n } from "../hooks/useI18n";
 
 type DbType = "mongoose" | "prisma";
 
@@ -12,6 +13,7 @@ interface GlobalCrudItem {
 }
 
 function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
+  const { LL } = useI18n();
   const utils = trpc.useUtils();
   const [content, setContent] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -89,7 +91,7 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
     if (list.isLoading) {
       return (
         <div className="p-8 text-center">
-          <p className="text-slate-400">Loading items...</p>
+          <p className="text-slate-400">{LL.Common.loadingItems()}</p>
         </div>
       );
     }
@@ -99,8 +101,7 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
         <div>
           <div className="px-6 py-4 bg-slate-600 border-b border-slate-500">
             <p className="text-sm font-semibold text-slate-300 uppercase tracking-wide">
-              {list.data.items.length}{" "}
-              {list.data.items.length === 1 ? "Item" : "Items"} (global)
+              {LL.Common.itemCountGlobal({ count: list.data.items.length })}
             </p>
           </div>
           <ul className="divide-y divide-slate-600">
@@ -167,9 +168,7 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
 
     return (
       <div className="p-12 text-center">
-        <p className="text-slate-400 text-lg">
-          No items yet. Add one to get started!
-        </p>
+        <p className="text-slate-400 text-lg">{LL.Common.noItemsYet()}</p>
       </div>
     );
   };
@@ -197,7 +196,7 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
         <div className="flex gap-3">
           <input
             className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:border-transparent transition"
-            placeholder="Add text here"
+            placeholder={LL.Dashboard.addTextPlaceholder()}
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleCreate()}
@@ -208,7 +207,7 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
             disabled={!content.trim() || createItem.isPending}
             className={`bg-gradient-to-r ${buttonColors} disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed px-6 py-3 rounded-lg text-white font-semibold transition-all duration-200 shadow-lg`}
           >
-            {createItem.isPending ? "Adding..." : "Add"}
+            {createItem.isPending ? LL.Common.adding() : LL.Common.add()}
           </button>
         </div>
       </div>
@@ -219,7 +218,7 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
           disabled={list.isRefetching}
           className={`bg-gradient-to-r ${buttonColors} disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed px-4 py-2 rounded-lg text-white font-semibold transition-colors`}
         >
-          {list.isRefetching ? "Refreshing..." : "Refresh"}
+          {list.isRefetching ? LL.Common.refreshing() : LL.Common.refresh()}
         </button>
       </div>
 
@@ -231,6 +230,8 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
 }
 
 export default function GlobalCrudDemo() {
+  const { LL } = useI18n();
+
   return (
     <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
       <div className="max-w-7xl mx-auto">
@@ -251,19 +252,18 @@ export default function GlobalCrudDemo() {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          Back to Home
+          {LL.Common.backToHome()}
         </Link>
 
         <div className="mb-12 text-center">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 bg-clip-text text-transparent mb-4">
-            Global CRUD Demo
+            {LL.Dashboard.globalCrudDemoTitle()}
           </h1>
           <p className="text-slate-400 text-lg">
-            Same as CRUD but shared across all tenants. Everyone sees and edits
-            the same data.
+            {LL.Dashboard.globalCrudDemoSubtitle()}
           </p>
           <p className="text-slate-500 text-sm mt-2">
-            Mongoose (MongoDB) & Prisma (PostgreSQL) • No tenant scope
+            {LL.Dashboard.globalCrudDemoTechStack()}
           </p>
         </div>
 

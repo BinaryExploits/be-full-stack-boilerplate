@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { trpc } from "@repo/trpc/client";
 import Link from "next/link";
+import { useI18n } from "../hooks/useI18n";
 
 interface TenantItem {
   id: string;
@@ -11,6 +12,7 @@ interface TenantItem {
 }
 
 export default function TenantDashboard() {
+  const { LL } = useI18n();
   const utils = trpc.useUtils();
   const [name, setName] = useState("");
   const [slug, setSlug] = useState("");
@@ -57,17 +59,15 @@ export default function TenantDashboard() {
     const trimmedName = name.trim();
     const trimmedSlug = slug.trim().toLowerCase().replace(/\s+/g, "-");
     if (!trimmedName) {
-      setErrorMessage("Name is required");
+      setErrorMessage(LL.Errors.nameFieldRequired());
       return;
     }
     if (!trimmedSlug) {
-      setErrorMessage("Slug is required");
+      setErrorMessage(LL.Errors.slugRequired());
       return;
     }
     if (!/^[a-z0-9-]+$/.test(trimmedSlug)) {
-      setErrorMessage(
-        "Slug must be lowercase letters, numbers, and hyphens only",
-      );
+      setErrorMessage(LL.Errors.slugInvalid());
       return;
     }
     createTenant.mutate({
@@ -94,17 +94,15 @@ export default function TenantDashboard() {
     const trimmedName = editName.trim();
     const trimmedSlug = editSlug.trim().toLowerCase().replace(/\s+/g, "-");
     if (!trimmedName) {
-      setErrorMessage("Name is required");
+      setErrorMessage(LL.Errors.nameFieldRequired());
       return;
     }
     if (!trimmedSlug) {
-      setErrorMessage("Slug is required");
+      setErrorMessage(LL.Errors.slugRequired());
       return;
     }
     if (!/^[a-z0-9-]+$/.test(trimmedSlug)) {
-      setErrorMessage(
-        "Slug must be lowercase letters, numbers, and hyphens only",
-      );
+      setErrorMessage(LL.Errors.slugInvalid());
       return;
     }
     updateTenant.mutate({
@@ -115,11 +113,7 @@ export default function TenantDashboard() {
   };
 
   const handleDelete = (id: string, slug: string) => {
-    if (
-      !globalThis.window?.confirm(
-        `Delete tenant "${slug}"? This cannot be undone.`,
-      )
-    )
+    if (!globalThis.window?.confirm(LL.Dashboard.deleteConfirm({ slug })))
       return;
     deleteTenant.mutate({ id });
   };
@@ -151,28 +145,27 @@ export default function TenantDashboard() {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          Back to Home
+          {LL.Common.backToHome()}
         </Link>
 
         <div className="mb-12 text-center">
           <h1 className="text-4xl font-bold bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 bg-clip-text text-transparent mb-4">
-            Platform Tenants
+            {LL.Dashboard.platformTenantsTitle()}
           </h1>
           <p className="text-slate-400 text-lg">
-            Create, edit, and remove tenants. Super-admin only.
+            {LL.Dashboard.platformTenantsSubtitle()}
           </p>
         </div>
 
         {isUnauth && (
           <div className="mb-6 p-4 bg-amber-900/30 border border-amber-600 rounded-lg text-amber-200">
-            You must be logged in to access this page.
+            {LL.Dashboard.mustBeLoggedIn()}
           </div>
         )}
 
         {isForbidden && (
           <div className="mb-6 p-4 bg-red-900/30 border border-red-600 rounded-lg text-red-200">
-            Super-admin access required. Your email must be in
-            SUPER_ADMIN_EMAILS.
+            {LL.Dashboard.superAdminRequired()}
           </div>
         )}
 
@@ -193,28 +186,28 @@ export default function TenantDashboard() {
             {/* Add form */}
             <div className="mb-8 bg-slate-800 border border-slate-600 rounded-xl p-6">
               <h2 className="text-lg font-semibold text-white mb-4">
-                Add tenant
+                {LL.Dashboard.addTenant()}
               </h2>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm text-slate-400 mb-1">
-                      Name
+                      {LL.Forms.name()}
                     </label>
                     <input
                       className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                      placeholder="e.g. Acme Corp"
+                      placeholder={LL.Dashboard.namePlaceholder()}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                     />
                   </div>
                   <div>
                     <label className="block text-sm text-slate-400 mb-1">
-                      Slug (a-z, 0-9, hyphens)
+                      {LL.Dashboard.slugLabel()}
                     </label>
                     <input
                       className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
-                      placeholder="e.g. acme-corp"
+                      placeholder={LL.Dashboard.slugPlaceholder()}
                       value={slug}
                       onChange={(e) =>
                         setSlug(
@@ -231,7 +224,9 @@ export default function TenantDashboard() {
                   }
                   className="bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 disabled:from-slate-600 disabled:to-slate-600 disabled:cursor-not-allowed px-6 py-2 rounded-lg text-white font-semibold transition-all"
                 >
-                  {createTenant.isPending ? "Adding..." : "Add tenant"}
+                  {createTenant.isPending
+                    ? LL.Common.adding()
+                    : LL.Dashboard.addTenant()}
                 </button>
               </div>
             </div>
@@ -240,20 +235,19 @@ export default function TenantDashboard() {
             <div className="bg-slate-800 border border-slate-600 rounded-xl overflow-hidden">
               <div className="px-6 py-4 bg-slate-700 border-b border-slate-600">
                 <p className="text-sm font-semibold text-slate-300 uppercase tracking-wide">
-                  {tenants.length} tenant
-                  {tenants.length !== 1 ? "s" : ""}
+                  {LL.Dashboard.tenantCount({ count: tenants.length })}
                 </p>
               </div>
 
               {tenantList.isLoading && (
                 <div className="p-8 text-center text-slate-400">
-                  Loading tenants...
+                  {LL.Dashboard.loadingTenants()}
                 </div>
               )}
 
               {tenants.length === 0 && !tenantList.isLoading && (
                 <div className="p-12 text-center text-slate-400">
-                  No tenants yet. Add one above.
+                  {LL.Dashboard.noTenantsYet()}
                 </div>
               )}
 
@@ -269,7 +263,7 @@ export default function TenantDashboard() {
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                               <label className="block text-xs text-slate-500 mb-1">
-                                Name
+                                {LL.Forms.name()}
                               </label>
                               <input
                                 className="w-full bg-slate-600 border border-slate-500 rounded px-2 py-1 text-white text-sm"
@@ -279,7 +273,7 @@ export default function TenantDashboard() {
                             </div>
                             <div>
                               <label className="block text-xs text-slate-500 mb-1">
-                                Slug
+                                {LL.Forms.slug()}
                               </label>
                               <input
                                 className="w-full bg-slate-600 border border-slate-500 rounded px-2 py-1 text-white text-sm"
@@ -300,13 +294,15 @@ export default function TenantDashboard() {
                               disabled={updateTenant.isPending}
                               className="px-4 py-1.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 rounded text-white text-sm font-medium"
                             >
-                              {updateTenant.isPending ? "Saving..." : "Save"}
+                              {updateTenant.isPending
+                                ? LL.Common.saving()
+                                : LL.Common.save()}
                             </button>
                             <button
                               onClick={cancelEdit}
                               className="px-4 py-1.5 bg-slate-600 hover:bg-slate-500 rounded text-slate-200 text-sm"
                             >
-                              Cancel
+                              {LL.Common.cancel()}
                             </button>
                           </div>
                         </div>
@@ -326,7 +322,7 @@ export default function TenantDashboard() {
                             <button
                               onClick={() => startEdit(t)}
                               className="p-2 text-slate-400 hover:text-amber-400 hover:bg-slate-600 rounded transition-colors"
-                              title="Edit"
+                              title={LL.Common.edit()}
                             >
                               <svg
                                 className="w-5 h-5"
@@ -346,7 +342,7 @@ export default function TenantDashboard() {
                               onClick={() => handleDelete(t.id, t.slug)}
                               disabled={deleteTenant.isPending}
                               className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-600 rounded transition-colors disabled:opacity-50"
-                              title="Delete"
+                              title={LL.Common.delete()}
                             >
                               <svg
                                 className="w-5 h-5"
@@ -377,7 +373,9 @@ export default function TenantDashboard() {
                 disabled={tenantList.isRefetching}
                 className="bg-slate-700 hover:bg-slate-600 disabled:opacity-50 px-4 py-2 rounded-lg text-slate-200 font-medium transition-colors"
               >
-                {tenantList.isRefetching ? "Refreshing..." : "Refresh list"}
+                {tenantList.isRefetching
+                  ? LL.Common.refreshing()
+                  : LL.Dashboard.refreshList()}
               </button>
             </div>
           </>

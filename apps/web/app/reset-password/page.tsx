@@ -4,8 +4,10 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useAuthClient } from "../lib/auth/auth-client";
+import { useI18n } from "../hooks/useI18n";
 
 function ResetPasswordContent() {
+  const { LL } = useI18n();
   const authClient = useAuthClient();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -45,17 +47,16 @@ function ResetPasswordContent() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-3">
-            Invalid or Expired Link
+            {LL.Auth.invalidOrExpiredLink()}
           </h1>
           <p className="text-gray-600 mb-6">
-            This password reset link is invalid or has expired. Please request a
-            new one.
+            {LL.Auth.invalidOrExpiredLinkMessage()}
           </p>
           <Link
             href="/forgot-password"
             className="inline-block px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Request New Link
+            {LL.Auth.requestNewLink()}
           </Link>
         </div>
       </div>
@@ -67,12 +68,12 @@ function ResetPasswordContent() {
     if (!authClient) return;
 
     if (newPassword !== confirmPassword) {
-      setError("Passwords do not match.");
+      setError(LL.Errors.passwordsDoNotMatch());
       return;
     }
 
     if (newPassword.length < 8) {
-      setError("Password must be at least 8 characters.");
+      setError(LL.Errors.passwordMinLength());
       return;
     }
 
@@ -93,14 +94,13 @@ function ResetPasswordContent() {
       ) {
         setTokenError(true);
       } else {
-        setError(err.message ?? "Failed to reset password. Please try again.");
+        setError(err.message ?? LL.Errors.failedResetPassword());
       }
       return;
     }
 
     router.push(
-      "/sign-in?success=" +
-        encodeURIComponent("Password set successfully. You can now sign in."),
+      "/sign-in?success=" + encodeURIComponent(LL.Auth.passwordSetSuccess()),
     );
   };
 
@@ -110,11 +110,9 @@ function ResetPasswordContent() {
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Set Your Password
+              {LL.Auth.setYourPassword()}
             </h1>
-            <p className="text-gray-600">
-              Enter a new password for your account
-            </p>
+            <p className="text-gray-600">{LL.Auth.setPasswordSubtitle()}</p>
           </div>
 
           {error && (
@@ -150,7 +148,7 @@ function ResetPasswordContent() {
                 htmlFor="new-password"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                New Password (min 8 characters)
+                {LL.Settings.newPasswordLabel()}
               </label>
               <input
                 type="password"
@@ -160,7 +158,7 @@ function ResetPasswordContent() {
                 required
                 minLength={8}
                 maxLength={128}
-                placeholder="••••••••"
+                placeholder={LL.Forms.passwordPlaceholder()}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -169,7 +167,7 @@ function ResetPasswordContent() {
                 htmlFor="confirm-password"
                 className="block text-sm font-medium text-gray-700 mb-2"
               >
-                Confirm Password
+                {LL.Forms.confirmPassword()}
               </label>
               <input
                 type="password"
@@ -179,7 +177,7 @@ function ResetPasswordContent() {
                 required
                 minLength={8}
                 maxLength={128}
-                placeholder="••••••••"
+                placeholder={LL.Forms.passwordPlaceholder()}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
@@ -188,7 +186,7 @@ function ResetPasswordContent() {
               disabled={loading}
               className="w-full px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {loading ? "Setting password..." : "Set Password"}
+              {loading ? LL.Auth.settingPassword() : LL.Auth.setPassword()}
             </button>
           </form>
         </div>
