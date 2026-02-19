@@ -365,6 +365,9 @@ importers:
       tailwindcss:
         specifier: ^4.1.14
         version: 4.1.18
+      typesafe-i18n:
+        specifier: ^5.27.1
+        version: 5.27.1(typescript@5.9.2)
       typescript:
         specifier: 5.9.2
         version: 5.9.2
@@ -7506,6 +7509,12 @@ packages:
 
   typedarray@0.0.6:
     resolution: {integrity: sha512-/aCDEGatGvZ2BIk+HmLf4ifCJFwvKFNb9/JeZPMulfgFracn9QFcAf5GO8B/mweUjSoblS5In0cWhqpfs/5PQA==}
+
+  typesafe-i18n@5.27.1:
+    resolution: {integrity: sha512-749uWo2ZXETT//kWjVYPm8QPYR8xLh8G0wLfoAyCAtAmysX67uCaAyLjAjAWojL6fuJpE5B6yIjwvO9orXzUPg==}
+    hasBin: true
+    peerDependencies:
+      typescript: '>=3.5.1'
 
   typescript-eslint@8.50.1:
     resolution: {integrity: sha512-ytTHO+SoYSbhAH9CrYnMhiLx8To6PSSvqnvXyPUgPETCvB6eBKmTI9w6XMPS3HsBRGkwTVBX+urA8dYQx6bHfQ==}
@@ -16415,6 +16424,10 @@ snapshots:
       reflect.getprototypeof: 1.0.10
 
   typedarray@0.0.6: {}
+
+  typesafe-i18n@5.27.1(typescript@5.9.2):
+    dependencies:
+      typescript: 5.9.2
 
   typescript-eslint@8.50.1(eslint@9.39.2(jiti@2.6.1))(typescript@5.9.2):
     dependencies:

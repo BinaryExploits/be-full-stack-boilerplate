@@ -8,6 +8,7 @@ import {
   authClient as authClientDefault,
   useAuthClient,
 } from "../lib/auth/auth-client";
+import { useI18n } from "../hooks/useI18n";
 
 type AuthView = "choose" | "email-otp" | "otp-verify" | "email-password";
 
@@ -27,6 +28,7 @@ type AuthClientWithEmailOtp = typeof authClientDefault & {
 };
 
 function SignInContent() {
+  const { LL } = useI18n();
   const authClient = useAuthClient();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -63,7 +65,7 @@ function SignInContent() {
     });
     if (result.error) {
       Logger.instance.critical("Error while signing in", result.error);
-      setError("Failed to sign in with Google");
+      setError(LL.Errors.failedSignInGoogle());
     }
   };
 
@@ -80,11 +82,11 @@ function SignInContent() {
 
     setLoading(false);
     if (result.error) {
-      setError("Failed to send OTP. Please try again.");
+      setError(LL.Errors.failedSendOtp());
       return;
     }
     if (!result.data) {
-      setError("Unable to send OTP");
+      setError(LL.Errors.unableToSendOtp());
       return;
     }
     setView("otp-verify");
@@ -103,11 +105,11 @@ function SignInContent() {
 
     setLoading(false);
     if (result.error) {
-      setError("Invalid OTP. Please try again.");
+      setError(LL.Errors.invalidOtp());
       return;
     }
     if (!result.data) {
-      setError("Unable to verify OTP");
+      setError(LL.Errors.unableToVerifyOtp());
       return;
     }
     router.push("/");
@@ -133,7 +135,7 @@ function SignInContent() {
           if (ctx.error.status === 403) {
             handledByOnError = true;
             setShowUnverifiedError(true);
-            setError("Please verify your email address before signing in.");
+            setError(LL.Errors.verifyEmailBeforeSignIn());
           }
         },
       },
@@ -148,11 +150,9 @@ function SignInContent() {
         msg.includes("invalid credentials") ||
         msg.includes("no password")
       ) {
-        setError(
-          "This account was created with Google or OTP. Use 'Forgot Password' below to set a password.",
-        );
+        setError(LL.Errors.accountCreatedWithSocial());
       } else {
-        setError("Invalid email or password.");
+        setError(LL.Errors.invalidEmailOrPassword());
       }
     }
   };
@@ -165,7 +165,7 @@ function SignInContent() {
       callbackURL: `${typeof window !== "undefined" ? window.location.origin : ""}/verify-email`,
     });
     setResendingVerification(false);
-    setError("Verification email sent! Check your inbox.");
+    setError(LL.Auth.verificationEmailSent());
     setShowUnverifiedError(false);
   };
 
@@ -183,10 +183,10 @@ function SignInContent() {
       <div className="max-w-md w-full">
         <div className="bg-white rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Sign in</h1>
-            <p className="text-gray-600">
-              Choose your preferred sign-in method
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              {LL.Auth.signInTitle()}
+            </h1>
+            <p className="text-gray-600">{LL.Auth.signInSubtitle()}</p>
           </div>
 
           {successMessage && (
@@ -235,8 +235,8 @@ function SignInContent() {
                       className="mt-2 block text-sm font-medium text-red-700 hover:text-red-800 underline disabled:opacity-50"
                     >
                       {resendingVerification
-                        ? "Sending..."
-                        : "Resend verification email"}
+                        ? LL.Common.sending()
+                        : LL.Auth.resendVerificationEmail()}
                     </button>
                   )}
                 </div>
@@ -269,7 +269,7 @@ function SignInContent() {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Sign in with Google
+                {LL.Auth.signInWithGoogle()}
               </button>
 
               <div className="relative">
@@ -277,7 +277,9 @@ function SignInContent() {
                   <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or</span>
+                  <span className="px-2 bg-white text-gray-500">
+                    {LL.Common.or()}
+                  </span>
                 </div>
               </div>
 
@@ -302,7 +304,7 @@ function SignInContent() {
                     d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
                   />
                 </svg>
-                Sign in with Email OTP
+                {LL.Auth.signInWithEmailOtp()}
               </button>
 
               <div className="relative">
@@ -311,7 +313,7 @@ function SignInContent() {
                 </div>
                 <div className="relative flex justify-center text-sm">
                   <span className="px-2 bg-white text-gray-500">
-                    Or with Email &amp; Password
+                    {LL.Auth.orWithEmailPassword()}
                   </span>
                 </div>
               </div>
@@ -337,7 +339,7 @@ function SignInContent() {
                     d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
                   />
                 </svg>
-                Sign in with Email &amp; Password
+                {LL.Auth.signInWithEmailPassword()}
               </button>
             </div>
           )}
@@ -355,7 +357,7 @@ function SignInContent() {
                   htmlFor="otp-email"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Email Address
+                  {LL.Forms.emailAddress()}
                 </label>
                 <input
                   type="email"
@@ -363,7 +365,7 @@ function SignInContent() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  placeholder="Enter your email"
+                  placeholder={LL.Forms.enterYourEmail()}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -372,14 +374,14 @@ function SignInContent() {
                 disabled={loading}
                 className="w-full px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Sending..." : "Send OTP"}
+                {loading ? LL.Common.sending() : LL.Auth.sendOtp()}
               </button>
               <button
                 type="button"
                 onClick={resetView}
                 className="w-full px-4 py-3 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                Back
+                {LL.Common.back()}
               </button>
             </form>
           )}
@@ -394,8 +396,7 @@ function SignInContent() {
             >
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
                 <p className="text-sm text-blue-800">
-                  We sent a verification code to{" "}
-                  <span className="font-medium">{email}</span>
+                  {LL.Auth.otpSentTo({ email })}
                 </p>
               </div>
               <div>
@@ -403,7 +404,7 @@ function SignInContent() {
                   htmlFor="otp-code"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Verification Code
+                  {LL.Forms.verificationCode()}
                 </label>
                 <input
                   type="text"
@@ -411,7 +412,7 @@ function SignInContent() {
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   required
-                  placeholder="Enter 6-digit code"
+                  placeholder={LL.Forms.verificationCodePlaceholder()}
                   maxLength={6}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-2xl tracking-widest font-mono"
                 />
@@ -421,7 +422,7 @@ function SignInContent() {
                 disabled={loading}
                 className="w-full px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Verifying..." : "Verify OTP"}
+                {loading ? LL.Auth.verifying() : LL.Auth.verifyOtp()}
               </button>
               <button
                 type="button"
@@ -432,7 +433,7 @@ function SignInContent() {
                 }}
                 className="w-full px-4 py-3 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                Change Email
+                {LL.Auth.changeEmail()}
               </button>
             </form>
           )}
@@ -450,7 +451,7 @@ function SignInContent() {
                   htmlFor="signin-email"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Email
+                  {LL.Forms.email()}
                 </label>
                 <input
                   type="email"
@@ -458,7 +459,7 @@ function SignInContent() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
-                  placeholder="you@example.com"
+                  placeholder={LL.Forms.emailPlaceholder()}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
@@ -467,7 +468,7 @@ function SignInContent() {
                   htmlFor="signin-password"
                   className="block text-sm font-medium text-gray-700 mb-2"
                 >
-                  Password
+                  {LL.Forms.password()}
                 </label>
                 <input
                   type="password"
@@ -475,7 +476,7 @@ function SignInContent() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   required
-                  placeholder="••••••••"
+                  placeholder={LL.Forms.passwordPlaceholder()}
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <div className="mt-1 text-right">
@@ -483,7 +484,7 @@ function SignInContent() {
                     href="/forgot-password"
                     className="text-sm text-blue-600 hover:text-blue-700 font-medium"
                   >
-                    Forgot Password?
+                    {LL.Auth.forgotPassword()}
                   </Link>
                 </div>
               </div>
@@ -492,25 +493,25 @@ function SignInContent() {
                 disabled={loading}
                 className="w-full px-4 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? "Signing in..." : "Sign in"}
+                {loading ? LL.Auth.signingIn() : LL.Auth.signIn()}
               </button>
               <button
                 type="button"
                 onClick={resetView}
                 className="w-full px-4 py-3 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
               >
-                Back
+                {LL.Common.back()}
               </button>
             </form>
           )}
 
           <p className="mt-6 text-center text-sm text-gray-600">
-            Don&apos;t have an account?{" "}
+            {LL.Auth.dontHaveAccount()}{" "}
             <Link
               href="/sign-up"
               className="text-blue-600 hover:text-blue-700 font-medium"
             >
-              Sign up
+              {LL.Auth.signUp()}
             </Link>
           </p>
         </div>

@@ -4,9 +4,12 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { trpc } from "@repo/trpc/client";
 import { TenantSwitcher } from "./tenant-switcher";
+import { LanguageSelector } from "./LanguageSelector";
 import { useAuthClient } from "../lib/auth/auth-client";
+import { useI18n } from "../hooks/useI18n";
 
 export function NavHeader() {
+  const { LL } = useI18n();
   const authClient = useAuthClient();
   const sessionResult = authClient?.useSession?.();
   const session = sessionResult?.data;
@@ -68,13 +71,13 @@ export function NavHeader() {
             <div className="w-7 h-7 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 flex items-center justify-center">
               <span className="text-slate-900 font-bold text-xs">BE</span>
             </div>
-            <span className="hidden sm:inline text-sm">Full Stack</span>
+            <span className="hidden sm:inline text-sm">{LL.Navigation.fullStack()}</span>
           </Link>
 
           <div className="flex items-center gap-3">
+            <LanguageSelector />
             <TenantSwitcher />
 
-            {/* User menu */}
             <div ref={ref} className="relative">
               <button
                 onClick={() => setOpen(!open)}
@@ -128,7 +131,7 @@ export function NavHeader() {
                           d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
                         />
                       </svg>
-                      Profile &amp; Security
+                      {LL.Navigation.profileAndSecurity()}
                     </Link>
                     {isSuperAdmin && !singleTenantMode && (
                       <Link
@@ -149,7 +152,7 @@ export function NavHeader() {
                             d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                           />
                         </svg>
-                        Platform Tenants
+                        {LL.Navigation.platformTenants()}
                       </Link>
                     )}
                     {hasAdminTenant && (
@@ -171,7 +174,7 @@ export function NavHeader() {
                             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
                           />
                         </svg>
-                        Manage Members
+                        {LL.Navigation.manageMembers()}
                       </Link>
                     )}
                   </div>
@@ -197,7 +200,7 @@ export function NavHeader() {
                           d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                         />
                       </svg>
-                      Sign out
+                      {LL.Navigation.signOut()}
                     </button>
                   </div>
                 </div>

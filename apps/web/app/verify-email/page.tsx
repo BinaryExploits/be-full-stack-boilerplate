@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect } from "react";
+import { useI18n } from "../hooks/useI18n";
 
 /**
  * Email verification callback page.
@@ -14,6 +15,7 @@ import { Suspense, useEffect } from "react";
  * on success, so we redirect to home (not sign-in).
  */
 function VerifyEmailContent() {
+  const { LL } = useI18n();
   const router = useRouter();
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
@@ -45,18 +47,18 @@ function VerifyEmailContent() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-3">
-            Verification Failed
+            {LL.Auth.verificationFailed()}
           </h1>
           <p className="text-gray-600 mb-6">
             {errorParam === "token_expired"
-              ? "This verification link has expired. Please try signing in again to receive a new verification email."
-              : "This verification link is invalid. Please try signing in again to receive a new verification email."}
+              ? LL.Auth.verificationFailedExpired()
+              : LL.Auth.verificationFailedInvalid()}
           </p>
           <Link
             href="/sign-in"
             className="inline-block px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Go to Sign In
+            {LL.Auth.goToSignIn()}
           </Link>
         </div>
       </div>
@@ -82,16 +84,16 @@ function VerifyEmailContent() {
           </svg>
         </div>
         <h1 className="text-2xl font-bold text-gray-900 mb-3">
-          Email Verified!
+          {LL.Auth.emailVerified()}
         </h1>
         <p className="text-gray-600 mb-6">
-          Your email has been verified successfully. Redirecting to home...
+          {LL.Auth.emailVerifiedMessage()}
         </p>
         <Link
           href="/"
           className="text-blue-600 hover:text-blue-700 font-medium"
         >
-          Go to Home now
+          {LL.Auth.goToHome()}
         </Link>
       </div>
     </div>
