@@ -28,6 +28,16 @@ export const createBetterAuth = (
     database: createDatabaseAdapter(),
     emailAndPassword: {
       enabled: true,
+      requireEmailVerification: true,
+      sendResetPassword: async ({ user, url }) => {
+        void emailService.sendPasswordResetEmail(user.email, url);
+      },
+    },
+    account: {
+      accountLinking: {
+        enabled: true,
+        trustedProviders: ['google'],
+      },
     },
     socialProviders: {
       google: {
@@ -50,6 +60,10 @@ export const createBetterAuth = (
     },
     emailVerification: {
       autoSignInAfterVerification: true,
+      sendOnSignUp: true,
+      sendVerificationEmail: async ({ user, url }) => {
+        void emailService.sendEmailVerificationEmail(user.email, url);
+      },
     },
     plugins: [
       expo(),

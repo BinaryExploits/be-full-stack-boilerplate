@@ -1,0 +1,16 @@
+{{companyName}} - Verify Your Email
+
+Hello,
+
+Please verify your email address by visiting the link below:
+
+{{verificationUrl}}
+
+If you didn't create an account with {{productName}}, please ignore this email or contact our support team.
+
+---
+
+{{companyName}}
+Support: {{supportEmail}}
+
+© {{companyName}}. All rights reserved.

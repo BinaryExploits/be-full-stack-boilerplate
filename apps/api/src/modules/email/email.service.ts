@@ -45,6 +45,35 @@ export class EmailService {
     }
   }
 
+  async sendEmailVerificationEmail(
+    to: string,
+    verificationUrl: string,
+  ): Promise<void> {
+    await this.sendEmail({
+      to,
+      templateName: 'email-verification',
+      templateData: {
+        verificationUrl,
+        companyName: COMPANY_NAME,
+        productName: PRODUCT_NAME,
+        supportEmail: SUPPORT_EMAIL,
+      },
+    });
+  }
+
+  async sendPasswordResetEmail(to: string, resetUrl: string): Promise<void> {
+    await this.sendEmail({
+      to,
+      templateName: 'password-reset',
+      templateData: {
+        resetUrl,
+        companyName: COMPANY_NAME,
+        productName: PRODUCT_NAME,
+        supportEmail: SUPPORT_EMAIL,
+      },
+    });
+  }
+
   private async sendEmail<T extends EmailTemplateName>(
     sendEmailArgs: SendEmailArgs<T>,
   ): Promise<void> {
