@@ -5,28 +5,33 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useMemo,
   useState,
   type ReactNode,
 } from "react";
-import type { Locales } from "../../i18n/i18n-types";
-import { baseLocale, isLocale, loadedLocales } from "../../i18n/i18n-util";
+import type { Locales, TranslationFunctions } from "../../i18n/i18n-types";
+import {
+  baseLocale,
+  i18nObject,
+  isLocale,
+  loadedLocales,
+} from "../../i18n/i18n-util";
 import { loadLocaleAsync } from "../../i18n/i18n-util.async";
-import TypesafeI18n from "../../i18n/i18n-react";
 
 const STORAGE_KEY = "app-locale";
 
 interface LocaleContextValue {
   locale: Locales;
   setLocale: (l: Locales) => void;
+  LL: TranslationFunctions;
 }
 
-const LocaleContext = createContext<LocaleContextValue>({
-  locale: baseLocale,
-  setLocale: () => {},
-});
+const LocaleContext = createContext<LocaleContextValue | null>(null);
 
-export function useLocaleContext() {
-  return useContext(LocaleContext);
+export function useLocaleContext(): LocaleContextValue {
+  const ctx = useContext(LocaleContext);
+  if (!ctx) throw new Error("useLocaleContext must be used within LocaleProvider");
+  return ctx;
 }
 
 function readStoredLocale(): Locales {
@@ -63,13 +68,18 @@ export function LocaleProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  if (!ready || !loadedLocales[locale]) {
+  const LL = useMemo(() => {
+    if (!ready || !loadedLocales[locale]) return null;
+    return i18nObject(locale);
+  }, [locale, ready]);
+
+  if (!LL) {
     return null;
   }
 
   return (
-    <LocaleContext.Provider value={{ locale, setLocale }}>
-      <TypesafeI18n locale={locale}>{children}</TypesafeI18n>
+    <LocaleContext.Provider value={{ locale, setLocale, LL }}>
+      {children}
     </LocaleContext.Provider>
   );
 }
