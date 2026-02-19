@@ -1,258 +1,170 @@
 "use client";
 
 import Link from "next/link";
+import {
+  LayoutGrid,
+  BarChart3,
+  Database,
+  Users,
+  Building2,
+  Globe,
+  ArrowRight,
+  TrendingUp,
+} from "lucide-react";
 import { TenantDashboardOnly } from "./components/tenant-dashboard-only";
 import { TenantAdminOnly } from "./components/tenant-admin-only";
-import { useI18n } from "./hooks/useI18n";
+import { Card, CardHeader, CardTitle, CardContent } from "./components/ui/card";
+import { Button } from "./components/ui/button";
+
+const stats = [
+  { label: "Total Records", value: "1,284", icon: Database, trend: "+12%" },
+  { label: "Active Tenants", value: "47", icon: Building2, trend: "+3" },
+  { label: "Users", value: "312", icon: Users, trend: "+8%" },
+  { label: "API Endpoints", value: "24", icon: Globe, trend: "stable" },
+];
+
+const features = [
+  {
+    title: "Powerful Data Grids",
+    description:
+      "Editable, sortable, filterable tables for all your data. CRUD operations, bulk actions, nested rows, and multi-select — powered by TanStack Table.",
+    icon: LayoutGrid,
+    href: "/grids",
+    color: "from-blue-500 to-blue-600",
+  },
+  {
+    title: "Rich Visualizations",
+    description:
+      "10+ chart types powered by Plotly.js with WebGL support. Line, bar, scatter, 3D surfaces, heatmaps, and more — all interactive and responsive.",
+    icon: BarChart3,
+    href: "/charts",
+    color: "from-emerald-500 to-emerald-600",
+  },
+  {
+    title: "Multi-tenant Ready",
+    description:
+      "CRUD operations scoped per tenant with role-based read/write control. Manage tenants, members, and permissions from a single dashboard.",
+    icon: Building2,
+    href: "/tenant-dashboard",
+    color: "from-amber-500 to-orange-600",
+  },
+];
 
 export default function Home() {
-  const { LL } = useI18n();
-
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-8">
-      <div className="max-w-4xl w-full">
-        <div className="text-center mb-16">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-r from-blue-400 to-cyan-400 flex items-center justify-center">
-              <span className="text-slate-900 font-bold text-2xl">BE</span>
-            </div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-              {LL.Home.title()}
-            </h1>
+    <div className="max-w-6xl mx-auto space-y-10">
+      {/* Hero */}
+      <section className="text-center py-8">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-r from-blue-400 to-cyan-400">
+            <span className="text-xl font-bold text-slate-900">BE</span>
           </div>
-          <p className="text-slate-400 text-lg">{LL.Home.subtitle()}</p>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+            BE: Tech Stack
+          </h1>
         </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <Link href="/crud-demo">
-            <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-blue-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-blue-500/20 hover:-translate-y-1">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-14 h-14 rounded-lg bg-gradient-to-r from-blue-500 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <svg
-                    className="w-8 h-8 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 7h16M4 12h16M4 17h16"
-                    />
-                  </svg>
-                </div>
-                <h2 className="text-2xl font-bold text-white">
-                  {LL.Home.crudDemoTitle()}
-                </h2>
-              </div>
-              <p className="text-slate-400 mb-6">
-                {LL.Home.crudDemoDescription()}
-              </p>
-              <div className="flex items-center text-blue-400 font-medium group-hover:gap-3 gap-2 transition-all">
-                <span>{LL.Home.tryItOut()}</span>
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </div>
-            </div>
+        <p className="text-slate-400 text-lg max-w-2xl mx-auto mb-8">
+          Full-stack boilerplate with multi-tenancy, authentication, and CRUD
+          operations. Explore the data grids and charting capabilities below.
+        </p>
+        <div className="flex items-center justify-center gap-4">
+          <Link href="/grids">
+            <Button size="lg">
+              <LayoutGrid className="h-4 w-4" />
+              View Grids
+              <ArrowRight className="h-4 w-4" />
+            </Button>
           </Link>
-
-          <Link href="/global-crud-demo">
-            <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-amber-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-amber-500/20 hover:-translate-y-1">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-14 h-14 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <svg
-                    className="w-8 h-8 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </div>
-                <h2 className="text-2xl font-bold text-white">
-                  {LL.Home.globalCrudDemoTitle()}
-                </h2>
-              </div>
-              <p className="text-slate-400 mb-6">
-                {LL.Home.globalCrudDemoDescription()}
-              </p>
-              <div className="flex items-center text-amber-400 font-medium group-hover:gap-3 gap-2 transition-all">
-                <span>{LL.Home.tryItOut()}</span>
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </div>
-            </div>
+          <Link href="/charts">
+            <Button variant="secondary" size="lg">
+              <BarChart3 className="h-4 w-4" />
+              View Charts
+              <ArrowRight className="h-4 w-4" />
+            </Button>
           </Link>
+        </div>
+      </section>
 
-          <TenantDashboardOnly>
-            <Link href="/tenant-dashboard">
-              <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-amber-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-amber-500/20 hover:-translate-y-1">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-14 h-14 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <svg
-                      className="w-8 h-8 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                      />
-                    </svg>
+      {/* Stats */}
+      <section className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {stats.map((stat) => (
+          <Card key={stat.label}>
+            <CardContent className="p-5">
+              <div className="flex items-center justify-between mb-2">
+                <stat.icon className="h-5 w-5 text-slate-400" />
+                <span className="flex items-center gap-1 text-xs text-emerald-400">
+                  <TrendingUp className="h-3 w-3" />
+                  {stat.trend}
+                </span>
+              </div>
+              <p className="text-2xl font-bold text-white">{stat.value}</p>
+              <p className="text-xs text-slate-400 mt-1">{stat.label}</p>
+            </CardContent>
+          </Card>
+        ))}
+      </section>
+
+      {/* Feature Highlights */}
+      <section>
+        <h2 className="text-xl font-semibold text-white mb-4">
+          Feature Highlights
+        </h2>
+        <div className="grid md:grid-cols-3 gap-6">
+          {features.map((feature) => (
+            <Link key={feature.title} href={feature.href}>
+              <Card className="group h-full hover:border-slate-600 transition-all hover:-translate-y-0.5">
+                <CardHeader>
+                  <div
+                    className={`flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-r ${feature.color} mb-2 group-hover:scale-110 transition-transform`}
+                  >
+                    <feature.icon className="h-5 w-5 text-white" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white">
-                    {LL.Home.platformTenantsTitle()}
-                  </h2>
-                </div>
-                <p className="text-slate-400 mb-6">
-                  {LL.Home.platformTenantsDescription()}
-                </p>
-                <div className="flex items-center text-amber-400 font-medium group-hover:gap-3 gap-2 transition-all">
-                  <span>{LL.Home.manageTenants()}</span>
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
+                  <CardTitle>{feature.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-slate-400">
+                    {feature.description}
+                  </p>
+                </CardContent>
+              </Card>
             </Link>
-          </TenantDashboardOnly>
+          ))}
+        </div>
+      </section>
 
-          <TenantAdminOnly>
-            <Link href="/tenant-members">
-              <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-cyan-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-cyan-500/20 hover:-translate-y-1">
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-14 h-14 rounded-lg bg-gradient-to-r from-cyan-500 to-blue-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <svg
-                      className="w-8 h-8 text-white"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
-                      />
-                    </svg>
-                  </div>
-                  <h2 className="text-2xl font-bold text-white">
-                    {LL.Home.manageMembersTitle()}
-                  </h2>
-                </div>
-                <p className="text-slate-400 mb-6">
-                  {LL.Home.manageMembersDescription()}
-                </p>
-                <div className="flex items-center text-cyan-400 font-medium group-hover:gap-3 gap-2 transition-all">
-                  <span>{LL.Home.manageMembers()}</span>
-                  <svg
-                    className="w-5 h-5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 5l7 7-7 7"
-                    />
-                  </svg>
-                </div>
-              </div>
-            </Link>
-          </TenantAdminOnly>
-
-          <Link href="/auth-demo">
-            <div className="group bg-slate-800 border border-slate-700 rounded-xl p-8 hover:border-green-500 transition-all duration-300 cursor-pointer hover:shadow-2xl hover:shadow-green-500/20 hover:-translate-y-1">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="w-14 h-14 rounded-lg bg-gradient-to-r from-green-500 to-green-600 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  <svg
-                    className="w-8 h-8 text-white"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                    />
-                  </svg>
-                </div>
-                <h2 className="text-2xl font-bold text-white">
-                  {LL.Home.authDemoTitle()}
-                </h2>
-              </div>
-              <p className="text-slate-400 mb-6">
-                {LL.Home.authDemoDescription()}
+      {/* Quick Access (conditional) */}
+      <section className="space-y-3">
+        <TenantDashboardOnly>
+          <Link
+            href="/tenant-dashboard"
+            className="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-800/50 p-4 hover:bg-slate-800 transition-colors"
+          >
+            <Building2 className="h-5 w-5 text-amber-400" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-white">Tenant Dashboard</p>
+              <p className="text-xs text-slate-400">
+                Manage platform tenants and subscriptions
               </p>
-              <div className="flex items-center text-green-400 font-medium group-hover:gap-3 gap-2 transition-all">
-                <span>{LL.Home.tryItOut()}</span>
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </div>
             </div>
+            <ArrowRight className="h-4 w-4 text-slate-500" />
           </Link>
-        </div>
-
-        <div className="mt-16 text-center">
-          <p className="text-slate-500 text-sm">{LL.Home.footer()}</p>
-        </div>
-      </div>
-    </main>
+        </TenantDashboardOnly>
+        <TenantAdminOnly>
+          <Link
+            href="/tenant-members"
+            className="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-800/50 p-4 hover:bg-slate-800 transition-colors"
+          >
+            <Users className="h-5 w-5 text-cyan-400" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-white">Manage Members</p>
+              <p className="text-xs text-slate-400">
+                Add, remove, and manage tenant member roles
+              </p>
+            </div>
+            <ArrowRight className="h-4 w-4 text-slate-500" />
+          </Link>
+        </TenantAdminOnly>
+      </section>
+    </div>
   );
 }

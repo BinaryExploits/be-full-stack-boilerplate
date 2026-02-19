@@ -2,18 +2,17 @@
 
 import { AuthGate } from "./auth-gate";
 import { TenantGate } from "./tenant-gate";
-import { NavHeader } from "./nav-header";
+import { AppLayout } from "./layout/app-layout";
 import { LocaleProvider } from "../providers/LocaleProvider";
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <LocaleProvider>
-      <NavHeader />
-      <div className="pt-14">
+      <AppLayout>
         <AuthGate>
           <TenantGate>{children}</TenantGate>
         </AuthGate>
-      </div>
+      </AppLayout>
     </LocaleProvider>
   );
 }
