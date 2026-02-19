@@ -29,7 +29,7 @@ export const createBetterAuth = (
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: true,
-      sendResetPassword: async ({ user, url }) => {
+      sendResetPassword: ({ user, url }) => {
         void emailService.sendPasswordResetEmail(user.email, url);
       },
     },
@@ -61,7 +61,7 @@ export const createBetterAuth = (
     emailVerification: {
       autoSignInAfterVerification: true,
       sendOnSignUp: true,
-      sendVerificationEmail: async ({ user, url }) => {
+      sendVerificationEmail: ({ user, url }) => {
         void emailService.sendEmailVerificationEmail(user.email, url);
       },
     },

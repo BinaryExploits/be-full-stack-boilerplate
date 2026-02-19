@@ -32,8 +32,7 @@ function validatePassword(value: string): string | null {
     return "Password must contain at least one uppercase letter.";
   if (!/[a-z]/.test(value))
     return "Password must contain at least one lowercase letter.";
-  if (!/[0-9]/.test(value))
-    return "Password must contain at least one number.";
+  if (!/[0-9]/.test(value)) return "Password must contain at least one number.";
   if (!/[^A-Za-z0-9]/.test(value))
     return "Password must contain at least one special character.";
   return null;
@@ -285,9 +284,7 @@ export default function SignUpPage() {
                 className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${fieldErrors.email ? "border-red-400" : "border-gray-300"}`}
               />
               {fieldErrors.email && (
-                <p className="mt-1 text-xs text-red-600">
-                  {fieldErrors.email}
-                </p>
+                <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
               )}
             </div>
             <div suppressHydrationWarning>
