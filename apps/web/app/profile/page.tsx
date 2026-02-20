@@ -187,11 +187,13 @@ export default function ProfilePage() {
 
   const validateName = (value: string): string | null => {
     const trimmed = value.trim();
-    if (!trimmed) return "Name is required";
-    if (trimmed.length < 2) return "Name must be at least 2 characters";
-    if (trimmed.length > 100) return "Name must be at most 100 characters";
+    if (!trimmed) return LL.Errors.nameRequired({ label: LL.Forms.name() });
+    if (trimmed.length < 2)
+      return LL.Errors.nameMinLength({ label: LL.Forms.name() });
+    if (trimmed.length > 100)
+      return LL.Errors.nameInvalidChars({ label: LL.Forms.name() });
     if (!NAME_REGEX.test(trimmed))
-      return "Name can only contain letters, spaces, hyphens, and apostrophes";
+      return LL.Errors.nameInvalidChars({ label: LL.Forms.name() });
     return null;
   };
 
@@ -212,12 +214,13 @@ export default function ProfilePage() {
         await authClient.updateUser({ name: nameValue.trim() });
       }
 
-      setNameMessage({ type: "success", text: "Name updated successfully" });
+      setNameMessage({ type: "success", text: LL.Settings.nameUpdated() });
       setEditingName(false);
     } catch (err) {
       setNameMessage({
         type: "error",
-        text: err instanceof Error ? err.message : "Failed to update name",
+        text:
+          err instanceof Error ? err.message : LL.Settings.failedUpdateName(),
       });
     }
     setNameLoading(false);
@@ -265,7 +268,7 @@ export default function ProfilePage() {
       window.location.href = "/sign-in";
     } catch (err) {
       setDeleteError(
-        err instanceof Error ? err.message : "Failed to delete account",
+        err instanceof Error ? err.message : LL.Settings.failedDeleteAccount(),
       );
       setDeleteLoading(false);
     }
@@ -636,7 +639,7 @@ export default function ProfilePage() {
         {/* Edit Profile */}
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6 mt-6">
           <h2 className="text-lg font-semibold text-white mb-4">
-            Edit Profile
+            {LL.Settings.editProfile()}
           </h2>
 
           {nameMessage && (
@@ -661,7 +664,7 @@ export default function ProfilePage() {
               }}
               className="px-4 py-2 text-sm font-medium text-blue-400 border border-blue-500/50 rounded-lg hover:bg-blue-500/10 transition-colors"
             >
-              Edit Name
+              {LL.Settings.editName()}
             </button>
           ) : (
             <div className="space-y-4">
@@ -670,7 +673,7 @@ export default function ProfilePage() {
                   htmlFor="edit-name"
                   className="block text-sm text-slate-400 mb-1"
                 >
-                  Full Name
+                  {LL.Settings.fullName()}
                 </label>
                 <input
                   type="text"
@@ -682,14 +685,13 @@ export default function ProfilePage() {
                   }}
                   maxLength={100}
                   className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${nameError ? "border-red-500" : "border-slate-600"}`}
-                  placeholder="Your full name"
+                  placeholder={LL.Settings.fullNamePlaceholder()}
                 />
                 {nameError && (
                   <p className="mt-1 text-xs text-red-400">{nameError}</p>
                 )}
                 <p className="mt-1 text-xs text-slate-500">
-                  2-100 characters. Letters, spaces, hyphens, and apostrophes
-                  only.
+                  {LL.Settings.nameHint()}
                 </p>
               </div>
               <div className="flex gap-3">
@@ -698,7 +700,7 @@ export default function ProfilePage() {
                   disabled={nameLoading || !nameValue.trim()}
                   className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
                 >
-                  {nameLoading ? "Saving..." : "Save"}
+                  {nameLoading ? LL.Common.saving() : LL.Common.save()}
                 </button>
                 <button
                   onClick={() => {
@@ -718,17 +720,16 @@ export default function ProfilePage() {
         {/* Data Privacy & GDPR */}
         <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6">
           <h2 className="text-lg font-semibold text-white mb-2">
-            Data &amp; Privacy
+            {LL.Settings.dataAndPrivacy()}
           </h2>
           <p className="text-slate-400 text-sm mb-4">
-            You have the right to access, export, and delete your personal data
-            at any time. Read our{" "}
+            {LL.Settings.dataPrivacyDescription()}{" "}
             <Link
               href="/privacy"
               target="_blank"
               className="text-blue-400 underline hover:text-blue-300"
             >
-              Privacy &amp; Data Policy
+              {LL.Settings.privacyAndDataPolicy()}
             </Link>
             .
           </p>
@@ -737,10 +738,10 @@ export default function ProfilePage() {
             <div className="flex items-center justify-between py-3 border-b border-slate-700">
               <div>
                 <p className="text-white text-sm font-medium">
-                  Download My Data
+                  {LL.Settings.downloadMyData()}
                 </p>
                 <p className="text-slate-400 text-xs mt-0.5">
-                  Export all your personal data as a JSON file
+                  {LL.Settings.downloadMyDataDescription()}
                 </p>
               </div>
               <button
@@ -749,10 +750,10 @@ export default function ProfilePage() {
                 className={`px-4 py-2 text-sm font-medium border rounded-lg transition-colors disabled:opacity-50 ${downloadSuccess ? "text-emerald-400 border-emerald-500/50" : "text-blue-400 border-blue-500/50 hover:bg-blue-500/10"}`}
               >
                 {downloadingData
-                  ? "Preparing export..."
+                  ? LL.Settings.preparingExport()
                   : downloadSuccess
-                    ? "Downloaded"
-                    : "Download"}
+                    ? LL.Settings.downloaded()
+                    : LL.Settings.download()}
               </button>
             </div>
 
@@ -760,10 +761,10 @@ export default function ProfilePage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-red-400 text-sm font-medium">
-                    Delete Account
+                    {LL.Settings.deleteAccount()}
                   </p>
                   <p className="text-slate-400 text-xs mt-0.5">
-                    Permanently delete your account and all associated data
+                    {LL.Settings.deleteAccountDescription()}
                   </p>
                 </div>
                 {!showDeleteConfirm && (
@@ -771,7 +772,7 @@ export default function ProfilePage() {
                     onClick={() => setShowDeleteConfirm(true)}
                     className="px-4 py-2 text-sm font-medium text-red-400 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-colors"
                   >
-                    Delete
+                    {LL.Common.delete()}
                   </button>
                 )}
               </div>
@@ -779,17 +780,17 @@ export default function ProfilePage() {
               {showDeleteConfirm && (
                 <div className="mt-4 p-4 bg-red-900/20 border border-red-700/50 rounded-lg">
                   <p className="text-red-300 text-sm mb-3">
-                    This action is irreversible. Type your email address{" "}
+                    {LL.Settings.deleteConfirmPrefix()}{" "}
                     <span className="font-mono font-bold text-red-200">
                       {user.email}
                     </span>{" "}
-                    to confirm.
+                    {LL.Settings.deleteConfirmSuffix()}
                   </p>
                   <input
                     type="email"
                     value={deleteConfirmEmail}
                     onChange={(e) => setDeleteConfirmEmail(e.target.value)}
-                    placeholder="Type your email to confirm"
+                    placeholder={LL.Settings.typeEmailToConfirm()}
                     className="w-full px-3 py-2 bg-slate-700 border border-red-600/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm mb-3"
                   />
                   {deleteError && (
@@ -804,8 +805,8 @@ export default function ProfilePage() {
                       className="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {deleteLoading
-                        ? "Deleting..."
-                        : "Permanently Delete Account"}
+                        ? LL.Settings.deleting()
+                        : LL.Settings.permanentlyDeleteAccount()}
                     </button>
                     <button
                       onClick={() => {

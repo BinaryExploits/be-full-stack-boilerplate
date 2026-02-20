@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect, type ReactNode } from "react";
 import dynamic from "next/dynamic";
 import { ChartCard } from "../components/charts/chart-card";
+import { useI18n } from "../hooks/useI18n";
 import {
   userGrowthData,
   revenueBreakdownData,
@@ -32,29 +33,26 @@ const Plot = dynamic(() => import("../components/charts/plot-wrapper"), {
   ),
 });
 
-const sectionNav = [
-  { id: "line-area", label: "Line & Area" },
-  { id: "bar-column", label: "Bar & Column" },
-  { id: "pie-donut", label: "Pie, Donut & Sunburst" },
-  { id: "scatter-bubble", label: "Scatter & Bubble" },
-  { id: "statistical", label: "Statistical" },
-  { id: "heatmap-timeline", label: "Heatmap & Timeline" },
-  { id: "3d-charts", label: "3D Charts" },
-  { id: "mixed-combo", label: "Mixed / Combo" },
-  { id: "plotly-table", label: "Plotly Table" },
-];
-
 export default function ChartsPage() {
+  const { LL } = useI18n();
+
+  const sectionNav = [
+    { id: "line-area", label: LL.Charts.navLineArea() },
+    { id: "bar-column", label: LL.Charts.navBarColumn() },
+    { id: "pie-donut", label: LL.Charts.navPieDonut() },
+    { id: "scatter-bubble", label: LL.Charts.navScatterBubble() },
+    { id: "statistical", label: LL.Charts.navStatistical() },
+    { id: "heatmap-timeline", label: LL.Charts.navHeatmapTimeline() },
+    { id: "3d-charts", label: LL.Charts.nav3dCharts() },
+    { id: "mixed-combo", label: LL.Charts.navMixedCombo() },
+    { id: "plotly-table", label: LL.Charts.navPlotlyTable() },
+  ];
+
   return (
     <div className="max-w-[1400px] mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">
-          Charts & Visualizations
-        </h1>
-        <p className="text-sm text-slate-400 mt-1">
-          12+ chart types powered by Plotly.js with WebGL support. All charts
-          are interactive — zoom, pan, and hover for details.
-        </p>
+        <h1 className="text-2xl font-bold text-white">{LL.Charts.title()}</h1>
+        <p className="text-sm text-slate-400 mt-1">{LL.Charts.description()}</p>
         <nav className="mt-3 flex flex-wrap gap-2">
           {sectionNav.map((s) => (
             <a
@@ -69,10 +67,10 @@ export default function ChartsPage() {
       </div>
 
       {/* Section 1: Line & Area */}
-      <LazySection id="line-area" title="Line & Area Charts">
+      <LazySection id="line-area" title={LL.Charts.lineAreaCharts()}>
         <ChartCard
-          title="User Growth Over Time"
-          description="24-month trend of new, active, and churned users."
+          title={LL.Charts.userGrowthTitle()}
+          description={LL.Charts.userGrowthDesc()}
         >
           <Plot
             data={[
@@ -81,7 +79,7 @@ export default function ChartsPage() {
                 y: userGrowthData.newUsers,
                 type: "scatter",
                 mode: "lines+markers",
-                name: "New Users",
+                name: LL.Charts.newUsers(),
                 line: { color: "#3b82f6" },
               },
               {
@@ -89,7 +87,7 @@ export default function ChartsPage() {
                 y: userGrowthData.activeUsers,
                 type: "scatter",
                 mode: "lines+markers",
-                name: "Active Users",
+                name: LL.Charts.activeUsers(),
                 line: { color: "#10b981" },
               },
               {
@@ -97,7 +95,7 @@ export default function ChartsPage() {
                 y: userGrowthData.churnedUsers,
                 type: "scatter",
                 mode: "lines+markers",
-                name: "Churned Users",
+                name: LL.Charts.churnedUsers(),
                 line: { color: "#ef4444" },
               },
             ]}
@@ -107,8 +105,8 @@ export default function ChartsPage() {
           />
         </ChartCard>
         <ChartCard
-          title="Revenue Breakdown by Category"
-          description="Stacked area showing subscription, add-on, service, and overage revenue."
+          title={LL.Charts.revenueBreakdownTitle()}
+          description={LL.Charts.revenueBreakdownDesc()}
         >
           <Plot
             data={[
@@ -117,7 +115,7 @@ export default function ChartsPage() {
                 y: revenueBreakdownData.subscriptions,
                 type: "scatter",
                 fill: "tozeroy",
-                name: "Subscriptions",
+                name: LL.Charts.subscriptions(),
                 line: { color: "#3b82f6" },
               },
               {
@@ -125,7 +123,7 @@ export default function ChartsPage() {
                 y: revenueBreakdownData.addons,
                 type: "scatter",
                 fill: "tonexty",
-                name: "Add-ons",
+                name: LL.Charts.addOns(),
                 line: { color: "#8b5cf6" },
               },
               {
@@ -133,7 +131,7 @@ export default function ChartsPage() {
                 y: revenueBreakdownData.services,
                 type: "scatter",
                 fill: "tonexty",
-                name: "Services",
+                name: LL.Charts.services(),
                 line: { color: "#10b981" },
               },
               {
@@ -141,7 +139,7 @@ export default function ChartsPage() {
                 y: revenueBreakdownData.overages,
                 type: "scatter",
                 fill: "tonexty",
-                name: "Overages",
+                name: LL.Charts.overages(),
                 line: { color: "#f59e0b" },
               },
             ]}
@@ -153,10 +151,10 @@ export default function ChartsPage() {
       </LazySection>
 
       {/* Section 2: Bar & Column */}
-      <LazySection id="bar-column" title="Bar & Column Charts">
+      <LazySection id="bar-column" title={LL.Charts.barColumnCharts()}>
         <ChartCard
-          title="Monthly Active Users by Region"
-          description="Grouped bar chart comparing four regions over 12 months."
+          title={LL.Charts.mauByRegionTitle()}
+          description={LL.Charts.mauByRegionDesc()}
         >
           <Plot
             data={[
@@ -164,28 +162,28 @@ export default function ChartsPage() {
                 x: mauByRegionData.labels,
                 y: mauByRegionData.usEast,
                 type: "bar",
-                name: "US-East",
+                name: LL.Charts.usEast(),
                 marker: { color: "#3b82f6" },
               },
               {
                 x: mauByRegionData.labels,
                 y: mauByRegionData.euWest,
                 type: "bar",
-                name: "EU-West",
+                name: LL.Charts.euWest(),
                 marker: { color: "#10b981" },
               },
               {
                 x: mauByRegionData.labels,
                 y: mauByRegionData.apac,
                 type: "bar",
-                name: "APAC",
+                name: LL.Charts.apac(),
                 marker: { color: "#f59e0b" },
               },
               {
                 x: mauByRegionData.labels,
                 y: mauByRegionData.usWest,
                 type: "bar",
-                name: "US-West",
+                name: LL.Charts.usWest(),
                 marker: { color: "#8b5cf6" },
               },
             ]}
@@ -195,8 +193,8 @@ export default function ChartsPage() {
           />
         </ChartCard>
         <ChartCard
-          title="Feature Usage by Tenant Plan"
-          description="Horizontal stacked bar showing feature adoption across plan tiers."
+          title={LL.Charts.featureUsageTitle()}
+          description={LL.Charts.featureUsageDesc()}
         >
           <Plot
             data={[
@@ -205,7 +203,7 @@ export default function ChartsPage() {
                 x: featureUsageData.auth,
                 type: "bar",
                 orientation: "h",
-                name: "Auth",
+                name: LL.Charts.auth(),
                 marker: { color: "#3b82f6" },
               },
               {
@@ -213,7 +211,7 @@ export default function ChartsPage() {
                 x: featureUsageData.crud,
                 type: "bar",
                 orientation: "h",
-                name: "CRUD",
+                name: LL.Charts.crud(),
                 marker: { color: "#10b981" },
               },
               {
@@ -221,7 +219,7 @@ export default function ChartsPage() {
                 x: featureUsageData.analytics,
                 type: "bar",
                 orientation: "h",
-                name: "Analytics",
+                name: LL.Charts.analytics(),
                 marker: { color: "#f59e0b" },
               },
               {
@@ -229,7 +227,7 @@ export default function ChartsPage() {
                 x: featureUsageData.api,
                 type: "bar",
                 orientation: "h",
-                name: "API",
+                name: LL.Charts.api(),
                 marker: { color: "#8b5cf6" },
               },
               {
@@ -237,7 +235,7 @@ export default function ChartsPage() {
                 x: featureUsageData.multiTenant,
                 type: "bar",
                 orientation: "h",
-                name: "Multi-Tenant",
+                name: LL.Charts.multiTenant(),
                 marker: { color: "#ef4444" },
               },
             ]}
@@ -249,10 +247,10 @@ export default function ChartsPage() {
       </LazySection>
 
       {/* Section 3: Pie, Donut & Sunburst */}
-      <LazySection id="pie-donut" title="Pie, Donut & Sunburst">
+      <LazySection id="pie-donut" title={LL.Charts.pieDonutSunburst()}>
         <ChartCard
-          title="Tenant Plan Distribution"
-          description="Donut chart showing the breakdown of tenants by plan tier."
+          title={LL.Charts.tenantPlanDistTitle()}
+          description={LL.Charts.tenantPlanDistDesc()}
         >
           <Plot
             data={[
@@ -274,8 +272,8 @@ export default function ChartsPage() {
           />
         </ChartCard>
         <ChartCard
-          title="User Role Hierarchy"
-          description="Sunburst chart showing organizational structure: Org > Department > Role."
+          title={LL.Charts.roleHierarchyTitle()}
+          description={LL.Charts.roleHierarchyDesc()}
         >
           <Plot
             data={[
@@ -296,23 +294,27 @@ export default function ChartsPage() {
       </LazySection>
 
       {/* Section 4: Scatter & Bubble */}
-      <LazySection id="scatter-bubble" title="Scatter & Bubble Charts">
+      <LazySection id="scatter-bubble" title={LL.Charts.scatterBubbleCharts()}>
         <ChartCard
-          title="Session Duration vs. Actions Taken"
-          description="Color-encoded by user tier. Hover for details."
+          title={LL.Charts.sessionScatterTitle()}
+          description={LL.Charts.sessionScatterDesc()}
         >
           <Plot
-            data={["Free", "Pro", "Enterprise"].map((tier, i) => {
+            data={[
+              { key: "Free", name: LL.Charts.free() },
+              { key: "Pro", name: LL.Charts.pro() },
+              { key: "Enterprise", name: LL.Charts.enterprise() },
+            ].map(({ key, name }, i) => {
               const colors = ["#64748b", "#3b82f6", "#10b981"];
               const idxs = sessionScatterData.tier
-                .map((t, idx) => (t === tier ? idx : -1))
+                .map((t, idx) => (t === key ? idx : -1))
                 .filter((idx) => idx >= 0);
               return {
                 x: idxs.map((idx) => sessionScatterData.duration[idx]),
                 y: idxs.map((idx) => sessionScatterData.actions[idx]),
                 type: "scatter" as const,
                 mode: "markers" as const,
-                name: tier,
+                name,
                 marker: { color: colors[i], size: 8, opacity: 0.7 },
               };
             })}
@@ -320,12 +322,12 @@ export default function ChartsPage() {
               ...baseLayout,
               height: 400,
               xaxis: {
-                title: "Duration (min)",
+                title: LL.Charts.durationMin(),
                 color: "#94a3b8",
                 gridcolor: "#1e293b",
               },
               yaxis: {
-                title: "Actions",
+                title: LL.Charts.actions(),
                 color: "#94a3b8",
                 gridcolor: "#1e293b",
               },
@@ -335,8 +337,8 @@ export default function ChartsPage() {
           />
         </ChartCard>
         <ChartCard
-          title="Tenant Size vs. Storage Used"
-          description="Bubble size represents monthly revenue."
+          title={LL.Charts.tenantBubbleTitle()}
+          description={LL.Charts.tenantBubbleDesc()}
         >
           <Plot
             data={[
@@ -351,7 +353,7 @@ export default function ChartsPage() {
                   colorscale: "Viridis",
                   showscale: true,
                   colorbar: {
-                    title: "Revenue ($)",
+                    title: LL.Charts.revenueUsd(),
                     tickfont: { color: "#94a3b8" },
                   },
                 },
@@ -364,12 +366,12 @@ export default function ChartsPage() {
               ...baseLayout,
               height: 400,
               xaxis: {
-                title: "User Count",
+                title: LL.Charts.userCount(),
                 color: "#94a3b8",
                 gridcolor: "#1e293b",
               },
               yaxis: {
-                title: "Storage (GB)",
+                title: LL.Charts.storageGb(),
                 color: "#94a3b8",
                 gridcolor: "#1e293b",
               },
@@ -381,10 +383,10 @@ export default function ChartsPage() {
       </LazySection>
 
       {/* Section 5: Statistical */}
-      <LazySection id="statistical" title="Statistical Charts">
+      <LazySection id="statistical" title={LL.Charts.statisticalCharts()}>
         <ChartCard
-          title="Response Time Distribution by Service"
-          description="Box plot showing latency spread across five API services."
+          title={LL.Charts.responseTimeTitle()}
+          description={LL.Charts.responseTimeDesc()}
         >
           <Plot
             data={Object.entries(responseTimeData).map(([name, values]) => ({
@@ -397,7 +399,7 @@ export default function ChartsPage() {
               ...baseLayout,
               height: 400,
               yaxis: {
-                title: "Response Time (ms)",
+                title: LL.Charts.responseTimeMs(),
                 color: "#94a3b8",
                 gridcolor: "#1e293b",
               },
@@ -407,8 +409,8 @@ export default function ChartsPage() {
           />
         </ChartCard>
         <ChartCard
-          title="User Session Length Distribution"
-          description="Histogram binned by minute intervals."
+          title={LL.Charts.sessionLengthTitle()}
+          description={LL.Charts.sessionLengthDesc()}
         >
           <Plot
             data={[
@@ -426,12 +428,12 @@ export default function ChartsPage() {
               ...baseLayout,
               height: 400,
               xaxis: {
-                title: "Session Length (min)",
+                title: LL.Charts.sessionLengthMin(),
                 color: "#94a3b8",
                 gridcolor: "#1e293b",
               },
               yaxis: {
-                title: "Count",
+                title: LL.Charts.count(),
                 color: "#94a3b8",
                 gridcolor: "#1e293b",
               },
@@ -443,10 +445,10 @@ export default function ChartsPage() {
       </LazySection>
 
       {/* Section 6: Heatmap & Timeline */}
-      <LazySection id="heatmap-timeline" title="Heatmap & Timeline">
+      <LazySection id="heatmap-timeline" title={LL.Charts.heatmapTimeline()}>
         <ChartCard
-          title="Activity by Hour and Day of Week"
-          description="7x24 heatmap showing event density. Viridis colorscale."
+          title={LL.Charts.activityHeatmapTitle()}
+          description={LL.Charts.activityHeatmapDesc()}
         >
           <Plot
             data={[
@@ -465,8 +467,8 @@ export default function ChartsPage() {
           />
         </ChartCard>
         <ChartCard
-          title="Tenant Onboarding Timeline"
-          description="Gantt-style horizontal bar showing onboarding start and end dates."
+          title={LL.Charts.ganttTitle()}
+          description={LL.Charts.ganttDesc()}
         >
           <Plot
             data={ganttData.tenants.map((tenant, i) => {
@@ -510,17 +512,25 @@ export default function ChartsPage() {
       </LazySection>
 
       {/* Section 7: 3D Charts (full width) */}
-      <LazySection id="3d-charts" title="3D Charts (WebGL)" fullWidth>
+      <LazySection
+        id="3d-charts"
+        title={LL.Charts.threeDChartsWebGL()}
+        fullWidth
+      >
         <ChartCard
-          title="3D User Engagement Clustering"
-          description="WebGL-rendered 3D scatter: sessions x avg duration x revenue, colored by cluster tier."
+          title={LL.Charts.engagement3dTitle()}
+          description={LL.Charts.engagement3dDesc()}
           className="lg:col-span-2"
         >
           <Plot
-            data={["Low", "Medium", "High"].map((cluster, i) => {
+            data={[
+              { key: "Low", name: LL.Charts.low() },
+              { key: "Medium", name: LL.Charts.medium() },
+              { key: "High", name: LL.Charts.high() },
+            ].map(({ key, name }, i) => {
               const colors = ["#64748b", "#3b82f6", "#10b981"];
               const idxs = engagement3dData.cluster
-                .map((c, idx) => (c === cluster ? idx : -1))
+                .map((c, idx) => (c === key ? idx : -1))
                 .filter((idx) => idx >= 0);
               return {
                 x: idxs.map((idx) => engagement3dData.sessions[idx]),
@@ -528,7 +538,7 @@ export default function ChartsPage() {
                 z: idxs.map((idx) => engagement3dData.revenue[idx]),
                 type: "scatter3d" as const,
                 mode: "markers" as const,
-                name: cluster,
+                name,
                 marker: { color: colors[i], size: 4, opacity: 0.8 },
               };
             })}
@@ -536,9 +546,9 @@ export default function ChartsPage() {
               ...baseLayout,
               height: 500,
               scene: {
-                xaxis: { title: "Sessions", color: "#94a3b8" },
-                yaxis: { title: "Avg Duration", color: "#94a3b8" },
-                zaxis: { title: "Revenue ($)", color: "#94a3b8" },
+                xaxis: { title: LL.Charts.sessions(), color: "#94a3b8" },
+                yaxis: { title: LL.Charts.avgDuration(), color: "#94a3b8" },
+                zaxis: { title: LL.Charts.revenueUsd(), color: "#94a3b8" },
               },
             }}
             config={plotConfig}
@@ -546,8 +556,8 @@ export default function ChartsPage() {
           />
         </ChartCard>
         <ChartCard
-          title="Revenue Surface: Time x Region"
-          description="Full 3D rotation — drag to explore. Portland colorscale."
+          title={LL.Charts.surfaceTitle()}
+          description={LL.Charts.surfaceDesc()}
           className="lg:col-span-2"
         >
           <Plot
@@ -565,9 +575,9 @@ export default function ChartsPage() {
               ...baseLayout,
               height: 500,
               scene: {
-                xaxis: { title: "Month", color: "#94a3b8" },
-                yaxis: { title: "Region", color: "#94a3b8" },
-                zaxis: { title: "Revenue ($K)", color: "#94a3b8" },
+                xaxis: { title: LL.Charts.month(), color: "#94a3b8" },
+                yaxis: { title: LL.Charts.region(), color: "#94a3b8" },
+                zaxis: { title: LL.Charts.revenueK(), color: "#94a3b8" },
               },
             }}
             config={plotConfig}
@@ -577,10 +587,10 @@ export default function ChartsPage() {
       </LazySection>
 
       {/* Section 8: Mixed / Combo */}
-      <LazySection id="mixed-combo" title="Mixed / Combo Charts">
+      <LazySection id="mixed-combo" title={LL.Charts.mixedComboCharts()}>
         <ChartCard
-          title="Revenue vs. User Growth"
-          description="Bar chart (revenue) with line overlay (user count) on secondary y-axis."
+          title={LL.Charts.comboTitle()}
+          description={LL.Charts.comboDesc()}
         >
           <Plot
             data={[
@@ -588,7 +598,7 @@ export default function ChartsPage() {
                 x: comboData.labels,
                 y: comboData.revenue,
                 type: "bar",
-                name: "Revenue ($K)",
+                name: LL.Charts.revenueK(),
                 marker: { color: "#3b82f6" },
               },
               {
@@ -596,7 +606,7 @@ export default function ChartsPage() {
                 y: comboData.userCount,
                 type: "scatter",
                 mode: "lines+markers",
-                name: "User Count",
+                name: LL.Charts.userCount(),
                 yaxis: "y2",
                 line: { color: "#10b981" },
               },
@@ -605,12 +615,12 @@ export default function ChartsPage() {
               ...baseLayout,
               height: 400,
               yaxis: {
-                title: "Revenue ($K)",
+                title: LL.Charts.revenueK(),
                 color: "#94a3b8",
                 gridcolor: "#1e293b",
               },
               yaxis2: {
-                title: "User Count",
+                title: LL.Charts.userCount(),
                 overlaying: "y",
                 side: "right",
                 color: "#10b981",
@@ -622,8 +632,8 @@ export default function ChartsPage() {
           />
         </ChartCard>
         <ChartCard
-          title="MRR Movement This Quarter"
-          description="Waterfall chart showing new business, expansion, churn, and net MRR."
+          title={LL.Charts.waterfallTitle()}
+          description={LL.Charts.waterfallDesc()}
         >
           <Plot
             data={[
@@ -644,7 +654,7 @@ export default function ChartsPage() {
               ...baseLayout,
               height: 400,
               yaxis: {
-                title: "MRR ($)",
+                title: LL.Charts.mrrUsd(),
                 color: "#94a3b8",
                 gridcolor: "#1e293b",
               },
@@ -656,10 +666,10 @@ export default function ChartsPage() {
       </LazySection>
 
       {/* Section 9: Plotly Table */}
-      <LazySection id="plotly-table" title="Plotly Table" fullWidth>
+      <LazySection id="plotly-table" title={LL.Charts.plotlyTable()} fullWidth>
         <ChartCard
-          title="Top 10 Tenants — Plotly Table Trace"
-          description="This is a Plotly trace, not TanStack Table — compare the two on the Grids page."
+          title={LL.Charts.plotlyTableTitle()}
+          description={LL.Charts.plotlyTableDesc()}
           className="lg:col-span-2"
         >
           <Plot

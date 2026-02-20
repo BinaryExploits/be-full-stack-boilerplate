@@ -10,7 +10,6 @@ import {
 import { LoggerProvider } from "@repo/ui/logger-provider";
 import { AuthClientProvider } from "./lib/auth/auth-client";
 import { AppShell } from "./components/app-shell";
-import { CookieBanner } from "./components/cookie-banner";
 import React from "react";
 
 export const metadata: Metadata = {
@@ -35,7 +34,6 @@ export default function RootLayout({
               )}
             >
               <AppShell>{children}</AppShell>
-              <CookieBanner />
             </LoggerProvider>
           </AuthClientProvider>
         </TrpcProvider>

@@ -265,7 +265,7 @@ export default function AuthDemoClient() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">User ID</p>
+                    <p className="text-sm text-gray-600">{LL.Auth.userId()}</p>
                     <p className="text-gray-900 font-mono text-sm">
                       {session.user.id}
                     </p>
@@ -310,16 +310,16 @@ export default function AuthDemoClient() {
               {authStep === "choose" && (
                 <>
                   <p className="text-xs text-gray-500 text-center">
-                    By signing in, you agree to our{" "}
+                    {LL.Auth.signInConsentPrefix()}{" "}
                     <a
                       href="/privacy"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-blue-600 underline hover:text-blue-700"
                     >
-                      Privacy &amp; Data Policy
+                      {LL.Settings.privacyAndDataPolicy()}
                     </a>{" "}
-                    and consent to the processing of your personal data.
+                    {LL.Auth.signInConsentSuffix()}
                   </p>
 
                   <button

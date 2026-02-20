@@ -93,9 +93,7 @@ export default function SignUpPage() {
     const pwErr = validatePassword(password, E);
     if (pwErr) errors.password = pwErr;
 
-    if (!consent)
-      errors.consent =
-        "You must consent to data processing to create an account";
+    if (!consent) errors.consent = LL.Auth.consentRequired();
 
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -297,17 +295,15 @@ export default function SignUpPage() {
                   className="mt-1 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
                 />
                 <span className="text-sm text-gray-600">
-                  I agree to the processing of my personal data as described in
-                  the{" "}
+                  {LL.Auth.consentText()}{" "}
                   <Link
                     href="/privacy"
                     target="_blank"
                     className="text-blue-600 underline hover:text-blue-700"
                   >
-                    Privacy &amp; Data Policy
+                    {LL.Settings.privacyAndDataPolicy()}
                   </Link>
-                  . You can withdraw consent at any time by deleting your
-                  account.
+                  {LL.Auth.consentSuffix()}
                 </span>
               </label>
               {fieldErrors.consent && (

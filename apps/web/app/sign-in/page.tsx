@@ -247,15 +247,15 @@ function SignInContent() {
           {view === "choose" && (
             <div className="space-y-4">
               <p className="text-xs text-gray-500 text-center">
-                By signing in, you agree to our{" "}
+                {LL.Auth.signInConsentPrefix()}{" "}
                 <Link
                   href="/privacy"
                   target="_blank"
                   className="text-blue-600 underline hover:text-blue-700"
                 >
-                  Privacy &amp; Data Policy
+                  {LL.Settings.privacyAndDataPolicy()}
                 </Link>{" "}
-                and consent to the processing of your personal data.
+                {LL.Auth.signInConsentSuffix()}
               </p>
 
               <button
