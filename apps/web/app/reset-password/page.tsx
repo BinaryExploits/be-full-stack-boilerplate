@@ -5,6 +5,21 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
 import { useAuthClient } from "../lib/auth/auth-client";
 import { useI18n } from "../hooks/useI18n";
+import type { TranslationFunctions } from "../../i18n/i18n-types";
+
+function validatePassword(
+  value: string,
+  E: TranslationFunctions["Errors"],
+): string | null {
+  if (!value) return E.passwordRequired();
+  if (value.length < 8) return E.passwordMinLength();
+  if (value.length > 128) return E.passwordMaxLength();
+  if (!/[A-Z]/.test(value)) return E.passwordUppercase();
+  if (!/[a-z]/.test(value)) return E.passwordLowercase();
+  if (!/[0-9]/.test(value)) return E.passwordNumber();
+  if (!/[^A-Za-z0-9]/.test(value)) return E.passwordSpecialChar();
+  return null;
+}
 
 function ResetPasswordContent() {
   const { LL } = useI18n();
@@ -19,7 +34,17 @@ function ResetPasswordContent() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const [tokenError, setTokenError] = useState(false);
+
+  const clearFieldError = (field: string) => {
+    setFieldErrors((prev) => {
+      if (!(field in prev)) return prev;
+      const next = { ...prev };
+      delete next[field];
+      return next;
+    });
+  };
 
   useEffect(() => {
     if (errorParam) {
@@ -67,15 +92,19 @@ function ResetPasswordContent() {
     e.preventDefault();
     if (!authClient) return;
 
-    if (newPassword !== confirmPassword) {
-      setError(LL.Errors.passwordsDoNotMatch());
-      return;
+    const errors: Record<string, string> = {};
+
+    const pwErr = validatePassword(newPassword, LL.Errors);
+    if (pwErr) errors.newPassword = pwErr;
+
+    if (!confirmPassword) {
+      errors.confirmPassword = LL.Errors.passwordRequired();
+    } else if (newPassword !== confirmPassword) {
+      errors.confirmPassword = LL.Errors.passwordsDoNotMatch();
     }
 
-    if (newPassword.length < 8) {
-      setError(LL.Errors.passwordMinLength());
-      return;
-    }
+    setFieldErrors(errors);
+    if (Object.keys(errors).length > 0) return;
 
     setLoading(true);
     setError(null);
@@ -154,13 +183,24 @@ function ResetPasswordContent() {
                 type="password"
                 id="new-password"
                 value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
+                onChange={(e) => {
+                  setNewPassword(e.target.value);
+                  if (fieldErrors.newPassword) clearFieldError("newPassword");
+                }}
                 required
-                minLength={8}
                 maxLength={128}
                 placeholder={LL.Forms.passwordPlaceholder()}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${fieldErrors.newPassword ? "border-red-400" : "border-gray-300"}`}
               />
+              {fieldErrors.newPassword ? (
+                <p className="mt-1 text-xs text-red-600">
+                  {fieldErrors.newPassword}
+                </p>
+              ) : (
+                <p className="mt-1 text-xs text-gray-500">
+                  {LL.Auth.passwordMinChars()}
+                </p>
+              )}
             </div>
             <div suppressHydrationWarning>
               <label
@@ -173,13 +213,21 @@ function ResetPasswordContent() {
                 type="password"
                 id="confirm-password"
                 value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (fieldErrors.confirmPassword)
+                    clearFieldError("confirmPassword");
+                }}
                 required
-                minLength={8}
                 maxLength={128}
                 placeholder={LL.Forms.passwordPlaceholder()}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${fieldErrors.confirmPassword ? "border-red-400" : "border-gray-300"}`}
               />
+              {fieldErrors.confirmPassword && (
+                <p className="mt-1 text-xs text-red-600">
+                  {fieldErrors.confirmPassword}
+                </p>
+              )}
             </div>
             <button
               type="submit"
