@@ -264,7 +264,7 @@ export default function ProfilePage() {
 
       await new Promise((r) => setTimeout(r, 5000));
 
-      router.replace("/sign-in");
+      window.location.href = "/sign-in";
     } catch (err) {
       setDeleteError(
         err instanceof Error ? err.message : "Failed to delete account",
