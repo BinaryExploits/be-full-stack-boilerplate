@@ -334,9 +334,17 @@ export default function SignUpPage() {
                   className="mt-1 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
                 />
                 <span className="text-sm text-gray-600">
-                  I agree to the processing of my personal data and acknowledge
-                  the privacy policy. You can withdraw consent at any time by
-                  deleting your account.
+                  I agree to the processing of my personal data as described in
+                  the{" "}
+                  <Link
+                    href="/privacy"
+                    target="_blank"
+                    className="text-blue-600 underline hover:text-blue-700"
+                  >
+                    Privacy &amp; Data Policy
+                  </Link>
+                  . You can withdraw consent at any time by deleting your
+                  account.
                 </span>
               </label>
               {fieldErrors.consent && (

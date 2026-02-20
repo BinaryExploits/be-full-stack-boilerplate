@@ -722,7 +722,15 @@ export default function ProfilePage() {
           </h2>
           <p className="text-slate-400 text-sm mb-4">
             You have the right to access, export, and delete your personal data
-            at any time.
+            at any time. Read our{" "}
+            <Link
+              href="/privacy"
+              target="_blank"
+              className="text-blue-400 underline hover:text-blue-300"
+            >
+              Privacy &amp; Data Policy
+            </Link>
+            .
           </p>
 
           <div className="space-y-4">

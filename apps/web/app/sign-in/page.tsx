@@ -247,9 +247,15 @@ function SignInContent() {
           {view === "choose" && (
             <div className="space-y-4">
               <p className="text-xs text-gray-500 text-center">
-                By signing in, you agree to our privacy policy and consent to
-                the processing of your personal data. You can withdraw consent
-                at any time from your profile settings.
+                By signing in, you agree to our{" "}
+                <Link
+                  href="/privacy"
+                  target="_blank"
+                  className="text-blue-600 underline hover:text-blue-700"
+                >
+                  Privacy &amp; Data Policy
+                </Link>{" "}
+                and consent to the processing of your personal data.
               </p>
 
               <button

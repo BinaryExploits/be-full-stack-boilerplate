@@ -129,10 +129,7 @@ export class EmailService {
 
       Logger.instance.info(`Email (${templateName}) sent successfully`);
     } catch (error) {
-      Logger.instance.critical(
-        `Failed to send email (${templateName})`,
-        error,
-      );
+      Logger.instance.critical(`Failed to send email (${templateName})`, error);
     }
   }
 }

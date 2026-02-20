@@ -310,9 +310,16 @@ export default function AuthDemoClient() {
               {authStep === "choose" && (
                 <>
                   <p className="text-xs text-gray-500 text-center">
-                    By signing in, you agree to our privacy policy and consent
-                    to the processing of your personal data. You can withdraw
-                    consent at any time from your profile settings.
+                    By signing in, you agree to our{" "}
+                    <a
+                      href="/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline hover:text-blue-700"
+                    >
+                      Privacy &amp; Data Policy
+                    </a>{" "}
+                    and consent to the processing of your personal data.
                   </p>
 
                   <button
