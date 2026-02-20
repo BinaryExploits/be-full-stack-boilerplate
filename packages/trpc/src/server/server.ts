@@ -405,6 +405,107 @@ const appRouter = t.router({
       success: z.boolean(),
       message: z.string().optional(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
+  }),
+  gdpr: t.router({
+    myData: publicProcedure.output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      user: z.object({
+        name: z.string(),
+        email: z.string(),
+        emailVerified: z.boolean(),
+        image: z.string().nullable(),
+        consentGiven: z.boolean(),
+        consentAt: z.date().nullable(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      }),
+      accounts: z.array(
+        z.object({
+          providerId: z.string(),
+          scope: z.string().nullable(),
+          createdAt: z.date(),
+        }),
+      ),
+      sessions: z.array(
+        z.object({
+          ipAddress: z.string().nullable(),
+          userAgent: z.string().nullable(),
+          createdAt: z.date(),
+          expiresAt: z.date(),
+        }),
+      ),
+      profile: z
+        .object({
+          createdAt: z.date(),
+        })
+        .nullable(),
+    })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    exportData: publicProcedure.output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      user: z.object({
+        name: z.string(),
+        email: z.string(),
+        emailVerified: z.boolean(),
+        image: z.string().nullable(),
+        consentGiven: z.boolean(),
+        consentAt: z.date().nullable(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      }),
+      accounts: z.array(
+        z.object({
+          providerId: z.string(),
+          scope: z.string().nullable(),
+          createdAt: z.date(),
+        }),
+      ),
+      sessions: z.array(
+        z.object({
+          ipAddress: z.string().nullable(),
+          userAgent: z.string().nullable(),
+          createdAt: z.date(),
+          expiresAt: z.date(),
+        }),
+      ),
+      profile: z
+        .object({
+          createdAt: z.date(),
+        })
+        .nullable(),
+    })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    updateProfile: publicProcedure.input(z.object({}).extend({
+      name: z
+        .string()
+        .min(2)
+        .max(100)
+        .regex(
+          /^[a-zA-Z\s'-]+$/,
+          'Name can only contain letters, spaces, hyphens, and apostrophes',
+        )
+        .optional(),
+      image: z.string().max(2048).nullable().optional(),
+    })).output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      user: z.object({
+        id: z.string(),
+        name: z.string(),
+        email: z.string(),
+        image: z.string().nullable(),
+        updatedAt: z.date(),
+      }),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    deleteAccount: publicProcedure.input(z.object({}).extend({
+      confirmation: z.string(),
+    })).output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
   })
 });
 export type AppRouter = typeof appRouter;

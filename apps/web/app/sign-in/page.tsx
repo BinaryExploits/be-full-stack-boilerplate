@@ -246,6 +246,18 @@ function SignInContent() {
 
           {view === "choose" && (
             <div className="space-y-4">
+              <p className="text-xs text-gray-500 text-center">
+                {LL.Auth.signInConsentPrefix()}{" "}
+                <Link
+                  href="/privacy"
+                  target="_blank"
+                  className="text-blue-600 underline hover:text-blue-700"
+                >
+                  {LL.Settings.privacyAndDataPolicy()}
+                </Link>{" "}
+                {LL.Auth.signInConsentSuffix()}
+              </p>
+
               <button
                 onClick={() => void signInWithGoogle()}
                 disabled={loading}

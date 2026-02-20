@@ -9,6 +9,7 @@ import {
 } from "@headlessui/react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { trpc } from "@repo/trpc/client";
+import { useI18n } from "../hooks/useI18n";
 import { DataTable } from "../components/grid/data-table";
 import {
   EditableCell,
@@ -58,33 +59,8 @@ const TAB_KEYS = [
 ] as const;
 type TabKey = (typeof TAB_KEYS)[number];
 
-const TAB_LABELS: Record<TabKey, string> = {
-  "crud-live": "Crud Records",
-  "global-crud-live": "Global Crud Records",
-  crud: "Editable People (Demo)",
-  "global-crud": "Batch Operations (Demo)",
-  tenants: "Tenants (Demo)",
-  "read-only": "Metrics (Demo)",
-  advanced: "Tasks (Demo)",
-};
-
-const TAB_DESCRIPTIONS: Record<TabKey, string> = {
-  "crud-live":
-    "Live read-only view of Crud records fetched from the API (Prisma). Reflects actual database state.",
-  "global-crud-live":
-    "Live read-only view of Global Crud records fetched from the API (Prisma). No tenant scoping.",
-  crud: "Demo: Editable grid with in-memory data modeled after the Crud entity shape.",
-  "global-crud":
-    "Demo: Bulk operations with row selection, multi-sort, and batch actions on in-memory data.",
-  tenants:
-    "Demo: Tenant management view grouped by plan tier with expandable sub-rows.",
-  "read-only":
-    "Demo: Read-only analytics metrics. Illustrative dummy data, not from a live API.",
-  advanced:
-    "Demo: Rich cell renderers with tags, avatars, priority icons, and expandable details.",
-};
-
 export default function GridsPage() {
+  const { LL } = useI18n();
   const searchParams = useSearchParams();
   const router = useRouter();
   const tabParam = searchParams.get("tab") as TabKey | null;
@@ -98,20 +74,40 @@ export default function GridsPage() {
     [router],
   );
 
+  const tabLabels: Record<TabKey, string> = {
+    "crud-live": LL.Grids.tabCrudRecords(),
+    "global-crud-live": LL.Grids.tabGlobalCrudRecords(),
+    crud: LL.Grids.tabEditablePeople(),
+    "global-crud": LL.Grids.tabBatchOps(),
+    tenants: LL.Grids.tabTenants(),
+    "read-only": LL.Grids.tabMetrics(),
+    advanced: LL.Grids.tabTasks(),
+  };
+
+  const tabDescriptions: Record<TabKey, string> = {
+    "crud-live": LL.Grids.descCrudLive(),
+    "global-crud-live": LL.Grids.descGlobalCrudLive(),
+    crud: LL.Grids.descCrud(),
+    "global-crud": LL.Grids.descGlobalCrud(),
+    tenants: LL.Grids.descTenants(),
+    "read-only": LL.Grids.descReadOnly(),
+    advanced: LL.Grids.descAdvanced(),
+  };
+
   return (
     <div className="max-w-[1400px] mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">Data Grids</h1>
+        <h1 className="text-2xl font-bold text-white">{LL.Grids.title()}</h1>
         <p className="text-sm text-slate-400 mt-1">
-          Grid scenarios powered by TanStack Table v8. Grids marked{" "}
+          {LL.Grids.descriptionPrefix()}{" "}
           <Badge variant="warning" className="text-[10px] align-middle">
-            Demo
+            {LL.Grids.demo()}
           </Badge>{" "}
-          use illustrative dummy data. Grids marked{" "}
+          {LL.Grids.descriptionMiddle()}{" "}
           <Badge variant="success" className="text-[10px] align-middle">
-            Live
+            {LL.Grids.live()}
           </Badge>{" "}
-          fetch real data from the API.
+          {LL.Grids.descriptionSuffix()}
         </p>
       </div>
 
@@ -127,14 +123,14 @@ export default function GridsPage() {
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
-            {TAB_LABELS[key]}
+            {tabLabels[key]}
           </button>
         ))}
       </div>
 
       {/* Description */}
       <p className="text-xs text-slate-400 mb-3">
-        {TAB_DESCRIPTIONS[activeTab]}
+        {tabDescriptions[activeTab]}
       </p>
 
       {/* Panels */}
@@ -160,6 +156,7 @@ interface CrudRecord {
 }
 
 function CrudLiveGrid() {
+  const { LL } = useI18n();
   const query = trpc.crud.findAllPrisma.useQuery(
     {},
     { refetchOnWindowFocus: false },
@@ -169,16 +166,20 @@ function CrudLiveGrid() {
     (query.data as { cruds?: CrudRecord[] } | undefined)?.cruds ?? [];
 
   const columns: ColumnDef<CrudRecord, unknown>[] = [
-    { accessorKey: "id", header: "ID", cell: ReadOnlyCell },
-    { accessorKey: "content", header: "Content", cell: ReadOnlyCell },
+    { accessorKey: "id", header: LL.Grids.colId(), cell: ReadOnlyCell },
+    {
+      accessorKey: "content",
+      header: LL.Grids.colContent(),
+      cell: ReadOnlyCell,
+    },
     {
       accessorKey: "createdAt",
-      header: "Created At",
+      header: LL.Grids.colCreatedAt(),
       cell: DateCell,
     },
     {
       accessorKey: "updatedAt",
-      header: "Updated At",
+      header: LL.Grids.colUpdatedAt(),
       cell: DateCell,
     },
   ];
@@ -187,7 +188,7 @@ function CrudLiveGrid() {
     return (
       <div className="flex items-center justify-center gap-2 py-20 text-slate-400">
         <Loader2 className="h-5 w-5 animate-spin" />
-        <span>Loading Crud records…</span>
+        <span>{LL.Grids.loadingCrudRecords()}</span>
       </div>
     );
   }
@@ -196,7 +197,7 @@ function CrudLiveGrid() {
     return (
       <div className="flex items-center justify-center gap-2 py-20 text-red-400">
         <AlertCircle className="h-5 w-5" />
-        <span>Failed to load: {query.error.message}</span>
+        <span>{LL.Grids.failedToLoad({ message: query.error.message })}</span>
       </div>
     );
   }
@@ -206,10 +207,10 @@ function CrudLiveGrid() {
       <div className="flex items-center gap-2 mb-3">
         <Badge variant="success">
           <Database className="h-3 w-3 mr-1 inline" />
-          Live — Prisma
+          {LL.Grids.livePrisma()}
         </Badge>
         <span className="text-xs text-slate-400">
-          {data.length} record{data.length !== 1 && "s"}
+          {LL.Grids.recordCount({ count: data.length })}
         </span>
         <Button
           variant="ghost"
@@ -220,7 +221,7 @@ function CrudLiveGrid() {
           <RefreshCw
             className={`h-3.5 w-3.5 ${query.isFetching ? "animate-spin" : ""}`}
           />
-          Refresh
+          {LL.Common.refresh()}
         </Button>
       </div>
       <DataTable
@@ -240,6 +241,7 @@ function CrudLiveGrid() {
 /* Live Global Crud Records — fetched from API via tRPC               */
 /* ================================================================== */
 function GlobalCrudLiveGrid() {
+  const { LL } = useI18n();
   const query = trpc.globalCrud.findAllPrisma.useQuery(
     {},
     { refetchOnWindowFocus: false },
@@ -249,16 +251,20 @@ function GlobalCrudLiveGrid() {
     (query.data as { items?: CrudRecord[] } | undefined)?.items ?? [];
 
   const columns: ColumnDef<CrudRecord, unknown>[] = [
-    { accessorKey: "id", header: "ID", cell: ReadOnlyCell },
-    { accessorKey: "content", header: "Content", cell: ReadOnlyCell },
+    { accessorKey: "id", header: LL.Grids.colId(), cell: ReadOnlyCell },
+    {
+      accessorKey: "content",
+      header: LL.Grids.colContent(),
+      cell: ReadOnlyCell,
+    },
     {
       accessorKey: "createdAt",
-      header: "Created At",
+      header: LL.Grids.colCreatedAt(),
       cell: DateCell,
     },
     {
       accessorKey: "updatedAt",
-      header: "Updated At",
+      header: LL.Grids.colUpdatedAt(),
       cell: DateCell,
     },
   ];
@@ -267,7 +273,7 @@ function GlobalCrudLiveGrid() {
     return (
       <div className="flex items-center justify-center gap-2 py-20 text-slate-400">
         <Loader2 className="h-5 w-5 animate-spin" />
-        <span>Loading Global Crud records…</span>
+        <span>{LL.Grids.loadingGlobalCrudRecords()}</span>
       </div>
     );
   }
@@ -276,7 +282,7 @@ function GlobalCrudLiveGrid() {
     return (
       <div className="flex items-center justify-center gap-2 py-20 text-red-400">
         <AlertCircle className="h-5 w-5" />
-        <span>Failed to load: {query.error.message}</span>
+        <span>{LL.Grids.failedToLoad({ message: query.error.message })}</span>
       </div>
     );
   }
@@ -286,10 +292,10 @@ function GlobalCrudLiveGrid() {
       <div className="flex items-center gap-2 mb-3">
         <Badge variant="success">
           <Database className="h-3 w-3 mr-1 inline" />
-          Live — Prisma
+          {LL.Grids.livePrisma()}
         </Badge>
         <span className="text-xs text-slate-400">
-          {data.length} record{data.length !== 1 && "s"}
+          {LL.Grids.recordCount({ count: data.length })}
         </span>
         <Button
           variant="ghost"
@@ -300,7 +306,7 @@ function GlobalCrudLiveGrid() {
           <RefreshCw
             className={`h-3.5 w-3.5 ${query.isFetching ? "animate-spin" : ""}`}
           />
-          Refresh
+          {LL.Common.refresh()}
         </Button>
       </div>
       <DataTable
@@ -320,6 +326,7 @@ function GlobalCrudLiveGrid() {
 /* Demo A — Editable People (Demo)                                    */
 /* ================================================================== */
 function CrudGrid() {
+  const { LL } = useI18n();
   const [data, setData] = useState<Person[]>(() => [...initialPeople]);
   const [modified, setModified] = useState(false);
 
@@ -358,18 +365,26 @@ function CrudGrid() {
   }, []);
 
   const columns: ColumnDef<Person, unknown>[] = [
-    { accessorKey: "firstName", header: "First Name", cell: EditableCell },
-    { accessorKey: "lastName", header: "Last Name", cell: EditableCell },
-    { accessorKey: "email", header: "Email", cell: EditableCell },
+    {
+      accessorKey: "firstName",
+      header: LL.Grids.colFirstName(),
+      cell: EditableCell,
+    },
+    {
+      accessorKey: "lastName",
+      header: LL.Grids.colLastName(),
+      cell: EditableCell,
+    },
+    { accessorKey: "email", header: LL.Grids.colEmail(), cell: EditableCell },
     {
       accessorKey: "role",
-      header: "Role",
+      header: LL.Grids.colRole(),
       cell: SelectCell,
       meta: { selectOptions: ["Admin", "User", "Editor", "Viewer"] },
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: LL.Grids.colStatus(),
       cell: BadgeCell,
       meta: {
         badgeVariantMap: {
@@ -379,7 +394,7 @@ function CrudGrid() {
         },
       },
     },
-    { accessorKey: "createdAt", header: "Created", cell: DateCell },
+    { accessorKey: "createdAt", header: LL.Grids.colCreated(), cell: DateCell },
     {
       id: "actions",
       header: "",
@@ -391,12 +406,14 @@ function CrudGrid() {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <Badge variant="warning">Demo — in-memory data</Badge>
+        <Badge variant="warning">{LL.Grids.demoInMemory()}</Badge>
         <div className="flex items-center gap-2">
-          {modified && <Badge variant="warning">Unsaved changes</Badge>}
+          {modified && (
+            <Badge variant="warning">{LL.Grids.unsavedChanges()}</Badge>
+          )}
           <Button variant="secondary" size="sm" onClick={handleAdd}>
             <Plus className="h-3.5 w-3.5" />
-            Add Row
+            {LL.Grids.addRow()}
           </Button>
         </div>
       </div>
@@ -417,6 +434,7 @@ function CrudGrid() {
 /* Demo B — Batch Operations (Demo)                                   */
 /* ================================================================== */
 function GlobalCrudGrid() {
+  const { LL } = useI18n();
   const [data, setData] = useState<Person[]>(() => [...initialRecords]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
@@ -459,18 +477,26 @@ function GlobalCrudGrid() {
       ),
       enableSorting: false,
     },
-    { accessorKey: "firstName", header: "First Name", cell: EditableCell },
-    { accessorKey: "lastName", header: "Last Name", cell: EditableCell },
-    { accessorKey: "email", header: "Email", cell: EditableCell },
+    {
+      accessorKey: "firstName",
+      header: LL.Grids.colFirstName(),
+      cell: EditableCell,
+    },
+    {
+      accessorKey: "lastName",
+      header: LL.Grids.colLastName(),
+      cell: EditableCell,
+    },
+    { accessorKey: "email", header: LL.Grids.colEmail(), cell: EditableCell },
     {
       accessorKey: "role",
-      header: "Role",
+      header: LL.Grids.colRole(),
       cell: SelectCell,
       meta: { selectOptions: ["Admin", "User", "Editor", "Viewer"] },
     },
     {
       accessorKey: "status",
-      header: "Status",
+      header: LL.Grids.colStatus(),
       cell: BadgeCell,
       meta: {
         badgeVariantMap: {
@@ -480,7 +506,7 @@ function GlobalCrudGrid() {
         },
       },
     },
-    { accessorKey: "createdAt", header: "Created", cell: DateCell },
+    { accessorKey: "createdAt", header: LL.Grids.colCreated(), cell: DateCell },
   ];
 
   const selectedCount = Object.keys(selectedIds).length;
@@ -488,15 +514,15 @@ function GlobalCrudGrid() {
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
-        <Badge variant="warning">Demo — in-memory data</Badge>
+        <Badge variant="warning">{LL.Grids.demoInMemory()}</Badge>
         {selectedCount > 0 && (
           <div className="flex items-center gap-2">
             <span className="text-xs text-slate-300">
-              {selectedCount} selected
+              {LL.Grids.selectedCount({ count: selectedCount })}
             </span>
             <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
               <Trash2 className="h-3.5 w-3.5" />
-              Delete Selected
+              {LL.Grids.deleteSelected()}
             </Button>
             <Button
               variant="secondary"
@@ -504,7 +530,7 @@ function GlobalCrudGrid() {
               onClick={() => console.log("Export selected")}
             >
               <Download className="h-3.5 w-3.5" />
-              Export
+              {LL.Grids.export()}
             </Button>
             <Button
               variant="secondary"
@@ -512,7 +538,7 @@ function GlobalCrudGrid() {
               onClick={() => console.log("Change status")}
             >
               <RefreshCw className="h-3.5 w-3.5" />
-              Change Status
+              {LL.Grids.changeStatus()}
             </Button>
           </div>
         )}
@@ -534,6 +560,7 @@ function GlobalCrudGrid() {
 /* Demo C — Tenants (Demo)                                            */
 /* ================================================================== */
 function TenantsGrid() {
+  const { LL } = useI18n();
   const groupedByPlan = ["Enterprise", "Pro", "Free"] as const;
 
   const tenantColumns: ColumnDef<TenantRow, unknown>[] = [
@@ -553,10 +580,14 @@ function TenantsGrid() {
       ),
       enableSorting: false,
     },
-    { accessorKey: "tenantName", header: "Tenant Name", cell: ReadOnlyCell },
+    {
+      accessorKey: "tenantName",
+      header: LL.Grids.colTenantName(),
+      cell: ReadOnlyCell,
+    },
     {
       accessorKey: "plan",
-      header: "Plan",
+      header: LL.Grids.colPlan(),
       cell: BadgeCell,
       meta: {
         badgeVariantMap: {
@@ -568,17 +599,21 @@ function TenantsGrid() {
     },
     {
       accessorKey: "usersCount",
-      header: "Users",
+      header: LL.Grids.colUsers(),
       cell: (props) => (
         <span className="tabular-nums">
           {(props.getValue() as number).toLocaleString()}
         </span>
       ),
     },
-    { accessorKey: "storageUsed", header: "Storage", cell: ReadOnlyCell },
+    {
+      accessorKey: "storageUsed",
+      header: LL.Grids.colStorage(),
+      cell: ReadOnlyCell,
+    },
     {
       accessorKey: "status",
-      header: "Status",
+      header: LL.Grids.colStatus(),
       cell: BadgeCell,
       meta: {
         badgeVariantMap: {
@@ -589,8 +624,8 @@ function TenantsGrid() {
         },
       },
     },
-    { accessorKey: "region", header: "Region", cell: ReadOnlyCell },
-    { accessorKey: "createdAt", header: "Created", cell: DateCell },
+    { accessorKey: "region", header: LL.Grids.colRegion(), cell: ReadOnlyCell },
+    { accessorKey: "createdAt", header: LL.Grids.colCreated(), cell: DateCell },
     {
       id: "actions",
       header: "",
@@ -602,7 +637,7 @@ function TenantsGrid() {
   return (
     <div>
       <Badge variant="warning" className="mb-3">
-        Demo — dummy data ({tenants.length} records)
+        {LL.Grids.demoDummyDataCount({ count: tenants.length })}
       </Badge>
       {groupedByPlan.map((plan) => {
         const planTenants = tenants.filter((t) => t.plan === plan);
@@ -628,7 +663,7 @@ function TenantsGrid() {
                     renderSubRow={(tenant) => (
                       <div className="bg-slate-800/60 p-4 text-xs text-slate-300">
                         <p className="font-medium text-white mb-2">
-                          Users in {tenant.tenantName}
+                          {LL.Grids.usersIn({ name: tenant.tenantName })}
                         </p>
                         <div className="grid grid-cols-3 gap-2">
                           {Array.from(
@@ -639,13 +674,15 @@ function TenantsGrid() {
                                 className="flex items-center gap-2 rounded bg-slate-700/50 px-2 py-1"
                               >
                                 <div className="h-5 w-5 rounded-full bg-slate-600" />
-                                <span>User {i + 1}</span>
+                                <span>{LL.Grids.userN({ n: i + 1 })}</span>
                               </div>
                             ),
                           )}
                           {tenant.usersCount > 6 && (
                             <span className="text-slate-500 self-center">
-                              +{tenant.usersCount - 6} more
+                              {LL.Grids.moreUsers({
+                                count: tenant.usersCount - 6,
+                              })}
                             </span>
                           )}
                         </div>
@@ -667,11 +704,12 @@ function TenantsGrid() {
 /* Demo D — Metrics (Demo)                                            */
 /* ================================================================== */
 function ReadOnlyGrid() {
+  const { LL } = useI18n();
   const columns: ColumnDef<Metric, unknown>[] = [
-    { accessorKey: "metric", header: "Metric", cell: ReadOnlyCell },
+    { accessorKey: "metric", header: LL.Grids.colMetric(), cell: ReadOnlyCell },
     {
       accessorKey: "value",
-      header: "Value",
+      header: LL.Grids.colValue(),
       cell: (props) => {
         const v = props.getValue() as number;
         return (
@@ -681,11 +719,11 @@ function ReadOnlyGrid() {
         );
       },
     },
-    { accessorKey: "change", header: "Change", cell: DeltaCell },
-    { accessorKey: "period", header: "Period", cell: ReadOnlyCell },
+    { accessorKey: "change", header: LL.Grids.colChange(), cell: DeltaCell },
+    { accessorKey: "period", header: LL.Grids.colPeriod(), cell: ReadOnlyCell },
     {
       accessorKey: "category",
-      header: "Category",
+      header: LL.Grids.colCategory(),
       cell: BadgeCell,
       meta: {
         badgeVariantMap: {
@@ -707,7 +745,7 @@ function ReadOnlyGrid() {
   return (
     <div>
       <Badge variant="warning" className="mb-3">
-        Demo — dummy data
+        {LL.Grids.demoDummyData()}
       </Badge>
       <DataTable
         data={metrics}
@@ -725,6 +763,7 @@ function ReadOnlyGrid() {
 /* Demo E — Tasks (Demo)                                              */
 /* ================================================================== */
 function AdvancedGrid() {
+  const { LL } = useI18n();
   const today = new Date("2026-02-19");
 
   const columns: ColumnDef<Task, unknown>[] = [
@@ -744,20 +783,28 @@ function AdvancedGrid() {
       ),
       enableSorting: false,
     },
-    { accessorKey: "name", header: "Task", cell: ReadOnlyCell },
-    { accessorKey: "tags", header: "Tags", cell: TagsCell },
-    { accessorKey: "assignedTo", header: "Assigned To", cell: AvatarCell },
-    { accessorKey: "priority", header: "Priority", cell: PriorityCell },
-    { accessorKey: "dueDate", header: "Due Date", cell: DateCell },
+    { accessorKey: "name", header: LL.Grids.colTask(), cell: ReadOnlyCell },
+    { accessorKey: "tags", header: LL.Grids.colTags(), cell: TagsCell },
+    {
+      accessorKey: "assignedTo",
+      header: LL.Grids.colAssignedTo(),
+      cell: AvatarCell,
+    },
+    {
+      accessorKey: "priority",
+      header: LL.Grids.colPriority(),
+      cell: PriorityCell,
+    },
+    { accessorKey: "dueDate", header: LL.Grids.colDueDate(), cell: DateCell },
     {
       accessorKey: "completedAt",
-      header: "Completed",
+      header: LL.Grids.colCompleted(),
       cell: (props) => {
         const val = props.getValue() as string | null;
         return val ? (
-          <Badge variant="success">Done</Badge>
+          <Badge variant="success">{LL.Grids.done()}</Badge>
         ) : (
-          <Badge variant="default">Open</Badge>
+          <Badge variant="default">{LL.Grids.open()}</Badge>
         );
       },
     },
@@ -766,7 +813,7 @@ function AdvancedGrid() {
   return (
     <div>
       <Badge variant="warning" className="mb-3">
-        Demo — dummy data
+        {LL.Grids.demoDummyData()}
       </Badge>
       <DataTable
         data={tasks}
@@ -783,10 +830,15 @@ function AdvancedGrid() {
             >
               <p className="font-medium text-white mb-1">{task.name}</p>
               <p className="text-slate-400 text-xs">
-                Assigned to {task.assignedTo} &middot; Priority: {task.priority}{" "}
-                &middot; Due: {new Date(task.dueDate).toLocaleDateString()}
+                {LL.Grids.assignedToLabel({ name: task.assignedTo })} &middot;{" "}
+                {LL.Grids.priorityLabel({ value: task.priority })} &middot;{" "}
+                {LL.Grids.dueLabel({
+                  date: new Date(task.dueDate).toLocaleDateString(),
+                })}
                 {isOverdue && (
-                  <span className="ml-2 text-red-400 font-medium">OVERDUE</span>
+                  <span className="ml-2 text-red-400 font-medium">
+                    {LL.Grids.overdue()}
+                  </span>
                 )}
               </p>
               <div className="flex gap-1 mt-2">

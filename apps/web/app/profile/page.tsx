@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useAuthClient } from "../lib/auth/auth-client";
 import { useI18n } from "../hooks/useI18n";
+import { trpc } from "@repo/trpc/client";
 
 interface AccountInfo {
   id: string;
@@ -20,6 +21,27 @@ export default function ProfilePage() {
 
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
   const [loadingAccounts, setLoadingAccounts] = useState(true);
+
+  const [editingName, setEditingName] = useState(false);
+  const [nameValue, setNameValue] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [nameLoading, setNameLoading] = useState(false);
+  const [nameMessage, setNameMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  const [downloadingData, setDownloadingData] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmEmail, setDeleteConfirmEmail] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const utils = trpc.useUtils();
+  const updateProfileMutation = trpc.gdpr.updateProfile.useMutation();
+  const deleteAccountMutation = trpc.gdpr.deleteAccount.useMutation();
 
   const [changingPassword, setChangingPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -159,6 +181,97 @@ export default function ProfilePage() {
 
     setResendingVerification(false);
     setVerificationSent(true);
+  };
+
+  const NAME_REGEX = /^[a-zA-Z\s'-]+$/;
+
+  const validateName = (value: string): string | null => {
+    const trimmed = value.trim();
+    if (!trimmed) return LL.Errors.nameRequired({ label: LL.Forms.name() });
+    if (trimmed.length < 2)
+      return LL.Errors.nameMinLength({ label: LL.Forms.name() });
+    if (trimmed.length > 100)
+      return LL.Errors.nameInvalidChars({ label: LL.Forms.name() });
+    if (!NAME_REGEX.test(trimmed))
+      return LL.Errors.nameInvalidChars({ label: LL.Forms.name() });
+    return null;
+  };
+
+  const handleUpdateName = async () => {
+    const error = validateName(nameValue);
+    if (error) {
+      setNameError(error);
+      return;
+    }
+    setNameLoading(true);
+    setNameMessage(null);
+    setNameError(null);
+
+    try {
+      await updateProfileMutation.mutateAsync({ name: nameValue.trim() });
+
+      if (authClient) {
+        await authClient.updateUser({ name: nameValue.trim() });
+      }
+
+      setNameMessage({ type: "success", text: LL.Settings.nameUpdated() });
+      setEditingName(false);
+    } catch (err) {
+      setNameMessage({
+        type: "error",
+        text:
+          err instanceof Error ? err.message : LL.Settings.failedUpdateName(),
+      });
+    }
+    setNameLoading(false);
+  };
+
+  const handleDownloadData = async () => {
+    setDownloadingData(true);
+    setDownloadSuccess(false);
+    try {
+      const data = await utils.gdpr.exportData.fetch();
+
+      await new Promise((r) => setTimeout(r, 600));
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "my-data-export.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      setDownloadSuccess(true);
+      setTimeout(() => setDownloadSuccess(false), 3000);
+    } catch {
+      // download failed silently
+    }
+    setDownloadingData(false);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user?.email || deleteConfirmEmail !== user.email) return;
+    setDeleteLoading(true);
+    setDeleteError(null);
+
+    try {
+      await deleteAccountMutation.mutateAsync({
+        confirmation: deleteConfirmEmail,
+      });
+
+      await new Promise((r) => setTimeout(r, 5000));
+
+      window.location.href = "/sign-in";
+    } catch (err) {
+      setDeleteError(
+        err instanceof Error ? err.message : LL.Settings.failedDeleteAccount(),
+      );
+      setDeleteLoading(false);
+    }
   };
 
   return (
@@ -521,6 +634,195 @@ export default function ProfilePage() {
               )}
             </div>
           )}
+        </div>
+
+        {/* Edit Profile */}
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6 mt-6">
+          <h2 className="text-lg font-semibold text-white mb-4">
+            {LL.Settings.editProfile()}
+          </h2>
+
+          {nameMessage && (
+            <div
+              className={`rounded-lg p-3 mb-4 text-sm ${
+                nameMessage.type === "success"
+                  ? "bg-emerald-900/30 border border-emerald-700/50 text-emerald-400"
+                  : "bg-red-900/30 border border-red-700/50 text-red-400"
+              }`}
+            >
+              {nameMessage.text}
+            </div>
+          )}
+
+          {!editingName ? (
+            <button
+              onClick={() => {
+                setEditingName(true);
+                setNameValue(user.name || "");
+                setNameMessage(null);
+                setNameError(null);
+              }}
+              className="px-4 py-2 text-sm font-medium text-blue-400 border border-blue-500/50 rounded-lg hover:bg-blue-500/10 transition-colors"
+            >
+              {LL.Settings.editName()}
+            </button>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label
+                  htmlFor="edit-name"
+                  className="block text-sm text-slate-400 mb-1"
+                >
+                  {LL.Settings.fullName()}
+                </label>
+                <input
+                  type="text"
+                  id="edit-name"
+                  value={nameValue}
+                  onChange={(e) => {
+                    setNameValue(e.target.value);
+                    if (nameError) setNameError(null);
+                  }}
+                  maxLength={100}
+                  className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${nameError ? "border-red-500" : "border-slate-600"}`}
+                  placeholder={LL.Settings.fullNamePlaceholder()}
+                />
+                {nameError && (
+                  <p className="mt-1 text-xs text-red-400">{nameError}</p>
+                )}
+                <p className="mt-1 text-xs text-slate-500">
+                  {LL.Settings.nameHint()}
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => void handleUpdateName()}
+                  disabled={nameLoading || !nameValue.trim()}
+                  className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                >
+                  {nameLoading ? LL.Common.saving() : LL.Common.save()}
+                </button>
+                <button
+                  onClick={() => {
+                    setEditingName(false);
+                    setNameMessage(null);
+                    setNameError(null);
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
+                >
+                  {LL.Common.cancel()}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Data Privacy & GDPR */}
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-white mb-2">
+            {LL.Settings.dataAndPrivacy()}
+          </h2>
+          <p className="text-slate-400 text-sm mb-4">
+            {LL.Settings.dataPrivacyDescription()}{" "}
+            <Link
+              href="/privacy"
+              target="_blank"
+              className="text-blue-400 underline hover:text-blue-300"
+            >
+              {LL.Settings.privacyAndDataPolicy()}
+            </Link>
+            .
+          </p>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between py-3 border-b border-slate-700">
+              <div>
+                <p className="text-white text-sm font-medium">
+                  {LL.Settings.downloadMyData()}
+                </p>
+                <p className="text-slate-400 text-xs mt-0.5">
+                  {LL.Settings.downloadMyDataDescription()}
+                </p>
+              </div>
+              <button
+                onClick={() => void handleDownloadData()}
+                disabled={downloadingData}
+                className={`px-4 py-2 text-sm font-medium border rounded-lg transition-colors disabled:opacity-50 ${downloadSuccess ? "text-emerald-400 border-emerald-500/50" : "text-blue-400 border-blue-500/50 hover:bg-blue-500/10"}`}
+              >
+                {downloadingData
+                  ? LL.Settings.preparingExport()
+                  : downloadSuccess
+                    ? LL.Settings.downloaded()
+                    : LL.Settings.download()}
+              </button>
+            </div>
+
+            <div className="py-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-red-400 text-sm font-medium">
+                    {LL.Settings.deleteAccount()}
+                  </p>
+                  <p className="text-slate-400 text-xs mt-0.5">
+                    {LL.Settings.deleteAccountDescription()}
+                  </p>
+                </div>
+                {!showDeleteConfirm && (
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="px-4 py-2 text-sm font-medium text-red-400 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-colors"
+                  >
+                    {LL.Common.delete()}
+                  </button>
+                )}
+              </div>
+
+              {showDeleteConfirm && (
+                <div className="mt-4 p-4 bg-red-900/20 border border-red-700/50 rounded-lg">
+                  <p className="text-red-300 text-sm mb-3">
+                    {LL.Settings.deleteConfirmPrefix()}{" "}
+                    <span className="font-mono font-bold text-red-200">
+                      {user.email}
+                    </span>{" "}
+                    {LL.Settings.deleteConfirmSuffix()}
+                  </p>
+                  <input
+                    type="email"
+                    value={deleteConfirmEmail}
+                    onChange={(e) => setDeleteConfirmEmail(e.target.value)}
+                    placeholder={LL.Settings.typeEmailToConfirm()}
+                    className="w-full px-3 py-2 bg-slate-700 border border-red-600/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm mb-3"
+                  />
+                  {deleteError && (
+                    <p className="text-red-400 text-xs mb-3">{deleteError}</p>
+                  )}
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => void handleDeleteAccount()}
+                      disabled={
+                        deleteLoading || deleteConfirmEmail !== user.email
+                      }
+                      className="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {deleteLoading
+                        ? LL.Settings.deleting()
+                        : LL.Settings.permanentlyDeleteAccount()}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowDeleteConfirm(false);
+                        setDeleteConfirmEmail("");
+                        setDeleteError(null);
+                      }}
+                      className="px-4 py-2 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
+                    >
+                      {LL.Common.cancel()}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </main>

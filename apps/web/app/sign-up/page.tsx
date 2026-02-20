@@ -63,10 +63,10 @@ export default function SignUpPage() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [consent, setConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [success, setSuccess] = useState(false);
 
   const clearFieldError = (field: string) => {
     setFieldErrors((prev) => {
@@ -93,6 +93,8 @@ export default function SignUpPage() {
     const pwErr = validatePassword(password, E);
     if (pwErr) errors.password = pwErr;
 
+    if (!consent) errors.consent = LL.Auth.consentRequired();
+
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -107,9 +109,9 @@ export default function SignUpPage() {
     setError(null);
 
     const callbackURL =
-      typeof window !== "undefined"
-        ? `${window.location.origin}/verify-email`
-        : "/verify-email";
+      typeof globalThis.location !== "undefined"
+        ? `${globalThis.location.origin}/`
+        : "/";
 
     const fullName = `${firstName.trim()} ${lastName.trim()}`;
 
@@ -134,44 +136,8 @@ export default function SignUpPage() {
       return;
     }
 
-    setSuccess(true);
+    router.replace("/");
   };
-
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
-          <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-emerald-100 flex items-center justify-center">
-            <svg
-              className="w-7 h-7 text-emerald-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-              />
-            </svg>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-3">
-            {LL.Auth.checkYourInbox()}
-          </h1>
-          <p className="text-gray-600 mb-6">
-            {LL.Auth.checkInboxMessage({ email })}
-          </p>
-          <Link
-            href="/sign-in"
-            className="inline-block text-blue-600 hover:text-blue-700 font-medium transition-colors"
-          >
-            {LL.Auth.goToSignIn()}
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
@@ -317,9 +283,38 @@ export default function SignUpPage() {
                 </p>
               )}
             </div>
+            <div>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => {
+                    setConsent(e.target.checked);
+                    if (fieldErrors.consent) clearFieldError("consent");
+                  }}
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                />
+                <span className="text-sm text-gray-600">
+                  {LL.Auth.consentText()}{" "}
+                  <Link
+                    href="/privacy"
+                    target="_blank"
+                    className="text-blue-600 underline hover:text-blue-700"
+                  >
+                    {LL.Settings.privacyAndDataPolicy()}
+                  </Link>
+                  {LL.Auth.consentSuffix()}
+                </span>
+              </label>
+              {fieldErrors.consent && (
+                <p className="mt-1 text-xs text-red-600">
+                  {fieldErrors.consent}
+                </p>
+              )}
+            </div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !consent}
               className="w-full px-4 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? LL.Auth.creatingAccount() : LL.Auth.signUp()}

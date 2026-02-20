@@ -19,16 +19,19 @@ import {
   Menu,
   X,
 } from "lucide-react";
-import { navSections, type NavItem } from "./sidebar-nav-items";
+import { getNavSections, type NavItem } from "./sidebar-nav-items";
 import { useAuthClient } from "../../lib/auth/auth-client";
+import { useI18n } from "../../hooks/useI18n";
 import { Avatar } from "../ui/avatar";
 
 const STORAGE_KEY = "sidebar-collapsed";
 
 export function AppSidebar() {
+  const { LL } = useI18n();
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const authClient = useAuthClient();
+  const navSections = getNavSections(LL);
   const sessionResult = authClient?.useSession?.();
   const session = sessionResult?.data;
   const user = session?.user;
@@ -100,7 +103,7 @@ export function AppSidebar() {
       >
         {!collapsed && (
           <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
-            Navigation
+            {LL.Sidebar.navigation()}
           </span>
         )}
         <button

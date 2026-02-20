@@ -265,7 +265,7 @@ export default function AuthDemoClient() {
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">User ID</p>
+                    <p className="text-sm text-gray-600">{LL.Auth.userId()}</p>
                     <p className="text-gray-900 font-mono text-sm">
                       {session.user.id}
                     </p>
@@ -309,6 +309,19 @@ export default function AuthDemoClient() {
 
               {authStep === "choose" && (
                 <>
+                  <p className="text-xs text-gray-500 text-center">
+                    {LL.Auth.signInConsentPrefix()}{" "}
+                    <a
+                      href="/privacy"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline hover:text-blue-700"
+                    >
+                      {LL.Settings.privacyAndDataPolicy()}
+                    </a>{" "}
+                    {LL.Auth.signInConsentSuffix()}
+                  </p>
+
                   <button
                     onClick={() => {
                       signInWithGoogle().catch((err: Error) => {

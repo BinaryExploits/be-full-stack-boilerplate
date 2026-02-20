@@ -97,37 +97,27 @@ export class EmailService {
     );
 
     try {
-      let messageId: string;
+      const payload = {
+        to,
+        subject: renderedEmail.subject,
+        html: renderedEmail.html,
+        text: renderedEmail.text,
+      };
 
       switch (provider) {
         case EmailProvider.RESEND:
-          messageId = await this.resendProvider.send({
-            to,
-            subject: renderedEmail.subject,
-            html: renderedEmail.html,
-            text: renderedEmail.text,
-          });
+          await this.resendProvider.send(payload);
           break;
         case EmailProvider.AWS_SES:
-          messageId = await this.awsSesProvider.send({
-            to,
-            subject: renderedEmail.subject,
-            html: renderedEmail.html,
-            text: renderedEmail.text,
-          });
+          await this.awsSesProvider.send(payload);
           break;
         default:
           throw new Error(`Unsupported email provider: ${String(provider)}`);
       }
 
-      Logger.instance.info(
-        `Email (${templateName}) sent successfully to ${to} via ${provider}. ID: ${messageId}`,
-      );
+      Logger.instance.info(`Email (${templateName}) sent successfully`);
     } catch (error) {
-      Logger.instance.critical(
-        `Failed to send email (${templateName}) to ${to} via ${provider}:`,
-        error,
-      );
+      Logger.instance.critical(`Failed to send email (${templateName})`, error);
     }
   }
 }

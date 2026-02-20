@@ -15,42 +15,73 @@ import { TenantDashboardOnly } from "./components/tenant-dashboard-only";
 import { TenantAdminOnly } from "./components/tenant-admin-only";
 import { Card, CardHeader, CardTitle, CardContent } from "./components/ui/card";
 import { Button } from "./components/ui/button";
+import { useI18n } from "./hooks/useI18n";
+import type { LucideIcon } from "lucide-react";
 
-const stats = [
-  { label: "Total Records", value: "1,284", icon: Database, trend: "+12%" },
-  { label: "Active Tenants", value: "47", icon: Building2, trend: "+3" },
-  { label: "Users", value: "312", icon: Users, trend: "+8%" },
-  { label: "API Endpoints", value: "24", icon: Globe, trend: "stable" },
-];
+interface StatItem {
+  label: string;
+  value: string;
+  icon: LucideIcon;
+  trend: string;
+}
 
-const features = [
-  {
-    title: "Powerful Data Grids",
-    description:
-      "Editable, sortable, filterable tables for all your data. CRUD operations, bulk actions, nested rows, and multi-select — powered by TanStack Table.",
-    icon: LayoutGrid,
-    href: "/grids",
-    color: "from-blue-500 to-blue-600",
-  },
-  {
-    title: "Rich Visualizations",
-    description:
-      "10+ chart types powered by Plotly.js with WebGL support. Line, bar, scatter, 3D surfaces, heatmaps, and more — all interactive and responsive.",
-    icon: BarChart3,
-    href: "/charts",
-    color: "from-emerald-500 to-emerald-600",
-  },
-  {
-    title: "Multi-tenant Ready",
-    description:
-      "CRUD operations scoped per tenant with role-based read/write control. Manage tenants, members, and permissions from a single dashboard.",
-    icon: Building2,
-    href: "/tenant-dashboard",
-    color: "from-amber-500 to-orange-600",
-  },
-];
+interface FeatureItem {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  href: string;
+  color: string;
+}
 
 export default function Home() {
+  const { LL } = useI18n();
+
+  const stats: StatItem[] = [
+    {
+      label: LL.Home.totalRecords(),
+      value: "1,284",
+      icon: Database,
+      trend: "+12%",
+    },
+    {
+      label: LL.Home.activeTenants(),
+      value: "47",
+      icon: Building2,
+      trend: "+3",
+    },
+    { label: LL.Home.users(), value: "312", icon: Users, trend: "+8%" },
+    {
+      label: LL.Home.apiEndpoints(),
+      value: "24",
+      icon: Globe,
+      trend: LL.Home.stable(),
+    },
+  ];
+
+  const features: FeatureItem[] = [
+    {
+      title: LL.Home.powerfulDataGrids(),
+      description: LL.Home.powerfulDataGridsDesc(),
+      icon: LayoutGrid,
+      href: "/grids",
+      color: "from-blue-500 to-blue-600",
+    },
+    {
+      title: LL.Home.richVisualizations(),
+      description: LL.Home.richVisualizationsDesc(),
+      icon: BarChart3,
+      href: "/charts",
+      color: "from-emerald-500 to-emerald-600",
+    },
+    {
+      title: LL.Home.multiTenantReady(),
+      description: LL.Home.multiTenantReadyDesc(),
+      icon: Building2,
+      href: "/tenant-dashboard",
+      color: "from-amber-500 to-orange-600",
+    },
+  ];
+
   return (
     <div className="max-w-6xl mx-auto space-y-10">
       {/* Hero */}
@@ -60,25 +91,24 @@ export default function Home() {
             <span className="text-xl font-bold text-slate-900">BE</span>
           </div>
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-            BE: Tech Stack
+            {LL.Home.heroTitle()}
           </h1>
         </div>
         <p className="text-slate-400 text-lg max-w-2xl mx-auto mb-8">
-          Full-stack boilerplate with multi-tenancy, authentication, and CRUD
-          operations. Explore the data grids and charting capabilities below.
+          {LL.Home.heroDescription()}
         </p>
         <div className="flex items-center justify-center gap-4">
           <Link href="/grids">
             <Button size="lg">
               <LayoutGrid className="h-4 w-4" />
-              View Grids
+              {LL.Home.viewGrids()}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
           <Link href="/charts">
             <Button variant="secondary" size="lg">
               <BarChart3 className="h-4 w-4" />
-              View Charts
+              {LL.Home.viewCharts()}
               <ArrowRight className="h-4 w-4" />
             </Button>
           </Link>
@@ -109,7 +139,7 @@ export default function Home() {
       {/* Feature Highlights */}
       <section>
         <h2 className="text-xl font-semibold text-white mb-4">
-          Feature Highlights
+          {LL.Home.featureHighlights()}
         </h2>
         <div className="grid md:grid-cols-3 gap-6">
           {features.map((feature) => (
@@ -143,9 +173,11 @@ export default function Home() {
           >
             <Building2 className="h-5 w-5 text-amber-400" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-white">Tenant Dashboard</p>
+              <p className="text-sm font-medium text-white">
+                {LL.Home.tenantDashboard()}
+              </p>
               <p className="text-xs text-slate-400">
-                Manage platform tenants and subscriptions
+                {LL.Home.tenantDashboardDesc()}
               </p>
             </div>
             <ArrowRight className="h-4 w-4 text-slate-500" />
@@ -158,9 +190,11 @@ export default function Home() {
           >
             <Users className="h-5 w-5 text-cyan-400" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-white">Manage Members</p>
+              <p className="text-sm font-medium text-white">
+                {LL.Home.manageMembersTitle()}
+              </p>
               <p className="text-xs text-slate-400">
-                Add, remove, and manage tenant member roles
+                {LL.Home.manageMembersQuickDesc()}
               </p>
             </div>
             <ArrowRight className="h-4 w-4 text-slate-500" />

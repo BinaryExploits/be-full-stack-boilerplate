@@ -6,6 +6,9 @@ import { BetterAuthLogger } from '../logger/logger-better-auth';
 import { AuthService } from './auth.service';
 import { AuthMiddleware } from './auth.middleware';
 import { createBetterAuth } from './auth';
+import { UserPrismaRepository } from './repositories/prisma/user.prisma-repository';
+import { AccountPrismaRepository } from './repositories/prisma/account.prisma-repository';
+import { SessionPrismaRepository } from './repositories/prisma/session.prisma-repository';
 
 @Module({
   imports: [
@@ -29,7 +32,19 @@ import { createBetterAuth } from './auth';
     }),
     EmailModule,
   ],
-  providers: [AuthService, AuthMiddleware],
-  exports: [AuthService, AuthMiddleware],
+  providers: [
+    AuthService,
+    AuthMiddleware,
+    UserPrismaRepository,
+    AccountPrismaRepository,
+    SessionPrismaRepository,
+  ],
+  exports: [
+    AuthService,
+    AuthMiddleware,
+    UserPrismaRepository,
+    AccountPrismaRepository,
+    SessionPrismaRepository,
+  ],
 })
 export class AuthModule {}

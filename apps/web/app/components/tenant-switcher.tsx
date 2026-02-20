@@ -18,7 +18,21 @@ export function TenantSwitcher() {
     refetchOnWindowFocus: false,
   });
   const switchTenant = trpc.tenant.switchTenant.useMutation({
-    onSuccess: () => {
+    onMutate: async ({ tenantId }) => {
+      await utils.tenant.myTenants.cancel();
+      const previous = utils.tenant.myTenants.getData();
+      utils.tenant.myTenants.setData(undefined, (old) => {
+        if (!old) return old;
+        return { ...old, selectedTenantId: tenantId } as typeof old;
+      });
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        utils.tenant.myTenants.setData(undefined, context.previous);
+      }
+    },
+    onSettled: () => {
       void utils.invalidate();
     },
   });

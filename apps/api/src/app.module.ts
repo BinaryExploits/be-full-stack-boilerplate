@@ -21,6 +21,7 @@ import { parseNodeEnvironment } from './lib/types/environment.type';
 import { TenantModule } from './modules/tenant/tenant.module';
 import { UserProfileModule } from './modules/user-profile/user-profile.module';
 import { GlobalCrudModule } from './modules/global-crud/global-crud.module';
+import { GdprModule } from './modules/gdpr/gdpr.module';
 
 @Module({
   imports: [
@@ -70,6 +71,7 @@ import { GlobalCrudModule } from './modules/global-crud/global-crud.module';
     CrudModule,
     GlobalCrudModule,
     EmailModule,
+    GdprModule,
   ],
   controllers: [],
   providers: [AppContext],
