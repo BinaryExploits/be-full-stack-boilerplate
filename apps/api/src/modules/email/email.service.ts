@@ -16,6 +16,13 @@ import { renderEmail } from './email.renderer';
 import { ResendProvider } from './resend.provider';
 import { AwsSesProvider } from './aws-ses.provider';
 
+function maskEmail(email: string): string {
+  const [local, domain] = email.split('@');
+  if (!local || !domain) return '***';
+  const visible = local.length <= 2 ? local[0] : local.slice(0, 2);
+  return `${visible}***@${domain}`;
+}
+
 @Injectable()
 export class EmailService {
   constructor(
@@ -121,11 +128,11 @@ export class EmailService {
       }
 
       Logger.instance.info(
-        `Email (${templateName}) sent successfully to ${to} via ${provider}. ID: ${messageId}`,
+        `Email (${templateName}) sent successfully to ${maskEmail(to)} via ${provider}. ID: ${messageId}`,
       );
     } catch (error) {
       Logger.instance.critical(
-        `Failed to send email (${templateName}) to ${to} via ${provider}:`,
+        `Failed to send email (${templateName}) to ${maskEmail(to)} via ${provider}:`,
         error,
       );
     }

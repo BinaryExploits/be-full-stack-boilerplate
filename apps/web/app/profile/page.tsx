@@ -2,8 +2,10 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuthClient } from "../lib/auth/auth-client";
 import { useI18n } from "../hooks/useI18n";
+import { trpc } from "@repo/trpc/client";
 
 interface AccountInfo {
   id: string;
@@ -14,12 +16,31 @@ interface AccountInfo {
 export default function ProfilePage() {
   const { LL } = useI18n();
   const authClient = useAuthClient();
+  const router = useRouter();
   const sessionResult = authClient?.useSession?.();
   const session = sessionResult?.data;
   const user = session?.user;
 
   const [accounts, setAccounts] = useState<AccountInfo[]>([]);
   const [loadingAccounts, setLoadingAccounts] = useState(true);
+
+  const [editingName, setEditingName] = useState(false);
+  const [nameValue, setNameValue] = useState("");
+  const [nameLoading, setNameLoading] = useState(false);
+  const [nameMessage, setNameMessage] = useState<{
+    type: "success" | "error";
+    text: string;
+  } | null>(null);
+
+  const [downloadingData, setDownloadingData] = useState(false);
+
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmEmail, setDeleteConfirmEmail] = useState("");
+  const [deleteLoading, setDeleteLoading] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const updateProfileMutation = trpc.gdpr.updateProfile.useMutation();
+  const deleteAccountMutation = trpc.gdpr.deleteAccount.useMutation();
 
   const [changingPassword, setChangingPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -159,6 +180,70 @@ export default function ProfilePage() {
 
     setResendingVerification(false);
     setVerificationSent(true);
+  };
+
+  const handleUpdateName = async () => {
+    if (!nameValue.trim()) return;
+    setNameLoading(true);
+    setNameMessage(null);
+
+    try {
+      await updateProfileMutation.mutateAsync({ name: nameValue.trim() });
+      setNameMessage({ type: "success", text: "Name updated successfully" });
+      setEditingName(false);
+    } catch (err) {
+      setNameMessage({
+        type: "error",
+        text: err instanceof Error ? err.message : "Failed to update name",
+      });
+    }
+    setNameLoading(false);
+  };
+
+  const handleDownloadData = async () => {
+    setDownloadingData(true);
+    try {
+      const response = await fetch(
+        `${typeof window !== "undefined" ? window.location.origin : ""}/api/trpc/gdpr.exportData`,
+        { credentials: "include" },
+      );
+      const data = await response.json();
+      const blob = new Blob([JSON.stringify(data, null, 2)], {
+        type: "application/json",
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "my-data-export.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch {
+      // download failed silently
+    }
+    setDownloadingData(false);
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!user?.email || deleteConfirmEmail !== user.email) return;
+    setDeleteLoading(true);
+    setDeleteError(null);
+
+    try {
+      await deleteAccountMutation.mutateAsync({
+        confirmation: deleteConfirmEmail,
+      });
+      if (authClient) {
+        await authClient.signOut();
+      }
+      router.replace("/sign-in");
+    } catch (err) {
+      setDeleteError(
+        err instanceof Error ? err.message : "Failed to delete account",
+      );
+      setDeleteLoading(false);
+    }
   };
 
   return (
@@ -521,6 +606,171 @@ export default function ProfilePage() {
               )}
             </div>
           )}
+        </div>
+
+        {/* Edit Profile */}
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6 mt-6">
+          <h2 className="text-lg font-semibold text-white mb-4">
+            Edit Profile
+          </h2>
+
+          {nameMessage && (
+            <div
+              className={`rounded-lg p-3 mb-4 text-sm ${
+                nameMessage.type === "success"
+                  ? "bg-emerald-900/30 border border-emerald-700/50 text-emerald-400"
+                  : "bg-red-900/30 border border-red-700/50 text-red-400"
+              }`}
+            >
+              {nameMessage.text}
+            </div>
+          )}
+
+          {!editingName ? (
+            <button
+              onClick={() => {
+                setEditingName(true);
+                setNameValue(user.name || "");
+                setNameMessage(null);
+              }}
+              className="px-4 py-2 text-sm font-medium text-blue-400 border border-blue-500/50 rounded-lg hover:bg-blue-500/10 transition-colors"
+            >
+              Edit Name
+            </button>
+          ) : (
+            <div className="space-y-4">
+              <div>
+                <label
+                  htmlFor="edit-name"
+                  className="block text-sm text-slate-400 mb-1"
+                >
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  id="edit-name"
+                  value={nameValue}
+                  onChange={(e) => setNameValue(e.target.value)}
+                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  placeholder="Your full name"
+                />
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => void handleUpdateName()}
+                  disabled={nameLoading || !nameValue.trim()}
+                  className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                >
+                  {nameLoading ? "Saving..." : "Save"}
+                </button>
+                <button
+                  onClick={() => {
+                    setEditingName(false);
+                    setNameMessage(null);
+                  }}
+                  className="px-4 py-2 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
+                >
+                  {LL.Common.cancel()}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Data Privacy & GDPR */}
+        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-white mb-2">
+            Data &amp; Privacy
+          </h2>
+          <p className="text-slate-400 text-sm mb-4">
+            You have the right to access, export, and delete your personal data at any time.
+          </p>
+
+          <div className="space-y-4">
+            <div className="flex items-center justify-between py-3 border-b border-slate-700">
+              <div>
+                <p className="text-white text-sm font-medium">
+                  Download My Data
+                </p>
+                <p className="text-slate-400 text-xs mt-0.5">
+                  Export all your personal data as a JSON file
+                </p>
+              </div>
+              <button
+                onClick={() => void handleDownloadData()}
+                disabled={downloadingData}
+                className="px-4 py-2 text-sm font-medium text-blue-400 border border-blue-500/50 rounded-lg hover:bg-blue-500/10 transition-colors disabled:opacity-50"
+              >
+                {downloadingData ? "Downloading..." : "Download"}
+              </button>
+            </div>
+
+            <div className="py-3">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-red-400 text-sm font-medium">
+                    Delete Account
+                  </p>
+                  <p className="text-slate-400 text-xs mt-0.5">
+                    Permanently delete your account and all associated data
+                  </p>
+                </div>
+                {!showDeleteConfirm && (
+                  <button
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="px-4 py-2 text-sm font-medium text-red-400 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-colors"
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+
+              {showDeleteConfirm && (
+                <div className="mt-4 p-4 bg-red-900/20 border border-red-700/50 rounded-lg">
+                  <p className="text-red-300 text-sm mb-3">
+                    This action is irreversible. Type your email address{" "}
+                    <span className="font-mono font-bold text-red-200">
+                      {user.email}
+                    </span>{" "}
+                    to confirm.
+                  </p>
+                  <input
+                    type="email"
+                    value={deleteConfirmEmail}
+                    onChange={(e) => setDeleteConfirmEmail(e.target.value)}
+                    placeholder="Type your email to confirm"
+                    className="w-full px-3 py-2 bg-slate-700 border border-red-600/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm mb-3"
+                  />
+                  {deleteError && (
+                    <p className="text-red-400 text-xs mb-3">{deleteError}</p>
+                  )}
+                  <div className="flex gap-3">
+                    <button
+                      onClick={() => void handleDeleteAccount()}
+                      disabled={
+                        deleteLoading || deleteConfirmEmail !== user.email
+                      }
+                      className="px-4 py-2 text-sm font-medium bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      {deleteLoading
+                        ? "Deleting..."
+                        : "Permanently Delete Account"}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowDeleteConfirm(false);
+                        setDeleteConfirmEmail("");
+                        setDeleteError(null);
+                      }}
+                      className="px-4 py-2 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
+                    >
+                      {LL.Common.cancel()}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </main>

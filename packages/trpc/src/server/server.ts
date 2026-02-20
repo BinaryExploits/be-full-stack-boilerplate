@@ -405,6 +405,125 @@ const appRouter = t.router({
       success: z.boolean(),
       message: z.string().optional(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
+  }),
+  gdpr: t.router({ ,
+    myData: publicProcedure.output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      user: z.object({
+        id: z.string(),
+        name: z.string(),
+        email: z.string(),
+        emailVerified: z.boolean(),
+        image: z.string().nullable(),
+        consentGiven: z.boolean(),
+        consentAt: z.date().nullable(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      }),
+      accounts: z.array(
+        z.object({
+          id: z.string(),
+          providerId: z.string(),
+          accountId: z.string(),
+          scope: z.string().nullable(),
+          createdAt: z.date(),
+        }),
+      ),
+      sessions: z.array(
+        z.object({
+          id: z.string(),
+          ipAddress: z.string().nullable(),
+          userAgent: z.string().nullable(),
+          createdAt: z.date(),
+          expiresAt: z.date(),
+        }),
+      ),
+      profile: z
+        .object({
+          selectedTenantId: z.string().nullable(),
+          createdAt: z.date(),
+        })
+        .nullable(),
+      tenantMemberships: z.array(
+        z.object({
+          id: z.string(),
+          tenantId: z.string(),
+          role: z.string(),
+          createdAt: z.date(),
+        }),
+      ),
+    })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    exportData: publicProcedure.output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      user: z.object({
+        id: z.string(),
+        name: z.string(),
+        email: z.string(),
+        emailVerified: z.boolean(),
+        image: z.string().nullable(),
+        consentGiven: z.boolean(),
+        consentAt: z.date().nullable(),
+        createdAt: z.date(),
+        updatedAt: z.date(),
+      }),
+      accounts: z.array(
+        z.object({
+          id: z.string(),
+          providerId: z.string(),
+          accountId: z.string(),
+          scope: z.string().nullable(),
+          createdAt: z.date(),
+        }),
+      ),
+      sessions: z.array(
+        z.object({
+          id: z.string(),
+          ipAddress: z.string().nullable(),
+          userAgent: z.string().nullable(),
+          createdAt: z.date(),
+          expiresAt: z.date(),
+        }),
+      ),
+      profile: z
+        .object({
+          selectedTenantId: z.string().nullable(),
+          createdAt: z.date(),
+        })
+        .nullable(),
+      tenantMemberships: z.array(
+        z.object({
+          id: z.string(),
+          tenantId: z.string(),
+          role: z.string(),
+          createdAt: z.date(),
+        }),
+      ),
+    })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    updateProfile: publicProcedure.input(z.object({}).extend({
+      name: z.string().min(1).max(255).optional(),
+      image: z.string().max(2048).nullable().optional(),
+    })).output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    }).extend({
+      user: z.object({
+        id: z.string(),
+        name: z.string(),
+        email: z.string(),
+        image: z.string().nullable(),
+        updatedAt: z.date(),
+      }),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
+    deleteAccount: publicProcedure.input(z.object({}).extend({
+      confirmation: z.string(),
+    })).output(z.object({
+      success: z.boolean(),
+      message: z.string().optional(),
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
   })
 });
 export type AppRouter = typeof appRouter;

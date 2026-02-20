@@ -217,14 +217,9 @@ function getFormattedTRPCError(opts: TRPCErrorOptions): FormattedError {
 
 export function trpcErrorFormatter(opts: TRPCErrorOptions): TRPCErrorShapeType {
   const formattedError: FormattedError = getFormattedTRPCError(opts);
-  const { input } = opts;
   const logArguments = {
     ...formattedError,
   };
-
-  if (input && process.env.NODE_ENV === 'development') {
-    Object.assign(logArguments, { input: input });
-  }
 
   Logger.instance
     .withContext('TRPC Route')

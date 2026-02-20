@@ -63,6 +63,7 @@ export default function SignUpPage() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [consent, setConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
@@ -92,6 +93,8 @@ export default function SignUpPage() {
 
     const pwErr = validatePassword(password, E);
     if (pwErr) errors.password = pwErr;
+
+    if (!consent) errors.consent = "You must consent to data processing to create an account";
 
     setFieldErrors(errors);
     return Object.keys(errors).length === 0;
@@ -317,9 +320,30 @@ export default function SignUpPage() {
                 </p>
               )}
             </div>
+            <div>
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={consent}
+                  onChange={(e) => {
+                    setConsent(e.target.checked);
+                    if (fieldErrors.consent) clearFieldError("consent");
+                  }}
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                />
+                <span className="text-sm text-gray-600">
+                  I agree to the processing of my personal data and acknowledge the privacy policy. You can withdraw consent at any time by deleting your account.
+                </span>
+              </label>
+              {fieldErrors.consent && (
+                <p className="mt-1 text-xs text-red-600">
+                  {fieldErrors.consent}
+                </p>
+              )}
+            </div>
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !consent}
               className="w-full px-4 py-3 bg-emerald-600 text-white font-medium rounded-lg hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? LL.Auth.creatingAccount() : LL.Auth.signUp()}

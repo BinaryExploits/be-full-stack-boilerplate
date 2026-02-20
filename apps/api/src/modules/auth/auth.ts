@@ -10,9 +10,11 @@ import {
   NodeEnvironment,
   parseNodeEnvironment,
 } from '../../lib/types/environment.type';
+import { Logger } from '@repo/utils-core';
+
+const prisma = new PrismaClient();
 
 const createDatabaseAdapter = () => {
-  const prisma = new PrismaClient();
   return prismaAdapter(prisma, {
     provider: 'postgresql',
   });
@@ -30,6 +32,41 @@ export const createBetterAuth = (
     trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS?.split(',') || [],
     basePath: '/api/auth',
     database: createDatabaseAdapter(),
+    databaseHooks: {
+      user: {
+        create: {
+          after: async (user, ctx) => {
+            const ipAddress =
+              ctx?.headers?.get?.('x-forwarded-for')?.split(',')[0]?.trim() ??
+              ctx?.headers?.get?.('x-real-ip') ??
+              null;
+
+            try {
+              await prisma.user.update({
+                where: { id: user.id },
+                data: {
+                  consentGiven: true,
+                  consentAt: new Date(),
+                  consentIp: ipAddress,
+                },
+              });
+              await prisma.gdprAuditLog.create({
+                data: {
+                  userId: user.id,
+                  action: 'CONSENT_GIVEN',
+                  details: 'Consent recorded at account creation',
+                  ipAddress,
+                },
+              });
+            } catch (err) {
+              Logger.instance
+                .withContext('Auth')
+                .critical('Failed to record GDPR consent', err);
+            }
+          },
+        },
+      },
+    },
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: !isDevelopment,
