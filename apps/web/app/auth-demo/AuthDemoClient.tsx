@@ -183,11 +183,11 @@ export default function AuthDemoClient() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 p-8">
       <div className="max-w-md mx-auto">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-gray-600 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-8"
         >
           <svg
             className="w-5 h-5"
@@ -205,19 +205,19 @@ export default function AuthDemoClient() {
           {LL.Common.backToHome()}
         </Link>
 
-        <div className="w-full space-y-8 p-8 bg-white rounded-lg shadow-lg">
+        <div className="w-full space-y-8 p-8 bg-white dark:bg-slate-800 rounded-lg shadow-lg">
           <div className="text-center">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               {LL.Auth.betterAuthDemo()}
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-slate-400">
               {session ? LL.Auth.welcomeBack() : LL.Auth.signInToContinue()}
             </p>
           </div>
 
           {session ? (
             <div className="space-y-6">
-              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700/50 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <svg
                     className="w-5 h-5 text-green-600"
@@ -232,14 +232,14 @@ export default function AuthDemoClient() {
                       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <span className="text-green-800 font-medium">
+                  <span className="text-green-800 dark:text-green-400 font-medium">
                     {LL.Auth.youAreSignedIn()}
                   </span>
                 </div>
               </div>
 
-              <div className="bg-gray-50 rounded-lg p-6 space-y-4">
-                <h2 className="text-lg font-semibold text-gray-900">
+              <div className="bg-gray-50 dark:bg-slate-700/50 rounded-lg p-6 space-y-4">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                   {LL.Auth.userInformation()}
                 </h2>
                 <div className="space-y-3">
@@ -248,25 +248,31 @@ export default function AuthDemoClient() {
                       <img
                         src={session.user.image}
                         alt="Profile"
-                        className="w-20 h-20 rounded-full border-2 border-gray-200"
+                        className="w-20 h-20 rounded-full border-2 border-gray-200 dark:border-slate-600"
                       />
                     </div>
                   )}
                   <div>
-                    <p className="text-sm text-gray-600">{LL.Forms.name()}</p>
-                    <p className="text-gray-900 font-medium">
+                    <p className="text-sm text-gray-600 dark:text-slate-400">
+                      {LL.Forms.name()}
+                    </p>
+                    <p className="text-gray-900 dark:text-white font-medium">
                       {session.user.name || "N/A"}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">{LL.Forms.email()}</p>
-                    <p className="text-gray-900 font-medium">
+                    <p className="text-sm text-gray-600 dark:text-slate-400">
+                      {LL.Forms.email()}
+                    </p>
+                    <p className="text-gray-900 dark:text-white font-medium">
                       {session.user.email}
                     </p>
                   </div>
                   <div>
-                    <p className="text-sm text-gray-600">{LL.Auth.userId()}</p>
-                    <p className="text-gray-900 font-mono text-sm">
+                    <p className="text-sm text-gray-600 dark:text-slate-400">
+                      {LL.Auth.userId()}
+                    </p>
+                    <p className="text-gray-900 dark:text-white font-mono text-sm">
                       {session.user.id}
                     </p>
                   </div>
@@ -287,10 +293,10 @@ export default function AuthDemoClient() {
           ) : (
             <div className="space-y-4">
               {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 rounded-lg p-4">
                   <div className="flex items-center gap-2">
                     <svg
-                      className="w-5 h-5 text-red-600 flex-shrink-0"
+                      className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -302,14 +308,16 @@ export default function AuthDemoClient() {
                         d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
                     </svg>
-                    <span className="text-red-800 text-sm">{error}</span>
+                    <span className="text-red-800 dark:text-red-400 text-sm">
+                      {error}
+                    </span>
                   </div>
                 </div>
               )}
 
               {authStep === "choose" && (
                 <>
-                  <p className="text-xs text-gray-500 text-center">
+                  <p className="text-xs text-gray-500 dark:text-slate-500 text-center">
                     {LL.Auth.signInConsentPrefix()}{" "}
                     <a
                       href="/privacy"
@@ -329,7 +337,7 @@ export default function AuthDemoClient() {
                       });
                     }}
                     disabled={loading}
-                    className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg shadow-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-medium hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24">
                       <path
@@ -354,10 +362,10 @@ export default function AuthDemoClient() {
 
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-300"></div>
+                      <div className="w-full border-t border-gray-300 dark:border-slate-600"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-white text-gray-500">
+                      <span className="px-2 bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400">
                         {LL.Common.or()}
                       </span>
                     </div>
@@ -366,7 +374,7 @@ export default function AuthDemoClient() {
                   <button
                     onClick={() => setAuthStep("email")}
                     disabled={loading}
-                    className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg shadow-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-medium hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <svg
                       className="w-5 h-5"
@@ -386,10 +394,10 @@ export default function AuthDemoClient() {
 
                   <div className="relative">
                     <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-gray-300"></div>
+                      <div className="w-full border-t border-gray-300 dark:border-slate-600"></div>
                     </div>
                     <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-white text-gray-500">
+                      <span className="px-2 bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400">
                         {LL.Auth.orEmailPassword()}
                       </span>
                     </div>
@@ -417,7 +425,7 @@ export default function AuthDemoClient() {
                       setPassword("");
                     }}
                     disabled={loading}
-                    className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg shadow-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-medium hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {LL.Auth.signInWithEmailPassword()}
                   </button>
@@ -435,7 +443,7 @@ export default function AuthDemoClient() {
                   <div>
                     <label
                       htmlFor="signup-name"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                     >
                       {LL.Forms.name()}
                     </label>
@@ -446,13 +454,13 @@ export default function AuthDemoClient() {
                       onChange={(e) => setName(e.target.value)}
                       required
                       placeholder={LL.Forms.namePlaceholder()}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     />
                   </div>
                   <div>
                     <label
                       htmlFor="signup-email"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                     >
                       {LL.Forms.email()}
                     </label>
@@ -463,13 +471,13 @@ export default function AuthDemoClient() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       placeholder={LL.Forms.emailPlaceholder()}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     />
                   </div>
                   <div>
                     <label
                       htmlFor="signup-password"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                     >
                       {LL.Forms.passwordMinChars()}
                     </label>
@@ -482,7 +490,7 @@ export default function AuthDemoClient() {
                       minLength={8}
                       maxLength={128}
                       placeholder={LL.Forms.passwordPlaceholder()}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
                     />
                   </div>
                   <button
@@ -496,7 +504,7 @@ export default function AuthDemoClient() {
                     type="button"
                     onClick={resetAuthFlow}
                     disabled={loading}
-                    className="w-full px-4 py-3 bg-white text-gray-700 font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-medium border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {LL.Common.back()}
                   </button>
@@ -514,7 +522,7 @@ export default function AuthDemoClient() {
                   <div>
                     <label
                       htmlFor="signin-email"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                     >
                       {LL.Forms.email()}
                     </label>
@@ -525,13 +533,13 @@ export default function AuthDemoClient() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       placeholder={LL.Forms.emailPlaceholder()}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                   <div>
                     <label
                       htmlFor="signin-password"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                     >
                       {LL.Forms.password()}
                     </label>
@@ -542,7 +550,7 @@ export default function AuthDemoClient() {
                       onChange={(e) => setPassword(e.target.value)}
                       required
                       placeholder={LL.Forms.passwordPlaceholder()}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
                   <button
@@ -556,7 +564,7 @@ export default function AuthDemoClient() {
                     type="button"
                     onClick={resetAuthFlow}
                     disabled={loading}
-                    className="w-full px-4 py-3 bg-white text-gray-700 font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-medium border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {LL.Common.back()}
                   </button>
@@ -574,7 +582,7 @@ export default function AuthDemoClient() {
                   <div>
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                     >
                       {LL.Forms.emailAddress()}
                     </label>
@@ -585,7 +593,7 @@ export default function AuthDemoClient() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       placeholder={LL.Forms.enterYourEmail()}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                     />
                   </div>
 
@@ -601,7 +609,7 @@ export default function AuthDemoClient() {
                     type="button"
                     onClick={resetAuthFlow}
                     disabled={loading}
-                    className="w-full px-4 py-3 bg-white text-gray-700 font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-medium border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {LL.Common.back()}
                   </button>
@@ -616,8 +624,8 @@ export default function AuthDemoClient() {
                   }}
                   className="space-y-4"
                 >
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                    <p className="text-sm text-blue-800">
+                  <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/50 rounded-lg p-4 mb-4">
+                    <p className="text-sm text-blue-800 dark:text-blue-400">
                       {LL.Auth.otpSentTo({ email })}
                     </p>
                   </div>
@@ -625,7 +633,7 @@ export default function AuthDemoClient() {
                   <div>
                     <label
                       htmlFor="otp"
-                      className="block text-sm font-medium text-gray-700 mb-2"
+                      className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                     >
                       {LL.Forms.verificationCode()}
                     </label>
@@ -637,7 +645,7 @@ export default function AuthDemoClient() {
                       required
                       placeholder={LL.Forms.verificationCodePlaceholder()}
                       maxLength={6}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-2xl tracking-widest font-mono"
+                      className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-2xl tracking-widest font-mono"
                     />
                   </div>
 
@@ -657,7 +665,7 @@ export default function AuthDemoClient() {
                       setError(null);
                     }}
                     disabled={loading}
-                    className="w-full px-4 py-3 bg-white text-gray-700 font-medium border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-medium border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {LL.Auth.changeEmail()}
                   </button>

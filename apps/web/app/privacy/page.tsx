@@ -104,7 +104,7 @@ export default function PrivacyPage() {
 
             {/* ── Cookies ── */}
             <section id="cookies">
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                 {LL.Privacy.section3Title()}
               </h2>
               <p>
@@ -113,16 +113,16 @@ export default function PrivacyPage() {
                 {LL.Privacy.cookiesIntroSuffix()}
               </p>
               <div className="mt-3 overflow-x-auto">
-                <table className="w-full text-left border border-gray-200 rounded-lg">
-                  <thead className="bg-gray-50">
+                <table className="w-full text-left border border-gray-200 dark:border-slate-600 rounded-lg">
+                  <thead className="bg-gray-50 dark:bg-slate-700">
                     <tr>
-                      <th className="px-4 py-2 border-b font-medium">
+                      <th className="px-4 py-2 border-b dark:border-slate-600 font-medium">
                         {LL.Privacy.cookieHeader()}
                       </th>
-                      <th className="px-4 py-2 border-b font-medium">
+                      <th className="px-4 py-2 border-b dark:border-slate-600 font-medium">
                         {LL.Privacy.purposeHeader()}
                       </th>
-                      <th className="px-4 py-2 border-b font-medium">
+                      <th className="px-4 py-2 border-b dark:border-slate-600 font-medium">
                         {LL.Privacy.expiryHeader()}
                       </th>
                     </tr>
@@ -202,7 +202,7 @@ export default function PrivacyPage() {
 
             {/* ── Your rights ── */}
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                 {LL.Privacy.section6Title()}
               </h2>
               <p>{LL.Privacy.rightsIntro()}</p>
@@ -229,7 +229,7 @@ export default function PrivacyPage() {
 
             {/* ── Retention ── */}
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                 {LL.Privacy.section7Title()}
               </h2>
               <ul className="list-disc pl-5 space-y-1">
@@ -242,14 +242,14 @@ export default function PrivacyPage() {
 
             {/* ── Contact ── */}
             <section>
-              <h2 className="text-lg font-semibold text-gray-900 mb-3">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">
                 {LL.Privacy.section8Title()}
               </h2>
               <p>
                 {LL.Privacy.contactText()}{" "}
                 <a
                   href="mailto:anns.shahbaz@binaryexports.com"
-                  className="text-blue-600 underline"
+                  className="text-blue-600 dark:text-blue-400 underline hover:text-blue-700 dark:hover:text-blue-300"
                 >
                   anns.shahbaz@binaryexports.com
                 </a>

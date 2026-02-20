@@ -3,7 +3,7 @@ import type { HTMLAttributes } from "react";
 function Card({ className = "", ...props }: HTMLAttributes<HTMLDivElement>) {
   return (
     <div
-      className={`rounded-xl border border-slate-700 bg-slate-800 text-white shadow ${className}`}
+      className={`rounded-xl border border-gray-200 bg-white text-gray-900 shadow dark:border-slate-700 dark:bg-slate-800 dark:text-white ${className}`}
       {...props}
     />
   );
@@ -34,7 +34,12 @@ function CardDescription({
   className = "",
   ...props
 }: HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={`text-sm text-slate-400 ${className}`} {...props} />;
+  return (
+    <p
+      className={`text-sm text-gray-500 dark:text-slate-400 ${className}`}
+      {...props}
+    />
+  );
 }
 
 function CardContent({

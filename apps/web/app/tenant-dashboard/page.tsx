@@ -126,11 +126,11 @@ export default function TenantDashboard() {
     tenantList.error?.message?.toLowerCase().includes("logged in");
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
+    <main className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-8">
       <div className="max-w-4xl mx-auto">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-8"
         >
           <svg
             className="w-5 h-5"
@@ -152,19 +152,19 @@ export default function TenantDashboard() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 bg-clip-text text-transparent mb-4">
             {LL.Dashboard.platformTenantsTitle()}
           </h1>
-          <p className="text-slate-400 text-lg">
+          <p className="text-gray-500 dark:text-slate-400 text-lg">
             {LL.Dashboard.platformTenantsSubtitle()}
           </p>
         </div>
 
         {isUnauth && (
-          <div className="mb-6 p-4 bg-amber-900/30 border border-amber-600 rounded-lg text-amber-200">
+          <div className="mb-6 p-4 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-600 rounded-lg text-amber-700 dark:text-amber-200">
             {LL.Dashboard.mustBeLoggedIn()}
           </div>
         )}
 
         {isForbidden && (
-          <div className="mb-6 p-4 bg-red-900/30 border border-red-600 rounded-lg text-red-200">
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-600 rounded-lg text-red-700 dark:text-red-200">
             {LL.Dashboard.superAdminRequired()}
           </div>
         )}
@@ -173,7 +173,7 @@ export default function TenantDashboard() {
           createTenant.error?.message ||
           updateTenant.error?.message ||
           deleteTenant.error?.message) && (
-          <div className="mb-6 p-4 bg-red-900/30 border border-red-600 rounded-lg text-red-200">
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-600 rounded-lg text-red-700 dark:text-red-200">
             {errorMessage ||
               createTenant.error?.message ||
               updateTenant.error?.message ||
@@ -184,29 +184,29 @@ export default function TenantDashboard() {
         {!isUnauth && !isForbidden && (
           <>
             {/* Add form */}
-            <div className="mb-8 bg-slate-800 border border-slate-600 rounded-xl p-6">
-              <h2 className="text-lg font-semibold text-white mb-4">
+            <div className="mb-8 bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-xl p-6">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
                 {LL.Dashboard.addTenant()}
               </h2>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm text-slate-400 mb-1">
+                    <label className="block text-sm text-gray-500 dark:text-slate-400 mb-1">
                       {LL.Forms.name()}
                     </label>
                     <input
-                      className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      className="w-full bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
                       placeholder={LL.Dashboard.namePlaceholder()}
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                     />
                   </div>
                   <div>
-                    <label className="block text-sm text-slate-400 mb-1">
+                    <label className="block text-sm text-gray-500 dark:text-slate-400 mb-1">
                       {LL.Dashboard.slugLabel()}
                     </label>
                     <input
-                      className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                      className="w-full bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500"
                       placeholder={LL.Dashboard.slugPlaceholder()}
                       value={slug}
                       onChange={(e) =>
@@ -232,51 +232,51 @@ export default function TenantDashboard() {
             </div>
 
             {/* Tenant list */}
-            <div className="bg-slate-800 border border-slate-600 rounded-xl overflow-hidden">
-              <div className="px-6 py-4 bg-slate-700 border-b border-slate-600">
-                <p className="text-sm font-semibold text-slate-300 uppercase tracking-wide">
+            <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-xl overflow-hidden">
+              <div className="px-6 py-4 bg-gray-100 dark:bg-slate-700 border-b border-gray-300 dark:border-slate-600">
+                <p className="text-sm font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wide">
                   {LL.Dashboard.tenantCount({ count: tenants.length })}
                 </p>
               </div>
 
               {tenantList.isLoading && (
-                <div className="p-8 text-center text-slate-400">
+                <div className="p-8 text-center text-gray-500 dark:text-slate-400">
                   {LL.Dashboard.loadingTenants()}
                 </div>
               )}
 
               {tenants.length === 0 && !tenantList.isLoading && (
-                <div className="p-12 text-center text-slate-400">
+                <div className="p-12 text-center text-gray-500 dark:text-slate-400">
                   {LL.Dashboard.noTenantsYet()}
                 </div>
               )}
 
               {tenants.length > 0 && (
-                <ul className="divide-y divide-slate-600">
+                <ul className="divide-y divide-gray-200 dark:divide-slate-600">
                   {tenants.map((t) => (
                     <li
                       key={t.id}
-                      className="px-6 py-4 hover:bg-slate-700/50 transition-colors"
+                      className="px-6 py-4 hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors"
                     >
                       {editingId === t.id ? (
                         <div className="space-y-4">
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">
+                              <label className="block text-xs text-gray-400 dark:text-slate-500 mb-1">
                                 {LL.Forms.name()}
                               </label>
                               <input
-                                className="w-full bg-slate-600 border border-slate-500 rounded px-2 py-1 text-white text-sm"
+                                className="w-full bg-gray-200 dark:bg-slate-600 border border-gray-300 dark:border-slate-500 rounded px-2 py-1 text-gray-900 dark:text-white text-sm"
                                 value={editName}
                                 onChange={(e) => setEditName(e.target.value)}
                               />
                             </div>
                             <div>
-                              <label className="block text-xs text-slate-500 mb-1">
+                              <label className="block text-xs text-gray-400 dark:text-slate-500 mb-1">
                                 {LL.Forms.slug()}
                               </label>
                               <input
-                                className="w-full bg-slate-600 border border-slate-500 rounded px-2 py-1 text-white text-sm"
+                                className="w-full bg-gray-200 dark:bg-slate-600 border border-gray-300 dark:border-slate-500 rounded px-2 py-1 text-gray-900 dark:text-white text-sm"
                                 value={editSlug}
                                 onChange={(e) =>
                                   setEditSlug(
@@ -300,7 +300,7 @@ export default function TenantDashboard() {
                             </button>
                             <button
                               onClick={cancelEdit}
-                              className="px-4 py-1.5 bg-slate-600 hover:bg-slate-500 rounded text-slate-200 text-sm"
+                              className="px-4 py-1.5 bg-gray-200 dark:bg-slate-600 hover:bg-gray-200 dark:hover:bg-slate-500 rounded text-gray-700 dark:text-slate-200 text-sm"
                             >
                               {LL.Common.cancel()}
                             </button>
@@ -310,10 +310,10 @@ export default function TenantDashboard() {
                         <div className="flex flex-wrap items-center justify-between gap-4">
                           <div className="min-w-0">
                             <div className="flex items-center gap-2 flex-wrap">
-                              <span className="font-semibold text-white">
+                              <span className="font-semibold text-gray-900 dark:text-white">
                                 {t.name}
                               </span>
-                              <span className="text-slate-500 font-mono text-sm">
+                              <span className="text-gray-400 dark:text-slate-500 font-mono text-sm">
                                 {t.slug}
                               </span>
                             </div>
@@ -321,7 +321,7 @@ export default function TenantDashboard() {
                           <div className="flex items-center gap-2 shrink-0">
                             <button
                               onClick={() => startEdit(t)}
-                              className="p-2 text-slate-400 hover:text-amber-400 hover:bg-slate-600 rounded transition-colors"
+                              className="p-2 text-gray-500 dark:text-slate-400 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-gray-200 dark:hover:bg-slate-600 rounded transition-colors"
                               title={LL.Common.edit()}
                             >
                               <svg
@@ -341,7 +341,7 @@ export default function TenantDashboard() {
                             <button
                               onClick={() => handleDelete(t.id, t.slug)}
                               disabled={deleteTenant.isPending}
-                              className="p-2 text-slate-400 hover:text-red-400 hover:bg-slate-600 rounded transition-colors disabled:opacity-50"
+                              className="p-2 text-gray-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-gray-200 dark:hover:bg-slate-600 rounded transition-colors disabled:opacity-50"
                               title={LL.Common.delete()}
                             >
                               <svg
@@ -371,7 +371,7 @@ export default function TenantDashboard() {
               <button
                 onClick={() => void utils.tenant.findAll.invalidate()}
                 disabled={tenantList.isRefetching}
-                className="bg-slate-700 hover:bg-slate-600 disabled:opacity-50 px-4 py-2 rounded-lg text-slate-200 font-medium transition-colors"
+                className="bg-gray-100 dark:bg-slate-700 hover:bg-gray-200 dark:hover:bg-slate-600 disabled:opacity-50 px-4 py-2 rounded-lg text-gray-700 dark:text-slate-200 font-medium transition-colors"
               >
                 {tenantList.isRefetching
                   ? LL.Common.refreshing()

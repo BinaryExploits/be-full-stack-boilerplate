@@ -10,13 +10,15 @@ export function AuthDemoLoadingShell() {
   const { LL } = useI18n();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-slate-900">
       <div className="text-center">
         <div
-          className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-b-gray-900 border-transparent"
+          className="mx-auto h-12 w-12 animate-spin rounded-full border-2 border-b-gray-900 dark:border-b-blue-400 border-transparent"
           aria-hidden
         />
-        <p className="mt-4 text-gray-600">{LL.Common.loading()}</p>
+        <p className="mt-4 text-gray-600 dark:text-slate-400">
+          {LL.Common.loading()}
+        </p>
       </div>
     </div>
   );

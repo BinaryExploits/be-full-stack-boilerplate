@@ -179,21 +179,23 @@ function SignInContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center p-8">
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               {LL.Auth.signInTitle()}
             </h1>
-            <p className="text-gray-600">{LL.Auth.signInSubtitle()}</p>
+            <p className="text-gray-600 dark:text-slate-400">
+              {LL.Auth.signInSubtitle()}
+            </p>
           </div>
 
           {successMessage && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700/50 rounded-lg p-4 mb-6">
               <div className="flex items-center gap-2">
                 <svg
-                  className="w-5 h-5 text-green-600 flex-shrink-0"
+                  className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -205,16 +207,18 @@ function SignInContent() {
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span className="text-green-800 text-sm">{successMessage}</span>
+                <span className="text-green-800 dark:text-green-400 text-sm">
+                  {successMessage}
+                </span>
               </div>
             </div>
           )}
 
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 rounded-lg p-4 mb-6">
               <div className="flex items-start gap-2">
                 <svg
-                  className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"
+                  className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -227,12 +231,14 @@ function SignInContent() {
                   />
                 </svg>
                 <div className="flex-1">
-                  <span className="text-red-800 text-sm">{error}</span>
+                  <span className="text-red-800 dark:text-red-400 text-sm">
+                    {error}
+                  </span>
                   {showUnverifiedError && (
                     <button
                       onClick={() => void handleResendVerification()}
                       disabled={resendingVerification}
-                      className="mt-2 block text-sm font-medium text-red-700 hover:text-red-800 underline disabled:opacity-50"
+                      className="mt-2 block text-sm font-medium text-red-700 dark:text-red-300 hover:text-red-800 dark:hover:text-red-400 underline disabled:opacity-50"
                     >
                       {resendingVerification
                         ? LL.Common.sending()
@@ -246,12 +252,12 @@ function SignInContent() {
 
           {view === "choose" && (
             <div className="space-y-4">
-              <p className="text-xs text-gray-500 text-center">
+              <p className="text-xs text-gray-500 dark:text-slate-500 text-center">
                 {LL.Auth.signInConsentPrefix()}{" "}
                 <Link
                   href="/privacy"
                   target="_blank"
-                  className="text-blue-600 underline hover:text-blue-700"
+                  className="text-blue-600 dark:text-blue-400 underline hover:text-blue-700 dark:hover:text-blue-300"
                 >
                   {LL.Settings.privacyAndDataPolicy()}
                 </Link>{" "}
@@ -261,7 +267,7 @@ function SignInContent() {
               <button
                 onClick={() => void signInWithGoogle()}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg shadow-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-medium hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path
@@ -286,10 +292,10 @@ function SignInContent() {
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
+                  <div className="w-full border-t border-gray-300 dark:border-slate-600" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">
+                  <span className="px-2 bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400">
                     {LL.Common.or()}
                   </span>
                 </div>
@@ -301,7 +307,7 @@ function SignInContent() {
                   setError(null);
                 }}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg shadow-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-medium hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg
                   className="w-5 h-5"
@@ -321,10 +327,10 @@ function SignInContent() {
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300" />
+                  <div className="w-full border-t border-gray-300 dark:border-slate-600" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">
+                  <span className="px-2 bg-white dark:bg-slate-800 text-gray-500 dark:text-slate-400">
                     {LL.Auth.orWithEmailPassword()}
                   </span>
                 </div>
@@ -336,7 +342,7 @@ function SignInContent() {
                   setError(null);
                 }}
                 disabled={loading}
-                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 rounded-lg shadow-sm bg-white text-gray-700 font-medium hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg shadow-sm bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-medium hover:bg-gray-50 dark:hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg
                   className="w-5 h-5"
@@ -367,7 +373,7 @@ function SignInContent() {
               <div>
                 <label
                   htmlFor="otp-email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                 >
                   {LL.Forms.emailAddress()}
                 </label>
@@ -378,7 +384,7 @@ function SignInContent() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder={LL.Forms.enterYourEmail()}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white dark:placeholder-slate-400"
                 />
               </div>
               <button
@@ -391,7 +397,7 @@ function SignInContent() {
               <button
                 type="button"
                 onClick={resetView}
-                className="w-full px-4 py-3 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-medium border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
               >
                 {LL.Common.back()}
               </button>
@@ -406,15 +412,15 @@ function SignInContent() {
               }}
               className="space-y-4"
             >
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                <p className="text-sm text-blue-800">
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700/50 rounded-lg p-4 mb-4">
+                <p className="text-sm text-blue-800 dark:text-blue-400">
                   {LL.Auth.otpSentTo({ email })}
                 </p>
               </div>
               <div>
                 <label
                   htmlFor="otp-code"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                 >
                   {LL.Forms.verificationCode()}
                 </label>
@@ -426,7 +432,7 @@ function SignInContent() {
                   required
                   placeholder={LL.Forms.verificationCodePlaceholder()}
                   maxLength={6}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-2xl tracking-widest font-mono"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 text-center text-2xl tracking-widest font-mono"
                 />
               </div>
               <button
@@ -443,7 +449,7 @@ function SignInContent() {
                   setOtp("");
                   setError(null);
                 }}
-                className="w-full px-4 py-3 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-medium border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
               >
                 {LL.Auth.changeEmail()}
               </button>
@@ -461,7 +467,7 @@ function SignInContent() {
               <div>
                 <label
                   htmlFor="signin-email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                 >
                   {LL.Forms.email()}
                 </label>
@@ -472,13 +478,13 @@ function SignInContent() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder={LL.Forms.emailPlaceholder()}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white dark:placeholder-slate-400"
                 />
               </div>
               <div suppressHydrationWarning>
                 <label
                   htmlFor="signin-password"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                 >
                   {LL.Forms.password()}
                 </label>
@@ -489,12 +495,12 @@ function SignInContent() {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   placeholder={LL.Forms.passwordPlaceholder()}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white dark:placeholder-slate-400"
                 />
                 <div className="mt-1 text-right">
                   <Link
                     href="/forgot-password"
-                    className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                    className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
                   >
                     {LL.Auth.forgotPassword()}
                   </Link>
@@ -510,18 +516,18 @@ function SignInContent() {
               <button
                 type="button"
                 onClick={resetView}
-                className="w-full px-4 py-3 bg-white text-gray-700 font-medium border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                className="w-full px-4 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-slate-200 font-medium border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
               >
                 {LL.Common.back()}
               </button>
             </form>
           )}
 
-          <p className="mt-6 text-center text-sm text-gray-600">
+          <p className="mt-6 text-center text-sm text-gray-600 dark:text-slate-400">
             {LL.Auth.dontHaveAccount()}{" "}
             <Link
               href="/sign-up"
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
             >
               {LL.Auth.signUp()}
             </Link>
@@ -536,7 +542,7 @@ export default function SignInPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center">
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-b-blue-400 border-transparent" />
         </div>
       }

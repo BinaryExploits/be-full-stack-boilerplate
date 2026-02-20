@@ -97,8 +97,10 @@ export default function GridsPage() {
   return (
     <div className="max-w-[1400px] mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">{LL.Grids.title()}</h1>
-        <p className="text-sm text-slate-400 mt-1">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          {LL.Grids.title()}
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
           {LL.Grids.descriptionPrefix()}{" "}
           <Badge variant="warning" className="text-[10px] align-middle">
             {LL.Grids.demo()}
@@ -112,15 +114,15 @@ export default function GridsPage() {
       </div>
 
       {/* Tab bar */}
-      <div className="flex gap-1 rounded-lg bg-slate-800 p-1 mb-6 overflow-x-auto">
+      <div className="flex gap-1 rounded-lg bg-white dark:bg-slate-800 p-1 mb-6 overflow-x-auto">
         {TAB_KEYS.map((key) => (
           <button
             key={key}
             onClick={() => setActiveTab(key)}
             className={`rounded-md px-4 py-2 text-sm font-medium transition-colors whitespace-nowrap focus:outline-none ${
               activeTab === key
-                ? "bg-slate-700 text-white"
-                : "text-slate-400 hover:text-slate-200"
+                ? "bg-gray-100 dark:bg-slate-700 text-gray-900 dark:text-white"
+                : "text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-slate-200"
             }`}
           >
             {tabLabels[key]}
@@ -129,7 +131,7 @@ export default function GridsPage() {
       </div>
 
       {/* Description */}
-      <p className="text-xs text-slate-400 mb-3">
+      <p className="text-xs text-gray-500 dark:text-slate-400 mb-3">
         {tabDescriptions[activeTab]}
       </p>
 
@@ -186,7 +188,7 @@ function CrudLiveGrid() {
 
   if (query.isLoading) {
     return (
-      <div className="flex items-center justify-center gap-2 py-20 text-slate-400">
+      <div className="flex items-center justify-center gap-2 py-20 text-gray-500 dark:text-slate-400">
         <Loader2 className="h-5 w-5 animate-spin" />
         <span>{LL.Grids.loadingCrudRecords()}</span>
       </div>
@@ -195,7 +197,7 @@ function CrudLiveGrid() {
 
   if (query.error) {
     return (
-      <div className="flex items-center justify-center gap-2 py-20 text-red-400">
+      <div className="flex items-center justify-center gap-2 py-20 text-red-600 dark:text-red-400">
         <AlertCircle className="h-5 w-5" />
         <span>{LL.Grids.failedToLoad({ message: query.error.message })}</span>
       </div>
@@ -209,7 +211,7 @@ function CrudLiveGrid() {
           <Database className="h-3 w-3 mr-1 inline" />
           {LL.Grids.livePrisma()}
         </Badge>
-        <span className="text-xs text-slate-400">
+        <span className="text-xs text-gray-500 dark:text-slate-400">
           {LL.Grids.recordCount({ count: data.length })}
         </span>
         <Button
@@ -271,7 +273,7 @@ function GlobalCrudLiveGrid() {
 
   if (query.isLoading) {
     return (
-      <div className="flex items-center justify-center gap-2 py-20 text-slate-400">
+      <div className="flex items-center justify-center gap-2 py-20 text-gray-500 dark:text-slate-400">
         <Loader2 className="h-5 w-5 animate-spin" />
         <span>{LL.Grids.loadingGlobalCrudRecords()}</span>
       </div>
@@ -280,7 +282,7 @@ function GlobalCrudLiveGrid() {
 
   if (query.error) {
     return (
-      <div className="flex items-center justify-center gap-2 py-20 text-red-400">
+      <div className="flex items-center justify-center gap-2 py-20 text-red-600 dark:text-red-400">
         <AlertCircle className="h-5 w-5" />
         <span>{LL.Grids.failedToLoad({ message: query.error.message })}</span>
       </div>
@@ -294,7 +296,7 @@ function GlobalCrudLiveGrid() {
           <Database className="h-3 w-3 mr-1 inline" />
           {LL.Grids.livePrisma()}
         </Badge>
-        <span className="text-xs text-slate-400">
+        <span className="text-xs text-gray-500 dark:text-slate-400">
           {LL.Grids.recordCount({ count: data.length })}
         </span>
         <Button
@@ -462,7 +464,7 @@ function GlobalCrudGrid() {
           type="checkbox"
           checked={table.getIsAllPageRowsSelected()}
           onChange={table.getToggleAllPageRowsSelectedHandler()}
-          className="rounded border-slate-500 bg-slate-700"
+          className="rounded border-gray-300 dark:border-slate-500 bg-gray-100 dark:bg-slate-700"
           aria-label="Select all"
         />
       ),
@@ -471,7 +473,7 @@ function GlobalCrudGrid() {
           type="checkbox"
           checked={row.getIsSelected()}
           onChange={row.getToggleSelectedHandler()}
-          className="rounded border-slate-500 bg-slate-700"
+          className="rounded border-gray-300 dark:border-slate-500 bg-gray-100 dark:bg-slate-700"
           aria-label={`Select row ${row.index + 1}`}
         />
       ),
@@ -517,7 +519,7 @@ function GlobalCrudGrid() {
         <Badge variant="warning">{LL.Grids.demoInMemory()}</Badge>
         {selectedCount > 0 && (
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-300">
+            <span className="text-xs text-gray-600 dark:text-slate-300">
               {LL.Grids.selectedCount({ count: selectedCount })}
             </span>
             <Button variant="destructive" size="sm" onClick={handleBulkDelete}>
@@ -570,7 +572,7 @@ function TenantsGrid() {
       cell: ({ row }) => (
         <button
           onClick={() => row.toggleExpanded()}
-          className="p-1 text-slate-400 hover:text-white"
+          className="p-1 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white"
           aria-label="Expand row"
         >
           <ChevronRight
@@ -645,7 +647,7 @@ function TenantsGrid() {
           <Disclosure key={plan} defaultOpen>
             {({ open }) => (
               <div className="mb-4">
-                <DisclosureButton className="flex w-full items-center gap-2 rounded-lg bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700 transition-colors">
+                <DisclosureButton className="flex w-full items-center gap-2 rounded-lg bg-white dark:bg-slate-800 px-4 py-2 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors">
                   <ChevronRight
                     className={`h-4 w-4 transition-transform ${open ? "rotate-90" : ""}`}
                   />
@@ -661,8 +663,8 @@ function TenantsGrid() {
                     readOnly
                     enableExpanding
                     renderSubRow={(tenant) => (
-                      <div className="bg-slate-800/60 p-4 text-xs text-slate-300">
-                        <p className="font-medium text-white mb-2">
+                      <div className="bg-gray-50 dark:bg-slate-800/60 p-4 text-xs text-gray-600 dark:text-slate-300">
+                        <p className="font-medium text-gray-900 dark:text-white mb-2">
                           {LL.Grids.usersIn({ name: tenant.tenantName })}
                         </p>
                         <div className="grid grid-cols-3 gap-2">
@@ -671,15 +673,15 @@ function TenantsGrid() {
                             (_, i) => (
                               <div
                                 key={i}
-                                className="flex items-center gap-2 rounded bg-slate-700/50 px-2 py-1"
+                                className="flex items-center gap-2 rounded bg-gray-50 dark:bg-slate-700/50 px-2 py-1"
                               >
-                                <div className="h-5 w-5 rounded-full bg-slate-600" />
+                                <div className="h-5 w-5 rounded-full bg-gray-200 dark:bg-slate-600" />
                                 <span>{LL.Grids.userN({ n: i + 1 })}</span>
                               </div>
                             ),
                           )}
                           {tenant.usersCount > 6 && (
-                            <span className="text-slate-500 self-center">
+                            <span className="text-gray-400 dark:text-slate-500 self-center">
                               {LL.Grids.moreUsers({
                                 count: tenant.usersCount - 6,
                               })}
@@ -773,7 +775,7 @@ function AdvancedGrid() {
       cell: ({ row }) => (
         <button
           onClick={() => row.toggleExpanded()}
-          className="p-1 text-slate-400 hover:text-white"
+          className="p-1 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white"
           aria-label="Expand details"
         >
           <ChevronRight
@@ -826,17 +828,19 @@ function AdvancedGrid() {
           const isOverdue = !task.completedAt && new Date(task.dueDate) < today;
           return (
             <div
-              className={`p-4 text-sm ${isOverdue ? "bg-red-900/10 border-l-2 border-red-500" : "bg-slate-800/40"}`}
+              className={`p-4 text-sm ${isOverdue ? "bg-red-50 dark:bg-red-900/10 border-l-2 border-red-200 dark:border-red-500" : "bg-gray-50 dark:bg-slate-800/40"}`}
             >
-              <p className="font-medium text-white mb-1">{task.name}</p>
-              <p className="text-slate-400 text-xs">
+              <p className="font-medium text-gray-900 dark:text-white mb-1">
+                {task.name}
+              </p>
+              <p className="text-gray-500 dark:text-slate-400 text-xs">
                 {LL.Grids.assignedToLabel({ name: task.assignedTo })} &middot;{" "}
                 {LL.Grids.priorityLabel({ value: task.priority })} &middot;{" "}
                 {LL.Grids.dueLabel({
                   date: new Date(task.dueDate).toLocaleDateString(),
                 })}
                 {isOverdue && (
-                  <span className="ml-2 text-red-400 font-medium">
+                  <span className="ml-2 text-red-600 dark:text-red-400 font-medium">
                     {LL.Grids.overdue()}
                   </span>
                 )}

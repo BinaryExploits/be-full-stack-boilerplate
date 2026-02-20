@@ -96,19 +96,19 @@ export function AppSidebar() {
   }
 
   const sidebarContent = (
-    <div className="flex h-full flex-col bg-slate-900 border-r border-slate-700/50">
+    <div className="flex h-full flex-col bg-white dark:bg-slate-900 border-r border-gray-200/50 dark:border-slate-700/50">
       {/* Collapse toggle */}
       <div
-        className={`hidden lg:flex items-center px-3 py-2 border-b border-slate-700/50 ${collapsed ? "justify-center" : "justify-between"}`}
+        className={`hidden lg:flex items-center px-3 py-2 border-b border-gray-200/50 dark:border-slate-700/50 ${collapsed ? "justify-center" : "justify-between"}`}
       >
         {!collapsed && (
-          <span className="text-xs font-semibold uppercase tracking-wider text-slate-500">
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-500">
             {LL.Sidebar.navigation()}
           </span>
         )}
         <button
           onClick={toggleCollapsed}
-          className="rounded p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
+          className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? (
@@ -120,10 +120,10 @@ export function AppSidebar() {
       </div>
 
       {/* Mobile close button */}
-      <div className="flex items-center justify-end px-2 py-2 border-b border-slate-700/50 lg:hidden">
+      <div className="flex items-center justify-end px-2 py-2 border-b border-gray-200/50 dark:border-slate-700/50 lg:hidden">
         <button
           onClick={() => setMobileOpen(false)}
-          className="rounded p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white"
+          className="rounded p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
           aria-label="Close sidebar"
         >
           <X className="h-4 w-4" />
@@ -135,7 +135,7 @@ export function AppSidebar() {
         {navSections.map((section) => (
           <div key={section.title}>
             {!collapsed && (
-              <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-slate-500">
+              <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-slate-500">
                 {section.title}
               </p>
             )}
@@ -157,8 +157,8 @@ export function AppSidebar() {
                         collapsed ? "justify-center" : "gap-2"
                       } ${
                         isActive(item.href)
-                          ? "bg-slate-700/60 font-medium text-white"
-                          : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                          ? "bg-blue-50 font-medium text-blue-700 dark:bg-slate-700/60 dark:text-white"
+                          : "text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
                       }`}
                       aria-label={item.label}
                     >
@@ -177,7 +177,7 @@ export function AppSidebar() {
 
       {/* Footer — user info */}
       {user && (
-        <div className="border-t border-slate-700/50 p-3">
+        <div className="border-t border-gray-200/50 dark:border-slate-700/50 p-3">
           <div className="flex items-center gap-2">
             <Avatar
               src={user.image ?? undefined}
@@ -186,17 +186,17 @@ export function AppSidebar() {
             />
             {!collapsed && (
               <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-medium text-white">
+                <p className="truncate text-xs font-medium text-gray-900 dark:text-white">
                   {user.name ?? "User"}
                 </p>
-                <p className="truncate text-[10px] text-slate-500">
+                <p className="truncate text-[10px] text-gray-400 dark:text-slate-500">
                   {user.email}
                 </p>
               </div>
             )}
             <button
               onClick={() => void authClient?.signOut?.()}
-              className="shrink-0 rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-red-400"
+              className="shrink-0 rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-red-500 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-red-400"
               aria-label="Sign out"
             >
               <LogOut className="h-3.5 w-3.5" />
@@ -212,7 +212,7 @@ export function AppSidebar() {
       {/* Mobile hamburger — positioned below the top navbar */}
       <button
         onClick={() => setMobileOpen(true)}
-        className="fixed left-3 top-16 z-50 rounded-lg bg-slate-800 p-2 text-slate-300 shadow-lg hover:bg-slate-700 lg:hidden"
+        className="fixed left-3 top-16 z-50 rounded-lg bg-white dark:bg-slate-800 p-2 text-gray-500 dark:text-slate-300 shadow-lg hover:bg-gray-50 dark:hover:bg-slate-700 lg:hidden"
         aria-label="Open navigation"
       >
         <Menu className="h-5 w-5" />
@@ -266,8 +266,8 @@ function CollapsibleNavItem({
           href={item.href}
           className={`flex items-center justify-center rounded-lg px-2 py-1.5 transition-colors ${
             active
-              ? "bg-slate-700/60 text-white"
-              : "text-slate-400 hover:bg-slate-800 hover:text-white"
+              ? "bg-blue-50 text-blue-700 dark:bg-slate-700/60 dark:text-white"
+              : "text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
           }`}
           aria-label={item.label}
         >
@@ -287,15 +287,15 @@ function CollapsibleNavItem({
                 href={item.href}
                 className={`flex flex-1 items-center gap-2 rounded-lg px-2 py-1.5 text-sm transition-colors ${
                   active
-                    ? "bg-slate-700/60 font-medium text-white"
-                    : "text-slate-400 hover:bg-slate-800 hover:text-white"
+                    ? "bg-blue-50 font-medium text-blue-700 dark:bg-slate-700/60 dark:text-white"
+                    : "text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
                 }`}
               >
                 <item.icon className="h-4 w-4 shrink-0" />
                 <span className="truncate">{item.label}</span>
               </Link>
               <DisclosureButton
-                className="rounded p-1 text-slate-400 hover:bg-slate-800 hover:text-white"
+                className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
                 aria-label={`Toggle ${item.label} submenu`}
               >
                 <ChevronRight
@@ -303,15 +303,15 @@ function CollapsibleNavItem({
                 />
               </DisclosureButton>
             </div>
-            <DisclosurePanel className="ml-4 mt-0.5 space-y-0.5 border-l border-slate-700/50 pl-2">
+            <DisclosurePanel className="ml-4 mt-0.5 space-y-0.5 border-l border-gray-200/50 dark:border-slate-700/50 pl-2">
               {item.children?.map((child) => (
                 <Link
                   key={child.href}
                   href={child.href}
                   className={`block rounded-lg px-2 py-1 text-xs transition-colors ${
                     isActive(child.href)
-                      ? "font-medium text-white"
-                      : "text-slate-500 hover:text-slate-300"
+                      ? "font-medium text-blue-700 dark:text-white"
+                      : "text-gray-400 hover:text-gray-700 dark:text-slate-500 dark:hover:text-slate-300"
                   }`}
                 >
                   {child.label}

@@ -6,7 +6,7 @@ import type { PlotParams } from "react-plotly.js";
 const RawPlot = dynamic(() => import("react-plotly.js"), {
   ssr: false,
   loading: () => (
-    <div className="animate-pulse rounded-lg bg-slate-700 h-80 w-full" />
+    <div className="animate-pulse rounded-lg bg-gray-200 dark:bg-slate-700 h-80 w-full" />
   ),
 });
 

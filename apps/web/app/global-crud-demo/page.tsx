@@ -28,8 +28,8 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
     ? "from-green-500 to-green-600 hover:from-green-600 hover:to-green-700"
     : "from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700";
   const hoverColor = isMongoose
-    ? "hover:text-green-400"
-    : "hover:text-amber-400";
+    ? "hover:text-green-600 dark:hover:text-green-400"
+    : "hover:text-amber-600 dark:hover:text-amber-400";
 
   const list = trpc.globalCrud[
     isMongoose ? "findAllMongo" : "findAllPrisma"
@@ -91,7 +91,9 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
     if (list.isLoading) {
       return (
         <div className="p-8 text-center">
-          <p className="text-slate-400">{LL.Common.loadingItems()}</p>
+          <p className="text-gray-500 dark:text-slate-400">
+            {LL.Common.loadingItems()}
+          </p>
         </div>
       );
     }
@@ -99,16 +101,16 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
     if (list.data && list.data.items.length > 0) {
       return (
         <div>
-          <div className="px-6 py-4 bg-slate-600 border-b border-slate-500">
-            <p className="text-sm font-semibold text-slate-300 uppercase tracking-wide">
+          <div className="px-6 py-4 bg-gray-100 dark:bg-slate-600 border-b border-gray-200 dark:border-slate-500">
+            <p className="text-sm font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wide">
               {LL.Common.itemCountGlobal({ count: list.data.items.length })}
             </p>
           </div>
-          <ul className="divide-y divide-slate-600">
+          <ul className="divide-y divide-gray-200 dark:divide-slate-600">
             {list.data.items.map((item: GlobalCrudItem) => (
               <li
                 key={item.id}
-                className="px-6 py-4 flex justify-between items-center hover:bg-slate-600 transition-colors"
+                className="px-6 py-4 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
               >
                 {editingId === item.id ? (
                   <input
@@ -123,7 +125,7 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
                       }
                     }}
                     autoFocus
-                    className={`flex-1 bg-slate-600 border rounded px-2 py-1 text-white focus:outline-none focus:ring-2 ${
+                    className={`flex-1 bg-gray-100 dark:bg-slate-600 border rounded px-2 py-1 text-gray-900 dark:text-white focus:outline-none focus:ring-2 ${
                       isMongoose
                         ? "border-green-400 focus:ring-green-400"
                         : "border-amber-400 focus:ring-amber-400"
@@ -135,7 +137,7 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
                       setEditingId(item.id);
                       setEditingContent(item.content);
                     }}
-                    className={`text-slate-200 font-medium cursor-pointer ${hoverColor} transition-colors flex-1 text-left`}
+                    className={`text-gray-700 dark:text-slate-200 font-medium cursor-pointer ${hoverColor} transition-colors flex-1 text-left`}
                   >
                     {item.content}
                   </button>
@@ -143,7 +145,7 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
                 <button
                   onClick={() => handleDelete(item.id)}
                   disabled={deleteItem.isPending}
-                  className="text-slate-400 hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors p-2 hover:bg-slate-700 rounded ml-2"
+                  className="text-gray-400 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 disabled:opacity-50 disabled:cursor-not-allowed transition-colors p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded ml-2"
                 >
                   <svg
                     className="w-5 h-5"
@@ -168,7 +170,9 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
 
     return (
       <div className="p-12 text-center">
-        <p className="text-slate-400 text-lg">{LL.Common.noItemsYet()}</p>
+        <p className="text-gray-500 dark:text-slate-400 text-lg">
+          {LL.Common.noItemsYet()}
+        </p>
       </div>
     );
   };
@@ -195,7 +199,7 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
       <div className="mb-6">
         <div className="flex gap-3">
           <input
-            className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-4 py-3 text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:border-transparent transition"
+            className="flex-1 bg-white dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-4 py-3 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-400 focus:outline-none focus:ring-2 focus:border-transparent transition"
             placeholder={LL.Dashboard.addTextPlaceholder()}
             value={content}
             onChange={(e) => setContent(e.target.value)}
@@ -222,7 +226,7 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
         </button>
       </div>
 
-      <div className="bg-slate-700 rounded-lg shadow-2xl overflow-hidden border border-slate-600">
+      <div className="bg-white dark:bg-slate-700 rounded-lg shadow-2xl overflow-hidden border border-gray-200 dark:border-slate-600">
         {renderListContent()}
       </div>
     </div>
@@ -233,11 +237,11 @@ export default function GlobalCrudDemo() {
   const { LL } = useI18n();
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
+    <main className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-8">
       <div className="max-w-7xl mx-auto">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-8"
         >
           <svg
             className="w-5 h-5"
@@ -259,10 +263,10 @@ export default function GlobalCrudDemo() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 bg-clip-text text-transparent mb-4">
             {LL.Dashboard.globalCrudDemoTitle()}
           </h1>
-          <p className="text-slate-400 text-lg">
+          <p className="text-gray-500 dark:text-slate-400 text-lg">
             {LL.Dashboard.globalCrudDemoSubtitle()}
           </p>
-          <p className="text-slate-500 text-sm mt-2">
+          <p className="text-gray-400 dark:text-slate-500 text-sm mt-2">
             {LL.Dashboard.globalCrudDemoTechStack()}
           </p>
         </div>

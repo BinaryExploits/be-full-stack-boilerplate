@@ -29,10 +29,10 @@ export function LanguageSelector() {
     <div ref={ref} className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="flex items-center gap-1.5 bg-slate-700 hover:bg-slate-600 border border-slate-600 rounded-lg px-2.5 py-1.5 text-sm text-white transition-colors"
+        className="flex items-center gap-1.5 bg-gray-100 hover:bg-gray-200 dark:bg-slate-700 dark:hover:bg-slate-600 border border-gray-300 dark:border-slate-600 rounded-lg px-2.5 py-1.5 text-sm text-gray-700 dark:text-white transition-colors"
       >
         <svg
-          className="w-4 h-4 text-slate-400"
+          className="w-4 h-4 text-gray-400 dark:text-slate-400"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -46,7 +46,7 @@ export function LanguageSelector() {
         </svg>
         <span className="max-w-[80px] truncate">{localeLabels[locale]}</span>
         <svg
-          className={`w-3 h-3 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
+          className={`w-3 h-3 text-gray-400 dark:text-slate-400 transition-transform ${open ? "rotate-180" : ""}`}
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -61,7 +61,7 @@ export function LanguageSelector() {
       </button>
 
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-50 w-40 bg-slate-800 border border-slate-600 rounded-lg shadow-xl overflow-hidden">
+        <div className="absolute right-0 top-full mt-1 z-50 w-40 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-600 rounded-lg shadow-xl overflow-hidden">
           {locales.map((l) => (
             <button
               key={l}
@@ -71,8 +71,8 @@ export function LanguageSelector() {
               }}
               className={`w-full text-left px-3 py-2 text-sm transition-colors ${
                 l === locale
-                  ? "bg-blue-500/10 text-blue-400"
-                  : "text-slate-300 hover:bg-slate-700"
+                  ? "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400"
+                  : "text-gray-600 hover:bg-gray-50 dark:text-slate-300 dark:hover:bg-slate-700"
               }`}
             >
               {localeLabels[l]}

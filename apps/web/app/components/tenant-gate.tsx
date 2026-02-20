@@ -77,13 +77,13 @@ export function TenantGate({ children }: { children: React.ReactNode }) {
 
   if (myTenants.isLoading || isSuperAdminQuery.isLoading) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="text-center">
           <div
             className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-b-blue-400 border-transparent"
             aria-hidden
           />
-          <p className="mt-4 text-slate-400 text-sm">
+          <p className="mt-4 text-gray-500 dark:text-slate-400 text-sm">
             {LL.Errors.loadingYourTenants()}
           </p>
         </div>
@@ -97,8 +97,8 @@ export function TenantGate({ children }: { children: React.ReactNode }) {
 
   if (tenants.length === 0) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
-        <div className="max-w-md w-full bg-slate-800 border border-slate-700 rounded-xl p-10 text-center">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-8">
+        <div className="max-w-md w-full bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-10 text-center">
           <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gradient-to-r from-amber-400 to-orange-400 flex items-center justify-center">
             <svg
               className="w-8 h-8 text-slate-900"
@@ -114,10 +114,12 @@ export function TenantGate({ children }: { children: React.ReactNode }) {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-white mb-3">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
             {LL.Errors.noTenantsAssigned()}
           </h1>
-          <p className="text-slate-400">{LL.Errors.noTenantsMessage()}</p>
+          <p className="text-gray-500 dark:text-slate-400">
+            {LL.Errors.noTenantsMessage()}
+          </p>
         </div>
       </div>
     );
@@ -125,13 +127,13 @@ export function TenantGate({ children }: { children: React.ReactNode }) {
 
   if (!selectedTenantId && switchTenant.isPending) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <div className="text-center">
           <div
             className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-b-blue-400 border-transparent"
             aria-hidden
           />
-          <p className="mt-4 text-slate-400 text-sm">
+          <p className="mt-4 text-gray-500 dark:text-slate-400 text-sm">
             {LL.Errors.settingUpTenant()}
           </p>
         </div>

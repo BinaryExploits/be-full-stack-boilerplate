@@ -10,6 +10,7 @@ import {
 import { LoggerProvider } from "@repo/ui/logger-provider";
 import { AuthClientProvider } from "./lib/auth/auth-client";
 import { AppShell } from "./components/app-shell";
+import { ThemeProvider } from "next-themes";
 import React from "react";
 
 export const metadata: Metadata = {
@@ -23,20 +24,22 @@ export default function RootLayout({
 }>) {
   setupServerLogger();
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <body>
-        <TrpcProvider url={process.env.NEXT_PUBLIC_TRPC_URL!}>
-          <AuthClientProvider>
-            <LoggerProvider
-              logLevel={FlagExtensions.fromStringList(
-                process.env.LOG_LEVELS,
-                LogLevel,
-              )}
-            >
-              <AppShell>{children}</AppShell>
-            </LoggerProvider>
-          </AuthClientProvider>
-        </TrpcProvider>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          <TrpcProvider url={process.env.NEXT_PUBLIC_TRPC_URL!}>
+            <AuthClientProvider>
+              <LoggerProvider
+                logLevel={FlagExtensions.fromStringList(
+                  process.env.LOG_LEVELS,
+                  LogLevel,
+                )}
+              >
+                <AppShell>{children}</AppShell>
+              </LoggerProvider>
+            </AuthClientProvider>
+          </TrpcProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

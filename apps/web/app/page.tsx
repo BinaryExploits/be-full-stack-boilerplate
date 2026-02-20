@@ -94,7 +94,7 @@ export default function Home() {
             {LL.Home.heroTitle()}
           </h1>
         </div>
-        <p className="text-slate-400 text-lg max-w-2xl mx-auto mb-8">
+        <p className="text-gray-500 dark:text-slate-400 text-lg max-w-2xl mx-auto mb-8">
           {LL.Home.heroDescription()}
         </p>
         <div className="flex items-center justify-center gap-4">
@@ -121,14 +121,16 @@ export default function Home() {
           <Card key={stat.label}>
             <div className="p-5">
               <div className="flex items-center justify-between mb-3">
-                <stat.icon className="h-5 w-5 text-slate-400" />
-                <span className="flex items-center gap-1 text-xs text-emerald-400">
+                <stat.icon className="h-5 w-5 text-gray-500 dark:text-slate-400" />
+                <span className="flex items-center gap-1 text-xs text-emerald-600 dark:text-emerald-400">
                   <TrendingUp className="h-3 w-3" />
                   {stat.trend}
                 </span>
               </div>
-              <p className="text-xs text-slate-400">{stat.label}</p>
-              <p className="text-2xl font-bold text-white mt-0.5">
+              <p className="text-xs text-gray-500 dark:text-slate-400">
+                {stat.label}
+              </p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-white mt-0.5">
                 {stat.value}
               </p>
             </div>
@@ -138,23 +140,23 @@ export default function Home() {
 
       {/* Feature Highlights */}
       <section>
-        <h2 className="text-xl font-semibold text-white mb-4">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
           {LL.Home.featureHighlights()}
         </h2>
         <div className="grid md:grid-cols-3 gap-6">
           {features.map((feature) => (
             <Link key={feature.title} href={feature.href}>
-              <Card className="group h-full hover:border-slate-600 transition-all hover:-translate-y-0.5">
+              <Card className="group h-full hover:border-gray-300 dark:hover:border-slate-600 transition-all hover:-translate-y-0.5">
                 <CardHeader>
                   <div
                     className={`flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-r ${feature.color} mb-2 group-hover:scale-110 transition-transform`}
                   >
-                    <feature.icon className="h-5 w-5 text-white" />
+                    <feature.icon className="h-5 w-5 text-gray-900 dark:text-white" />
                   </div>
                   <CardTitle>{feature.title}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-slate-400">
+                  <p className="text-sm text-gray-500 dark:text-slate-400">
                     {feature.description}
                   </p>
                 </CardContent>
@@ -169,35 +171,35 @@ export default function Home() {
         <TenantDashboardOnly>
           <Link
             href="/tenant-dashboard"
-            className="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-800/50 p-4 hover:bg-slate-800 transition-colors"
+            className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 p-4 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
           >
             <Building2 className="h-5 w-5 text-amber-400" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-white">
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {LL.Home.tenantDashboard()}
               </p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-gray-500 dark:text-slate-400">
                 {LL.Home.tenantDashboardDesc()}
               </p>
             </div>
-            <ArrowRight className="h-4 w-4 text-slate-500" />
+            <ArrowRight className="h-4 w-4 text-gray-400 dark:text-slate-500" />
           </Link>
         </TenantDashboardOnly>
         <TenantAdminOnly>
           <Link
             href="/tenant-members"
-            className="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-800/50 p-4 hover:bg-slate-800 transition-colors"
+            className="flex items-center gap-3 rounded-lg border border-gray-200 dark:border-slate-700 bg-white/50 dark:bg-slate-800/50 p-4 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
           >
             <Users className="h-5 w-5 text-cyan-400" />
             <div className="flex-1">
-              <p className="text-sm font-medium text-white">
+              <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {LL.Home.manageMembersTitle()}
               </p>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-gray-500 dark:text-slate-400">
                 {LL.Home.manageMembersQuickDesc()}
               </p>
             </div>
-            <ArrowRight className="h-4 w-4 text-slate-500" />
+            <ArrowRight className="h-4 w-4 text-gray-400 dark:text-slate-500" />
           </Link>
         </TenantAdminOnly>
       </section>

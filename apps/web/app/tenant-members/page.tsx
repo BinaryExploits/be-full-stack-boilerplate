@@ -107,13 +107,15 @@ export default function TenantMembers() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <main className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
         <div className="text-center">
           <div
             className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-b-blue-400 border-transparent"
             aria-hidden
           />
-          <p className="mt-4 text-slate-400 text-sm">{LL.Common.loading()}</p>
+          <p className="mt-4 text-gray-500 dark:text-slate-400 text-sm">
+            {LL.Common.loading()}
+          </p>
         </div>
       </main>
     );
@@ -121,17 +123,17 @@ export default function TenantMembers() {
 
   if (adminTenants.length === 0) {
     return (
-      <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
-        <div className="max-w-md mx-auto mt-24 bg-slate-800 border border-slate-700 rounded-xl p-10 text-center">
-          <h1 className="text-2xl font-bold text-white mb-3">
+      <main className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-8">
+        <div className="max-w-md mx-auto mt-24 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-10 text-center">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
             {LL.Settings.noAdminAccess()}
           </h1>
-          <p className="text-slate-400 mb-6">
+          <p className="text-gray-500 dark:text-slate-400 mb-6">
             {LL.Settings.noAdminAccessMessage()}
           </p>
           <Link
             href="/"
-            className="text-blue-400 hover:text-blue-300 text-sm font-medium"
+            className="text-blue-400 hover:text-blue-600 dark:hover:text-blue-400 text-sm font-medium"
           >
             {LL.Common.backToHome()}
           </Link>
@@ -141,11 +143,11 @@ export default function TenantMembers() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
+    <main className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-8">
       <div className="max-w-5xl mx-auto">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-8"
         >
           <svg
             className="w-5 h-5"
@@ -167,7 +169,7 @@ export default function TenantMembers() {
           <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-500 bg-clip-text text-transparent mb-4">
             {LL.Settings.manageMembersTitle()}
           </h1>
-          <p className="text-slate-400 text-lg">
+          <p className="text-gray-500 dark:text-slate-400 text-lg">
             {LL.Settings.manageMembersSubtitle()}
           </p>
         </div>
@@ -175,7 +177,7 @@ export default function TenantMembers() {
         {(errorMessage ||
           addMember.error?.message ||
           removeMember.error?.message) && (
-          <div className="mb-6 p-4 bg-red-900/30 border border-red-600 rounded-lg text-red-200">
+          <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-600 rounded-lg text-red-700 dark:text-red-200">
             {errorMessage ||
               addMember.error?.message ||
               removeMember.error?.message}
@@ -185,13 +187,13 @@ export default function TenantMembers() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
           {/* Left: tenant list (name only) */}
           <div className="lg:col-span-2">
-            <div className="bg-slate-800 border border-slate-600 rounded-xl overflow-hidden">
-              <div className="px-5 py-3 bg-slate-700 border-b border-slate-600">
-                <p className="text-xs font-semibold text-slate-300 uppercase tracking-wide">
+            <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-xl overflow-hidden">
+              <div className="px-5 py-3 bg-gray-100 dark:bg-slate-700 border-b border-gray-300 dark:border-slate-600">
+                <p className="text-xs font-semibold text-gray-600 dark:text-slate-300 uppercase tracking-wide">
                   {LL.Settings.yourTenants({ count: adminTenants.length })}
                 </p>
               </div>
-              <ul className="divide-y divide-slate-700">
+              <ul className="divide-y divide-gray-200 dark:divide-slate-700">
                 {adminTenants.map((t) => (
                   <li key={t.id}>
                     <button
@@ -203,11 +205,11 @@ export default function TenantMembers() {
                       className={`w-full text-left px-5 py-3 text-sm transition-colors flex items-center justify-between ${
                         selectedTenantId === t.id
                           ? "bg-blue-500/10 text-blue-400 border-l-2 border-l-blue-500"
-                          : "text-slate-300 hover:bg-slate-700/50"
+                          : "text-gray-600 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-700/50"
                       }`}
                     >
                       <span className="font-medium truncate">{t.name}</span>
-                      <span className="shrink-0 ml-2 text-xs px-1.5 py-0.5 rounded bg-slate-700 text-slate-400">
+                      <span className="shrink-0 ml-2 text-xs px-1.5 py-0.5 rounded bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400">
                         {t.role === "TENANT_ADMIN"
                           ? LL.Common.roleAdmin()
                           : LL.Common.roleUser()}
@@ -222,20 +224,20 @@ export default function TenantMembers() {
           {/* Right: member management */}
           <div className="lg:col-span-3">
             {selectedTenantId && selectedTenant ? (
-              <div className="bg-slate-800 border border-slate-600 rounded-xl p-6">
+              <div className="bg-white dark:bg-slate-800 border border-gray-300 dark:border-slate-600 rounded-xl p-6">
                 <div className="flex items-center justify-between mb-6">
-                  <h2 className="text-lg font-semibold text-white">
+                  <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
                     {LL.Settings.membersOf({ name: selectedTenant.name })}
                   </h2>
                 </div>
 
                 {/* Add member form */}
-                <div className="space-y-3 mb-6 p-4 bg-slate-700/30 rounded-lg border border-slate-700">
-                  <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide mb-2">
+                <div className="space-y-3 mb-6 p-4 bg-gray-50 dark:bg-slate-700/30 rounded-lg border border-gray-200 dark:border-slate-700">
+                  <p className="text-xs font-semibold text-gray-500 dark:text-slate-400 uppercase tracking-wide mb-2">
                     {LL.Settings.addMember()}
                   </p>
                   <input
-                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder={LL.Settings.memberEmailPlaceholder()}
                     type="email"
                     value={newMemberEmail}
@@ -243,7 +245,7 @@ export default function TenantMembers() {
                   />
                   <div className="flex gap-2">
                     <select
-                      className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className="flex-1 bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg px-3 py-2 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                       value={newMemberRole}
                       onChange={(e) =>
                         setNewMemberRole(
@@ -272,11 +274,11 @@ export default function TenantMembers() {
 
                 {/* Member list */}
                 {membersQuery.isLoading ? (
-                  <p className="text-sm text-slate-400 text-center py-4">
+                  <p className="text-sm text-gray-500 dark:text-slate-400 text-center py-4">
                     {LL.Settings.loadingMembers()}
                   </p>
                 ) : members.length === 0 ? (
-                  <p className="text-sm text-slate-400 text-center py-4">
+                  <p className="text-sm text-gray-500 dark:text-slate-400 text-center py-4">
                     {LL.Settings.noMembersYet()}
                   </p>
                 ) : (
@@ -286,10 +288,10 @@ export default function TenantMembers() {
                       return (
                         <li
                           key={m.id}
-                          className="flex items-center justify-between bg-slate-700/50 rounded-lg px-4 py-3"
+                          className="flex items-center justify-between bg-gray-50 dark:bg-slate-700/50 rounded-lg px-4 py-3"
                         >
                           <div className="min-w-0">
-                            <p className="text-sm text-white truncate flex items-center gap-2">
+                            <p className="text-sm text-gray-900 dark:text-white truncate flex items-center gap-2">
                               {m.email}
                               {isSelf && (
                                 <span className="text-[10px] font-semibold uppercase tracking-wide bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded">
@@ -297,7 +299,7 @@ export default function TenantMembers() {
                                 </span>
                               )}
                             </p>
-                            <p className="text-xs text-slate-500">
+                            <p className="text-xs text-gray-400 dark:text-slate-500">
                               {m.role === "TENANT_ADMIN"
                                 ? LL.Common.roleAdmin()
                                 : LL.Common.roleUser()}
@@ -307,7 +309,7 @@ export default function TenantMembers() {
                             <button
                               onClick={() => handleRemoveMember(m.email)}
                               disabled={removeMember.isPending}
-                              className="shrink-0 ml-3 p-1.5 text-slate-400 hover:text-red-400 hover:bg-slate-600 rounded transition-colors disabled:opacity-50"
+                              className="shrink-0 ml-3 p-1.5 text-gray-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-gray-200 dark:hover:bg-slate-600 rounded transition-colors disabled:opacity-50"
                               title={LL.Settings.removeMember()}
                             >
                               <svg
@@ -332,9 +334,9 @@ export default function TenantMembers() {
                 )}
               </div>
             ) : (
-              <div className="bg-slate-800/50 border border-slate-700 border-dashed rounded-xl p-12 text-center">
+              <div className="bg-gray-50 dark:bg-slate-800/50 border border-gray-200 dark:border-slate-700 border-dashed rounded-xl p-12 text-center">
                 <svg
-                  className="w-12 h-12 mx-auto text-slate-600 mb-4"
+                  className="w-12 h-12 mx-auto text-gray-400 dark:text-slate-600 mb-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -346,7 +348,7 @@ export default function TenantMembers() {
                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-                <p className="text-slate-500">
+                <p className="text-gray-400 dark:text-slate-500">
                   {LL.Settings.selectTenantPrompt()}
                 </p>
               </div>

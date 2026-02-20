@@ -29,7 +29,7 @@ import {
 const Plot = dynamic(() => import("../components/charts/plot-wrapper"), {
   ssr: false,
   loading: () => (
-    <div className="animate-pulse rounded-lg bg-slate-700 h-80 w-full" />
+    <div className="animate-pulse rounded-lg bg-gray-100 dark:bg-slate-700 h-80 w-full" />
   ),
 });
 
@@ -51,14 +51,18 @@ export default function ChartsPage() {
   return (
     <div className="max-w-[1400px] mx-auto">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-white">{LL.Charts.title()}</h1>
-        <p className="text-sm text-slate-400 mt-1">{LL.Charts.description()}</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          {LL.Charts.title()}
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-slate-400 mt-1">
+          {LL.Charts.description()}
+        </p>
         <nav className="mt-3 flex flex-wrap gap-2">
           {sectionNav.map((s) => (
             <a
               key={s.id}
               href={`#${s.id}`}
-              className="rounded-full border border-slate-700 px-3 py-1 text-xs text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+              className="rounded-full border border-gray-200 dark:border-slate-700 px-3 py-1 text-xs text-gray-500 dark:text-slate-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors"
             >
               {s.label}
             </a>
@@ -745,14 +749,16 @@ function LazySection({
 
   return (
     <section id={id} ref={ref} className="mb-10 scroll-mt-6">
-      <h2 className="text-lg font-semibold text-white mb-4">{title}</h2>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+        {title}
+      </h2>
       <div
         className={`grid gap-6 ${fullWidth ? "grid-cols-1" : "grid-cols-1 lg:grid-cols-2"}`}
       >
         {visible ? (
           children
         ) : (
-          <div className="animate-pulse rounded-xl bg-slate-800 h-96 col-span-full" />
+          <div className="animate-pulse rounded-xl bg-white dark:bg-slate-800 h-96 col-span-full" />
         )}
       </div>
     </section>

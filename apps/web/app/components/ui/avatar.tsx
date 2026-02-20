@@ -41,7 +41,7 @@ function Avatar({
 
   return (
     <span
-      className={`${sizeClasses[size]} inline-flex items-center justify-center rounded-full bg-slate-600 font-medium text-slate-200 ${className}`}
+      className={`${sizeClasses[size]} inline-flex items-center justify-center rounded-full bg-gray-200 font-medium text-gray-600 dark:bg-slate-600 dark:text-slate-200 ${className}`}
       aria-label={alt}
     >
       {initials}

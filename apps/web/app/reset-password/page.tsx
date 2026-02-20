@@ -54,11 +54,11 @@ function ResetPasswordContent() {
 
   if (tokenError || !token) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
-          <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-red-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center p-8">
+        <div className="max-w-md w-full bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8 text-center">
+          <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
             <svg
-              className="w-7 h-7 text-red-600"
+              className="w-7 h-7 text-red-600 dark:text-red-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -71,10 +71,10 @@ function ResetPasswordContent() {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-3">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
             {LL.Auth.invalidOrExpiredLink()}
           </h1>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-600 dark:text-slate-400 mb-6">
             {LL.Auth.invalidOrExpiredLinkMessage()}
           </p>
           <Link
@@ -134,21 +134,23 @@ function ResetPasswordContent() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center p-8">
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               {LL.Auth.setYourPassword()}
             </h1>
-            <p className="text-gray-600">{LL.Auth.setPasswordSubtitle()}</p>
+            <p className="text-gray-600 dark:text-slate-400">
+              {LL.Auth.setPasswordSubtitle()}
+            </p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 rounded-lg p-4 mb-6">
               <div className="flex items-center gap-2">
                 <svg
-                  className="w-5 h-5 text-red-600 flex-shrink-0"
+                  className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -160,7 +162,9 @@ function ResetPasswordContent() {
                     d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span className="text-red-800 text-sm">{error}</span>
+                <span className="text-red-800 dark:text-red-400 text-sm">
+                  {error}
+                </span>
               </div>
             </div>
           )}
@@ -175,7 +179,7 @@ function ResetPasswordContent() {
             <div suppressHydrationWarning>
               <label
                 htmlFor="new-password"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
               >
                 {LL.Settings.newPasswordLabel()}
               </label>
@@ -190,14 +194,14 @@ function ResetPasswordContent() {
                 required
                 maxLength={128}
                 placeholder={LL.Forms.passwordPlaceholder()}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${fieldErrors.newPassword ? "border-red-400" : "border-gray-300"}`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 ${fieldErrors.newPassword ? "border-red-400 dark:border-red-500" : "border-gray-300 dark:border-slate-600"}`}
               />
               {fieldErrors.newPassword ? (
-                <p className="mt-1 text-xs text-red-600">
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                   {fieldErrors.newPassword}
                 </p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 dark:text-slate-500">
                   {LL.Auth.passwordMinChars()}
                 </p>
               )}
@@ -205,7 +209,7 @@ function ResetPasswordContent() {
             <div suppressHydrationWarning>
               <label
                 htmlFor="confirm-password"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
               >
                 {LL.Forms.confirmPassword()}
               </label>
@@ -221,10 +225,10 @@ function ResetPasswordContent() {
                 required
                 maxLength={128}
                 placeholder={LL.Forms.passwordPlaceholder()}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${fieldErrors.confirmPassword ? "border-red-400" : "border-gray-300"}`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 ${fieldErrors.confirmPassword ? "border-red-400 dark:border-red-500" : "border-gray-300 dark:border-slate-600"}`}
               />
               {fieldErrors.confirmPassword && (
-                <p className="mt-1 text-xs text-red-600">
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                   {fieldErrors.confirmPassword}
                 </p>
               )}
@@ -247,7 +251,7 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center">
           <div className="h-10 w-10 animate-spin rounded-full border-2 border-b-blue-400 border-transparent" />
         </div>
       }

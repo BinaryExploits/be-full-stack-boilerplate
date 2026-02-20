@@ -7,8 +7,9 @@ const variantClasses: Record<ButtonVariant, string> = {
   primary:
     "bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white shadow",
   secondary:
-    "bg-slate-700 hover:bg-slate-600 text-slate-100 border border-slate-600",
-  ghost: "hover:bg-slate-700 text-slate-300 hover:text-white",
+    "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300 dark:bg-slate-700 dark:hover:bg-slate-600 dark:text-slate-100 dark:border-slate-600",
+  ghost:
+    "hover:bg-gray-100 text-gray-500 hover:text-gray-900 dark:hover:bg-slate-700 dark:text-slate-300 dark:hover:text-white",
   destructive: "bg-red-600 hover:bg-red-700 text-white shadow",
 };
 
@@ -29,7 +30,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     return (
       <button
         ref={ref}
-        className={`inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 disabled:pointer-events-none disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
+        className={`inline-flex items-center justify-center gap-2 rounded-lg font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-slate-900 disabled:pointer-events-none disabled:opacity-50 ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
         {...props}
       />
     );

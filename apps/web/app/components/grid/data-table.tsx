@@ -132,7 +132,7 @@ export function DataTable<T>({
                         header.getContext(),
                       )}
                       {header.column.getCanSort() && (
-                        <span className="text-slate-500">
+                        <span className="text-gray-400 dark:text-slate-500">
                           {header.column.getIsSorted() === "asc" ? (
                             <ArrowUp className="h-3 w-3" />
                           ) : header.column.getIsSorted() === "desc" ? (
@@ -154,7 +154,7 @@ export function DataTable<T>({
             <TableRow>
               <TableCell
                 colSpan={columns.length}
-                className="h-24 text-center text-slate-400"
+                className="h-24 text-center text-gray-400 dark:text-slate-400"
               >
                 No results.
               </TableCell>
@@ -168,7 +168,7 @@ export function DataTable<T>({
                     row.getIsSelected()
                       ? "bg-blue-500/10"
                       : zebraStripe && idx % 2 === 1
-                        ? "bg-slate-800/40"
+                        ? "bg-gray-50 dark:bg-slate-800/40"
                         : ""
                   }
                 >

@@ -16,7 +16,7 @@ interface DataTablePaginationProps<T> {
 export function DataTablePagination<T>({ table }: DataTablePaginationProps<T>) {
   return (
     <div className="flex items-center justify-between px-1 pt-3">
-      <div className="text-xs text-slate-400">
+      <div className="text-xs text-gray-400 dark:text-slate-400">
         {table.getFilteredSelectedRowModel().rows.length > 0 && (
           <span>
             {table.getFilteredSelectedRowModel().rows.length} of{" "}
@@ -27,11 +27,13 @@ export function DataTablePagination<T>({ table }: DataTablePaginationProps<T>) {
 
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400">Rows per page</span>
+          <span className="text-xs text-gray-400 dark:text-slate-400">
+            Rows per page
+          </span>
           <select
             value={table.getState().pagination.pageSize}
             onChange={(e) => table.setPageSize(Number(e.target.value))}
-            className="rounded border border-slate-600 bg-slate-800 px-2 py-1 text-xs text-slate-200 outline-none focus:border-blue-400"
+            className="rounded border border-gray-300 bg-white dark:border-slate-600 dark:bg-slate-800 px-2 py-1 text-xs text-gray-700 dark:text-slate-200 outline-none focus:border-blue-400"
           >
             {[10, 20, 30, 50].map((size) => (
               <option key={size} value={size}>
@@ -41,7 +43,7 @@ export function DataTablePagination<T>({ table }: DataTablePaginationProps<T>) {
           </select>
         </div>
 
-        <span className="text-xs text-slate-400 tabular-nums">
+        <span className="text-xs text-gray-400 dark:text-slate-400 tabular-nums">
           Page {table.getState().pagination.pageIndex + 1} of{" "}
           {table.getPageCount()}
         </span>

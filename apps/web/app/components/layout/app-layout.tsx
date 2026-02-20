@@ -37,7 +37,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   return (
     <>
       <NavHeader />
-      <div className="flex min-h-screen pt-14 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="flex min-h-screen pt-14 bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900">
         <AppSidebar />
         <main className="flex-1 min-w-0">
           <div className="p-4 lg:p-6">{children}</div>

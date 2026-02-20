@@ -140,21 +140,23 @@ export default function SignUpPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center p-8">
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               {LL.Auth.signUpTitle()}
             </h1>
-            <p className="text-gray-600">{LL.Auth.signUpSubtitle()}</p>
+            <p className="text-gray-600 dark:text-slate-400">
+              {LL.Auth.signUpSubtitle()}
+            </p>
           </div>
 
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 rounded-lg p-4 mb-6">
               <div className="flex items-start gap-2">
                 <svg
-                  className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5"
+                  className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -166,7 +168,9 @@ export default function SignUpPage() {
                     d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span className="text-red-800 text-sm">{error}</span>
+                <span className="text-red-800 dark:text-red-400 text-sm">
+                  {error}
+                </span>
               </div>
             </div>
           )}
@@ -182,7 +186,7 @@ export default function SignUpPage() {
               <div>
                 <label
                   htmlFor="first-name"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                 >
                   {LL.Forms.firstName()}
                 </label>
@@ -196,10 +200,10 @@ export default function SignUpPage() {
                   }}
                   required
                   placeholder={LL.Forms.firstNamePlaceholder()}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${fieldErrors.firstName ? "border-red-400" : "border-gray-300"}`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 ${fieldErrors.firstName ? "border-red-400 dark:border-red-500" : "border-gray-300 dark:border-slate-600"}`}
                 />
                 {fieldErrors.firstName && (
-                  <p className="mt-1 text-xs text-red-600">
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                     {fieldErrors.firstName}
                   </p>
                 )}
@@ -207,7 +211,7 @@ export default function SignUpPage() {
               <div>
                 <label
                   htmlFor="last-name"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                 >
                   {LL.Forms.lastName()}
                 </label>
@@ -221,10 +225,10 @@ export default function SignUpPage() {
                   }}
                   required
                   placeholder={LL.Forms.lastNamePlaceholder()}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${fieldErrors.lastName ? "border-red-400" : "border-gray-300"}`}
+                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 ${fieldErrors.lastName ? "border-red-400 dark:border-red-500" : "border-gray-300 dark:border-slate-600"}`}
                 />
                 {fieldErrors.lastName && (
-                  <p className="mt-1 text-xs text-red-600">
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                     {fieldErrors.lastName}
                   </p>
                 )}
@@ -233,7 +237,7 @@ export default function SignUpPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
               >
                 {LL.Forms.email()}
               </label>
@@ -247,16 +251,18 @@ export default function SignUpPage() {
                 }}
                 required
                 placeholder={LL.Forms.emailPlaceholder()}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${fieldErrors.email ? "border-red-400" : "border-gray-300"}`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 ${fieldErrors.email ? "border-red-400 dark:border-red-500" : "border-gray-300 dark:border-slate-600"}`}
               />
               {fieldErrors.email && (
-                <p className="mt-1 text-xs text-red-600">{fieldErrors.email}</p>
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+                  {fieldErrors.email}
+                </p>
               )}
             </div>
             <div suppressHydrationWarning>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-gray-700 mb-2"
+                className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
               >
                 {LL.Forms.password()}
               </label>
@@ -271,14 +277,14 @@ export default function SignUpPage() {
                 required
                 maxLength={128}
                 placeholder={LL.Forms.passwordPlaceholder()}
-                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent ${fieldErrors.password ? "border-red-400" : "border-gray-300"}`}
+                className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent dark:bg-slate-700 dark:text-white dark:placeholder-slate-400 ${fieldErrors.password ? "border-red-400 dark:border-red-500" : "border-gray-300 dark:border-slate-600"}`}
               />
               {fieldErrors.password ? (
-                <p className="mt-1 text-xs text-red-600">
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                   {fieldErrors.password}
                 </p>
               ) : (
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 dark:text-slate-500">
                   {LL.Auth.passwordMinChars()}
                 </p>
               )}
@@ -292,14 +298,14 @@ export default function SignUpPage() {
                     setConsent(e.target.checked);
                     if (fieldErrors.consent) clearFieldError("consent");
                   }}
-                  className="mt-1 h-4 w-4 rounded border-gray-300 text-emerald-600 focus:ring-emerald-500"
+                  className="mt-1 h-4 w-4 rounded border-gray-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500"
                 />
-                <span className="text-sm text-gray-600">
+                <span className="text-sm text-gray-600 dark:text-slate-400">
                   {LL.Auth.consentText()}{" "}
                   <Link
                     href="/privacy"
                     target="_blank"
-                    className="text-blue-600 underline hover:text-blue-700"
+                    className="text-blue-600 dark:text-blue-400 underline hover:text-blue-700 dark:hover:text-blue-300"
                   >
                     {LL.Settings.privacyAndDataPolicy()}
                   </Link>
@@ -307,7 +313,7 @@ export default function SignUpPage() {
                 </span>
               </label>
               {fieldErrors.consent && (
-                <p className="mt-1 text-xs text-red-600">
+                <p className="mt-1 text-xs text-red-600 dark:text-red-400">
                   {fieldErrors.consent}
                 </p>
               )}
@@ -321,11 +327,11 @@ export default function SignUpPage() {
             </button>
           </form>
 
-          <p className="mt-6 text-center text-sm text-gray-600">
+          <p className="mt-6 text-center text-sm text-gray-600 dark:text-slate-400">
             {LL.Auth.alreadyHaveAccount()}{" "}
             <Link
               href="/sign-in"
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
             >
               {LL.Auth.signIn()}
             </Link>

@@ -65,7 +65,7 @@ export function EditableCell<T>({
       value={value}
       onChange={(e) => setValue(e.target.value)}
       onBlur={onBlur}
-      className="w-full bg-transparent border-b border-transparent focus:border-blue-400 outline-none text-slate-200 text-sm py-0.5"
+      className="w-full bg-transparent border-b border-transparent focus:border-blue-400 outline-none text-gray-700 dark:text-slate-200 text-sm py-0.5"
     />
   );
 }
@@ -106,7 +106,7 @@ export function NumberCell<T>({
       onChange={(e) => setValue(e.target.value)}
       onBlur={onBlur}
       type="number"
-      className="w-full bg-transparent border-b border-transparent focus:border-blue-400 outline-none text-slate-200 text-sm py-0.5 text-right tabular-nums"
+      className="w-full bg-transparent border-b border-transparent focus:border-blue-400 outline-none text-gray-700 dark:text-slate-200 text-sm py-0.5 text-right tabular-nums"
     />
   );
 }
@@ -129,7 +129,7 @@ export function SelectCell<T>({
       onChange={(e) =>
         table.options.meta?.updateData?.(row.index, column.id, e.target.value)
       }
-      className="w-full bg-slate-800 text-slate-200 text-sm rounded border border-slate-600 py-0.5 px-1 outline-none focus:border-blue-400"
+      className="w-full bg-white text-gray-700 dark:bg-slate-800 dark:text-slate-200 text-sm rounded border border-gray-300 dark:border-slate-600 py-0.5 px-1 outline-none focus:border-blue-400"
     >
       {options.map((opt) => (
         <option key={opt} value={opt}>
@@ -157,10 +157,10 @@ export function BadgeCell<T>({ getValue, column }: CellContext<T, unknown>) {
 /* ------------------------------------------------------------------ */
 export function DateCell<T>({ getValue }: CellContext<T, unknown>) {
   const val = getValue();
-  if (!val) return <span className="text-slate-500">—</span>;
+  if (!val) return <span className="text-gray-400 dark:text-slate-500">—</span>;
   const date = val instanceof Date ? val : new Date(val as string | number);
   return (
-    <span className="text-sm tabular-nums text-slate-300">
+    <span className="text-sm tabular-nums text-gray-600 dark:text-slate-300">
       {date.toLocaleDateString("en-US", {
         year: "numeric",
         month: "short",
@@ -212,7 +212,8 @@ export function PriorityCell<T>({ getValue }: CellContext<T, unknown>) {
 /* ------------------------------------------------------------------ */
 export function TagsCell<T>({ getValue }: CellContext<T, unknown>) {
   const tags = getValue() as string[] | undefined;
-  if (!tags?.length) return <span className="text-slate-500">—</span>;
+  if (!tags?.length)
+    return <span className="text-gray-400 dark:text-slate-500">—</span>;
   return (
     <div className="flex flex-wrap gap-1">
       {tags.map((tag) => (
@@ -234,7 +235,7 @@ export function ActionCell<T>({ row, table }: CellContext<T, unknown>) {
     <div className="flex items-center gap-1">
       <button
         onClick={() => id && table.options.meta?.deleteRow?.(id)}
-        className="rounded p-1 text-slate-400 hover:bg-red-500/10 hover:text-red-400 transition-colors"
+        className="rounded p-1 text-gray-400 hover:bg-red-50 hover:text-red-500 dark:text-slate-400 dark:hover:bg-red-500/10 dark:hover:text-red-400 transition-colors"
         aria-label="Delete row"
       >
         <Trash2 className="h-3.5 w-3.5" />
@@ -257,19 +258,19 @@ export function RowActionsCell<T>({ row }: CellContext<T, unknown>) {
     <div className="relative">
       <button
         onClick={() => setOpen(!open)}
-        className="rounded p-1 text-slate-400 hover:bg-slate-700 hover:text-white transition-colors"
+        className="rounded p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white transition-colors"
         aria-label="Row actions"
       >
         <MoreHorizontal className="h-4 w-4" />
       </button>
       {open && (
-        <div className="absolute right-0 top-full z-20 mt-1 w-36 rounded-lg border border-slate-600 bg-slate-800 shadow-xl py-1">
+        <div className="absolute right-0 top-full z-20 mt-1 w-36 rounded-lg border border-gray-200 bg-white dark:border-slate-600 dark:bg-slate-800 shadow-xl py-1">
           <button
             onClick={() => {
               console.log("View:", name);
               setOpen(false);
             }}
-            className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-slate-300 hover:bg-slate-700"
+            className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             <Eye className="h-3.5 w-3.5" /> View Details
           </button>
@@ -278,7 +279,7 @@ export function RowActionsCell<T>({ row }: CellContext<T, unknown>) {
               console.log("Edit:", name);
               setOpen(false);
             }}
-            className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-slate-300 hover:bg-slate-700"
+            className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-gray-600 hover:bg-gray-50 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             <Edit3 className="h-3.5 w-3.5" /> Edit
           </button>
@@ -287,7 +288,7 @@ export function RowActionsCell<T>({ row }: CellContext<T, unknown>) {
               console.log("Suspend:", name);
               setOpen(false);
             }}
-            className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-red-400 hover:bg-slate-700"
+            className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-red-500 hover:bg-gray-50 dark:text-red-400 dark:hover:bg-slate-700"
           >
             <Ban className="h-3.5 w-3.5" /> Suspend
           </button>
@@ -302,12 +303,13 @@ export function RowActionsCell<T>({ row }: CellContext<T, unknown>) {
 /* ------------------------------------------------------------------ */
 export function DeltaCell<T>({ getValue }: CellContext<T, unknown>) {
   const val = getValue() as number;
-  if (val == null) return <span className="text-slate-500">—</span>;
+  if (val == null)
+    return <span className="text-gray-400 dark:text-slate-500">—</span>;
   const isPositive = val > 0;
   const isZero = val === 0;
   return (
     <span
-      className={`text-sm font-medium tabular-nums ${isZero ? "text-slate-400" : isPositive ? "text-emerald-400" : "text-red-400"}`}
+      className={`text-sm font-medium tabular-nums ${isZero ? "text-gray-400 dark:text-slate-400" : isPositive ? "text-emerald-600 dark:text-emerald-400" : "text-red-600 dark:text-red-400"}`}
     >
       {isPositive ? "↑" : isZero ? "—" : "↓"} {Math.abs(val).toFixed(1)}%
     </span>

@@ -44,14 +44,14 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-slate-900 flex items-center justify-center p-8">
       <div className="max-w-md w-full">
-        <div className="bg-white rounded-lg shadow-lg p-8">
+        <div className="bg-white dark:bg-slate-800 rounded-lg shadow-lg p-8">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
               {LL.Auth.forgotPasswordTitle()}
             </h1>
-            <p className="text-gray-600">
+            <p className="text-gray-600 dark:text-slate-400">
               {submitted
                 ? LL.Auth.checkYourInbox()
                 : LL.Auth.forgotPasswordSubtitle()}
@@ -60,9 +60,9 @@ export default function ForgotPasswordPage() {
 
           {submitted ? (
             <div className="text-center">
-              <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-blue-100 flex items-center justify-center">
+              <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                 <svg
-                  className="w-7 h-7 text-blue-600"
+                  className="w-7 h-7 text-blue-600 dark:text-blue-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -75,12 +75,12 @@ export default function ForgotPasswordPage() {
                   />
                 </svg>
               </div>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 dark:text-slate-400 mb-6">
                 {LL.Auth.resetLinkSentMessage()}
               </p>
               <Link
                 href="/sign-in"
-                className="text-blue-600 hover:text-blue-700 font-medium"
+                className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
               >
                 {LL.Auth.backToSignIn()}
               </Link>
@@ -96,7 +96,7 @@ export default function ForgotPasswordPage() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-2"
+                  className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-2"
                 >
                   {LL.Forms.emailAddress()}
                 </label>
@@ -107,7 +107,7 @@ export default function ForgotPasswordPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   placeholder={LL.Forms.emailPlaceholder()}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-3 border border-gray-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-slate-700 dark:text-white dark:placeholder-slate-400"
                 />
               </div>
               <button
@@ -117,10 +117,10 @@ export default function ForgotPasswordPage() {
               >
                 {loading ? LL.Common.sending() : LL.Auth.sendResetLink()}
               </button>
-              <p className="text-center text-sm text-gray-600">
+              <p className="text-center text-sm text-gray-600 dark:text-slate-400">
                 <Link
                   href="/sign-in"
-                  className="text-blue-600 hover:text-blue-700 font-medium"
+                  className="text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 font-medium"
                 >
                   {LL.Auth.backToSignIn()}
                 </Link>

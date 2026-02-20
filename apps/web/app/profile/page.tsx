@@ -81,7 +81,7 @@ export default function ProfilePage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
         <div className="h-10 w-10 animate-spin rounded-full border-2 border-b-blue-400 border-transparent" />
       </div>
     );
@@ -275,11 +275,11 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
+    <main className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-8">
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-8"
+          className="inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-8"
         >
           <svg
             className="w-5 h-5"
@@ -297,10 +297,12 @@ export default function ProfilePage() {
           {LL.Common.backToHome()}
         </Link>
 
-        <h1 className="text-3xl font-bold text-white mb-2">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
           {LL.Settings.profileTitle()}
         </h1>
-        <p className="text-slate-400 mb-8">{LL.Settings.profileSubtitle()}</p>
+        <p className="text-gray-500 dark:text-slate-400 mb-8">
+          {LL.Settings.profileSubtitle()}
+        </p>
 
         {/* Email verification warning */}
         {!user.emailVerified && (
@@ -320,21 +322,21 @@ export default function ProfilePage() {
                 />
               </svg>
               <div className="flex-1">
-                <p className="text-amber-200 font-medium text-sm">
+                <p className="text-amber-700 dark:text-amber-200 font-medium text-sm">
                   {LL.Settings.emailNotVerified()}
                 </p>
-                <p className="text-amber-300/70 text-sm mt-1">
+                <p className="text-amber-600/70 dark:text-amber-300/70 text-sm mt-1">
                   {LL.Settings.verifyEmailPrompt()}
                 </p>
                 {verificationSent ? (
-                  <p className="text-emerald-400 text-sm mt-2">
+                  <p className="text-emerald-600 dark:text-emerald-400 text-sm mt-2">
                     {LL.Auth.verificationEmailSent()}
                   </p>
                 ) : (
                   <button
                     onClick={() => void handleResendVerification()}
                     disabled={resendingVerification}
-                    className="mt-2 text-sm font-medium text-amber-300 hover:text-amber-200 underline disabled:opacity-50"
+                    className="mt-2 text-sm font-medium text-amber-600 dark:text-amber-300 hover:text-amber-700 dark:hover:text-amber-200 underline disabled:opacity-50"
                   >
                     {resendingVerification
                       ? LL.Common.sending()
@@ -347,8 +349,8 @@ export default function ProfilePage() {
         )}
 
         {/* User info */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-4">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {LL.Settings.accountInfo()}
           </h2>
           <div className="space-y-3">
@@ -357,29 +359,35 @@ export default function ProfilePage() {
                 <img
                   src={user.image}
                   alt={LL.Settings.profileTitle()}
-                  className="w-12 h-12 rounded-full border-2 border-slate-600"
+                  className="w-12 h-12 rounded-full border-2 border-gray-300 dark:border-slate-600"
                 />
                 <div>
-                  <p className="text-white font-medium">{user.name || "—"}</p>
-                  <p className="text-slate-400 text-sm">{user.email}</p>
+                  <p className="text-gray-900 dark:text-white font-medium">
+                    {user.name || "—"}
+                  </p>
+                  <p className="text-gray-500 dark:text-slate-400 text-sm">
+                    {user.email}
+                  </p>
                 </div>
               </div>
             )}
             {!user.image && (
               <>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400 text-sm">
+                  <span className="text-gray-500 dark:text-slate-400 text-sm">
                     {LL.Forms.name()}
                   </span>
-                  <span className="text-white font-medium">
+                  <span className="text-gray-900 dark:text-white font-medium">
                     {user.name || "—"}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
-                  <span className="text-slate-400 text-sm">
+                  <span className="text-gray-500 dark:text-slate-400 text-sm">
                     {LL.Forms.email()}
                   </span>
-                  <span className="text-white font-medium">{user.email}</span>
+                  <span className="text-gray-900 dark:text-white font-medium">
+                    {user.email}
+                  </span>
                 </div>
               </>
             )}
@@ -387,23 +395,26 @@ export default function ProfilePage() {
         </div>
 
         {/* Linked Accounts */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-4">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {LL.Settings.linkedAccounts()}
           </h2>
 
           {loadingAccounts ? (
-            <div className="flex items-center gap-2 text-slate-400 text-sm">
+            <div className="flex items-center gap-2 text-gray-500 dark:text-slate-400 text-sm">
               <div className="h-4 w-4 animate-spin rounded-full border-2 border-b-blue-400 border-transparent" />
               {LL.Common.loading()}
             </div>
           ) : (
             <div className="space-y-4">
               {/* Google */}
-              <div className="flex items-center justify-between py-3 border-b border-slate-700 last:border-0">
+              <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-slate-700 last:border-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-slate-700 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-slate-300" viewBox="0 0 24 24">
+                  <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-slate-700 flex items-center justify-center">
+                    <svg
+                      className="w-5 h-5 text-gray-600 dark:text-slate-300"
+                      viewBox="0 0 24 24"
+                    >
                       <path
                         fill="currentColor"
                         d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -423,25 +434,25 @@ export default function ProfilePage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-white text-sm font-medium">
+                    <p className="text-gray-900 dark:text-white text-sm font-medium">
                       {LL.Settings.google()}
                     </p>
                     {hasGoogle && (
-                      <p className="text-slate-400 text-xs">
+                      <p className="text-gray-500 dark:text-slate-400 text-xs">
                         {LL.Settings.connected()}
                       </p>
                     )}
                   </div>
                 </div>
                 {hasGoogle ? (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-900/40 text-emerald-400 border border-emerald-700/50">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-700/50">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
                     {LL.Settings.connected()}
                   </span>
                 ) : (
                   <button
                     onClick={handleConnectGoogle}
-                    className="px-3 py-1.5 text-xs font-medium text-blue-400 border border-blue-500/50 rounded-lg hover:bg-blue-500/10 transition-colors"
+                    className="px-3 py-1.5 text-xs font-medium text-blue-600 dark:text-blue-400 border border-blue-500/50 rounded-lg hover:bg-blue-500/10 transition-colors"
                   >
                     {LL.Settings.connectGoogle()}
                   </button>
@@ -449,11 +460,11 @@ export default function ProfilePage() {
               </div>
 
               {/* Email/Password */}
-              <div className="flex items-center justify-between py-3 border-b border-slate-700 last:border-0">
+              <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-slate-700 last:border-0">
                 <div className="flex items-center gap-3">
-                  <div className="w-9 h-9 rounded-lg bg-slate-700 flex items-center justify-center">
+                  <div className="w-9 h-9 rounded-lg bg-gray-100 dark:bg-slate-700 flex items-center justify-center">
                     <svg
-                      className="w-5 h-5 text-slate-300"
+                      className="w-5 h-5 text-gray-600 dark:text-slate-300"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -467,23 +478,23 @@ export default function ProfilePage() {
                     </svg>
                   </div>
                   <div>
-                    <p className="text-white text-sm font-medium">
+                    <p className="text-gray-900 dark:text-white text-sm font-medium">
                       {LL.Settings.emailAndPassword()}
                     </p>
                     {hasCredential && (
-                      <p className="text-slate-400 text-xs">
+                      <p className="text-gray-500 dark:text-slate-400 text-xs">
                         {LL.Settings.passwordSet()}
                       </p>
                     )}
                   </div>
                 </div>
                 {hasCredential ? (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-900/40 text-emerald-400 border border-emerald-700/50">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 dark:bg-emerald-900/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-700/50">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 dark:bg-emerald-400" />
                     {LL.Settings.connected()}
                   </span>
                 ) : (
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-slate-700 text-slate-400 border border-slate-600">
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-slate-700 text-gray-500 dark:text-slate-400 border border-gray-300 dark:border-slate-600">
                     {LL.Settings.notSet()}
                   </span>
                 )}
@@ -493,8 +504,8 @@ export default function ProfilePage() {
         </div>
 
         {/* Password Management */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6">
-          <h2 className="text-lg font-semibold text-white mb-4">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {LL.Settings.passwordTitle()}
           </h2>
 
@@ -502,8 +513,8 @@ export default function ProfilePage() {
             <div
               className={`rounded-lg p-3 mb-4 text-sm ${
                 passwordMessage.type === "success"
-                  ? "bg-emerald-900/30 border border-emerald-700/50 text-emerald-400"
-                  : "bg-red-900/30 border border-red-700/50 text-red-400"
+                  ? "bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700/50 text-emerald-600 dark:text-emerald-400"
+                  : "bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700/50 text-red-600 dark:text-red-400"
               }`}
             >
               {passwordMessage.text}
@@ -518,7 +529,7 @@ export default function ProfilePage() {
                     setChangingPassword(true);
                     setPasswordMessage(null);
                   }}
-                  className="px-4 py-2 text-sm font-medium text-blue-400 border border-blue-500/50 rounded-lg hover:bg-blue-500/10 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-blue-600 dark:text-blue-400 border border-blue-500/50 rounded-lg hover:bg-blue-500/10 transition-colors"
                 >
                   {LL.Settings.changePassword()}
                 </button>
@@ -533,7 +544,7 @@ export default function ProfilePage() {
                   <div>
                     <label
                       htmlFor="current-pw"
-                      className="block text-sm text-slate-400 mb-1"
+                      className="block text-sm text-gray-500 dark:text-slate-400 mb-1"
                     >
                       {LL.Settings.currentPassword()}
                     </label>
@@ -543,14 +554,14 @@ export default function ProfilePage() {
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       required
-                      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                      className="w-full px-3 py-2 bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                       placeholder={LL.Forms.passwordPlaceholder()}
                     />
                   </div>
                   <div>
                     <label
                       htmlFor="new-pw"
-                      className="block text-sm text-slate-400 mb-1"
+                      className="block text-sm text-gray-500 dark:text-slate-400 mb-1"
                     >
                       {LL.Settings.newPasswordLabel()}
                     </label>
@@ -562,14 +573,14 @@ export default function ProfilePage() {
                       required
                       minLength={8}
                       maxLength={128}
-                      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                      className="w-full px-3 py-2 bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                       placeholder={LL.Forms.passwordPlaceholder()}
                     />
                   </div>
                   <div>
                     <label
                       htmlFor="confirm-pw"
-                      className="block text-sm text-slate-400 mb-1"
+                      className="block text-sm text-gray-500 dark:text-slate-400 mb-1"
                     >
                       {LL.Settings.confirmNewPassword()}
                     </label>
@@ -581,7 +592,7 @@ export default function ProfilePage() {
                       required
                       minLength={8}
                       maxLength={128}
-                      className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                      className="w-full px-3 py-2 bg-gray-100 dark:bg-slate-700 border border-gray-300 dark:border-slate-600 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
                       placeholder={LL.Forms.passwordPlaceholder()}
                     />
                   </div>
@@ -604,7 +615,7 @@ export default function ProfilePage() {
                         setConfirmPassword("");
                         setPasswordMessage(null);
                       }}
-                      className="px-4 py-2 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
+                      className="px-4 py-2 text-sm font-medium text-gray-500 dark:text-slate-400 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
                     >
                       {LL.Common.cancel()}
                     </button>
@@ -614,11 +625,11 @@ export default function ProfilePage() {
             </>
           ) : (
             <div>
-              <p className="text-slate-400 text-sm mb-3">
+              <p className="text-gray-500 dark:text-slate-400 text-sm mb-3">
                 {LL.Settings.addPasswordDescription()}
               </p>
               {setPasswordSent ? (
-                <p className="text-emerald-400 text-sm">
+                <p className="text-emerald-600 dark:text-emerald-400 text-sm">
                   {LL.Settings.checkInboxForPassword()}
                 </p>
               ) : (
@@ -637,8 +648,8 @@ export default function ProfilePage() {
         </div>
 
         {/* Edit Profile */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6 mt-6">
-          <h2 className="text-lg font-semibold text-white mb-4">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-6 mb-6 mt-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
             {LL.Settings.editProfile()}
           </h2>
 
@@ -646,8 +657,8 @@ export default function ProfilePage() {
             <div
               className={`rounded-lg p-3 mb-4 text-sm ${
                 nameMessage.type === "success"
-                  ? "bg-emerald-900/30 border border-emerald-700/50 text-emerald-400"
-                  : "bg-red-900/30 border border-red-700/50 text-red-400"
+                  ? "bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700/50 text-emerald-600 dark:text-emerald-400"
+                  : "bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-700/50 text-red-600 dark:text-red-400"
               }`}
             >
               {nameMessage.text}
@@ -671,7 +682,7 @@ export default function ProfilePage() {
               <div>
                 <label
                   htmlFor="edit-name"
-                  className="block text-sm text-slate-400 mb-1"
+                  className="block text-sm text-gray-500 dark:text-slate-400 mb-1"
                 >
                   {LL.Settings.fullName()}
                 </label>
@@ -684,13 +695,15 @@ export default function ProfilePage() {
                     if (nameError) setNameError(null);
                   }}
                   maxLength={100}
-                  className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${nameError ? "border-red-500" : "border-slate-600"}`}
+                  className={`w-full px-3 py-2 bg-gray-100 dark:bg-slate-700 border rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${nameError ? "border-red-500" : "border-gray-300 dark:border-slate-600"}`}
                   placeholder={LL.Settings.fullNamePlaceholder()}
                 />
                 {nameError && (
-                  <p className="mt-1 text-xs text-red-400">{nameError}</p>
+                  <p className="mt-1 text-xs text-red-600 dark:text-red-400">
+                    {nameError}
+                  </p>
                 )}
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-gray-400 dark:text-slate-500">
                   {LL.Settings.nameHint()}
                 </p>
               </div>
@@ -708,7 +721,7 @@ export default function ProfilePage() {
                     setNameMessage(null);
                     setNameError(null);
                   }}
-                  className="px-4 py-2 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
+                  className="px-4 py-2 text-sm font-medium text-gray-500 dark:text-slate-400 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
                 >
                   {LL.Common.cancel()}
                 </button>
@@ -718,16 +731,16 @@ export default function ProfilePage() {
         </div>
 
         {/* Data Privacy & GDPR */}
-        <div className="bg-slate-800 border border-slate-700 rounded-xl p-6 mb-6">
-          <h2 className="text-lg font-semibold text-white mb-2">
+        <div className="bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
             {LL.Settings.dataAndPrivacy()}
           </h2>
-          <p className="text-slate-400 text-sm mb-4">
+          <p className="text-gray-500 dark:text-slate-400 text-sm mb-4">
             {LL.Settings.dataPrivacyDescription()}{" "}
             <Link
               href="/privacy"
               target="_blank"
-              className="text-blue-400 underline hover:text-blue-300"
+              className="text-blue-600 dark:text-blue-400 underline hover:text-blue-700 dark:hover:text-blue-300"
             >
               {LL.Settings.privacyAndDataPolicy()}
             </Link>
@@ -735,19 +748,19 @@ export default function ProfilePage() {
           </p>
 
           <div className="space-y-4">
-            <div className="flex items-center justify-between py-3 border-b border-slate-700">
+            <div className="flex items-center justify-between py-3 border-b border-gray-200 dark:border-slate-700">
               <div>
-                <p className="text-white text-sm font-medium">
+                <p className="text-gray-900 dark:text-white text-sm font-medium">
                   {LL.Settings.downloadMyData()}
                 </p>
-                <p className="text-slate-400 text-xs mt-0.5">
+                <p className="text-gray-500 dark:text-slate-400 text-xs mt-0.5">
                   {LL.Settings.downloadMyDataDescription()}
                 </p>
               </div>
               <button
                 onClick={() => void handleDownloadData()}
                 disabled={downloadingData}
-                className={`px-4 py-2 text-sm font-medium border rounded-lg transition-colors disabled:opacity-50 ${downloadSuccess ? "text-emerald-400 border-emerald-500/50" : "text-blue-400 border-blue-500/50 hover:bg-blue-500/10"}`}
+                className={`px-4 py-2 text-sm font-medium border rounded-lg transition-colors disabled:opacity-50 ${downloadSuccess ? "text-emerald-600 dark:text-emerald-400 border-emerald-500/50" : "text-blue-600 dark:text-blue-400 border-blue-500/50 hover:bg-blue-500/10"}`}
               >
                 {downloadingData
                   ? LL.Settings.preparingExport()
@@ -760,17 +773,17 @@ export default function ProfilePage() {
             <div className="py-3">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-red-400 text-sm font-medium">
+                  <p className="text-red-600 dark:text-red-400 text-sm font-medium">
                     {LL.Settings.deleteAccount()}
                   </p>
-                  <p className="text-slate-400 text-xs mt-0.5">
+                  <p className="text-gray-500 dark:text-slate-400 text-xs mt-0.5">
                     {LL.Settings.deleteAccountDescription()}
                   </p>
                 </div>
                 {!showDeleteConfirm && (
                   <button
                     onClick={() => setShowDeleteConfirm(true)}
-                    className="px-4 py-2 text-sm font-medium text-red-400 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-red-600 dark:text-red-400 border border-red-500/50 rounded-lg hover:bg-red-500/10 transition-colors"
                   >
                     {LL.Common.delete()}
                   </button>
@@ -778,10 +791,10 @@ export default function ProfilePage() {
               </div>
 
               {showDeleteConfirm && (
-                <div className="mt-4 p-4 bg-red-900/20 border border-red-700/50 rounded-lg">
-                  <p className="text-red-300 text-sm mb-3">
+                <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/50 rounded-lg">
+                  <p className="text-red-700 dark:text-red-300 text-sm mb-3">
                     {LL.Settings.deleteConfirmPrefix()}{" "}
-                    <span className="font-mono font-bold text-red-200">
+                    <span className="font-mono font-bold text-red-700 dark:text-red-200">
                       {user.email}
                     </span>{" "}
                     {LL.Settings.deleteConfirmSuffix()}
@@ -791,10 +804,12 @@ export default function ProfilePage() {
                     value={deleteConfirmEmail}
                     onChange={(e) => setDeleteConfirmEmail(e.target.value)}
                     placeholder={LL.Settings.typeEmailToConfirm()}
-                    className="w-full px-3 py-2 bg-slate-700 border border-red-600/50 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm mb-3"
+                    className="w-full px-3 py-2 bg-gray-100 dark:bg-slate-700 border border-red-200 dark:border-red-600/50 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent text-sm mb-3"
                   />
                   {deleteError && (
-                    <p className="text-red-400 text-xs mb-3">{deleteError}</p>
+                    <p className="text-red-600 dark:text-red-400 text-xs mb-3">
+                      {deleteError}
+                    </p>
                   )}
                   <div className="flex gap-3">
                     <button
@@ -814,7 +829,7 @@ export default function ProfilePage() {
                         setDeleteConfirmEmail("");
                         setDeleteError(null);
                       }}
-                      className="px-4 py-2 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
+                      className="px-4 py-2 text-sm font-medium text-gray-500 dark:text-slate-400 border border-gray-300 dark:border-slate-600 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 transition-colors"
                     >
                       {LL.Common.cancel()}
                     </button>
