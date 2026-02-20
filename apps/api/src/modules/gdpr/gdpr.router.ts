@@ -28,32 +28,16 @@ import {
 export class GdprRouter {
   constructor(private readonly gdprService: GdprService) {}
 
-  private extractIp(ctx: AppContextType): string | null {
-    const headers = ctx.req.headers;
-    const forwarded = headers['x-forwarded-for'];
-    if (typeof forwarded === 'string') return forwarded.split(',')[0].trim();
-    if (Array.isArray(forwarded)) return forwarded[0];
-    return (headers['x-real-ip'] as string) ?? null;
-  }
-
   @Query({ output: ZGdprMyDataResponse })
   async myData(@Ctx() ctx: AppContextType): Promise<TGdprMyDataResponse> {
     const user = ctx.user!;
-    return this.gdprService.getMyData(
-      user.id,
-      user.email,
-      this.extractIp(ctx),
-    );
+    return this.gdprService.getMyData(user.id, this.extractIp(ctx));
   }
 
   @Query({ output: ZGdprMyDataResponse })
   async exportData(@Ctx() ctx: AppContextType): Promise<TGdprMyDataResponse> {
     const user = ctx.user!;
-    return this.gdprService.getMyData(
-      user.id,
-      user.email,
-      this.extractIp(ctx),
-    );
+    return this.gdprService.getMyData(user.id, this.extractIp(ctx));
   }
 
   @Mutation({
@@ -97,5 +81,13 @@ export class GdprRouter {
     );
 
     return { success: true };
+  }
+
+  private extractIp(ctx: AppContextType): string | null {
+    const headers = ctx.req.headers;
+    const forwarded = headers['x-forwarded-for'];
+    if (typeof forwarded === 'string') return forwarded.split(',')[0].trim();
+    if (Array.isArray(forwarded)) return forwarded[0];
+    return (headers['x-real-ip'] as string) ?? null;
   }
 }

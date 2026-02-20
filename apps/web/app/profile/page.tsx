@@ -690,7 +690,8 @@ export default function ProfilePage() {
                   <p className="mt-1 text-xs text-red-400">{nameError}</p>
                 )}
                 <p className="mt-1 text-xs text-slate-500">
-                  2-100 characters. Letters, spaces, hyphens, and apostrophes only.
+                  2-100 characters. Letters, spaces, hyphens, and apostrophes
+                  only.
                 </p>
               </div>
               <div className="flex gap-3">
@@ -722,7 +723,8 @@ export default function ProfilePage() {
             Data &amp; Privacy
           </h2>
           <p className="text-slate-400 text-sm mb-4">
-            You have the right to access, export, and delete your personal data at any time.
+            You have the right to access, export, and delete your personal data
+            at any time.
           </p>
 
           <div className="space-y-4">

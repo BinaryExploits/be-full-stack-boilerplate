@@ -9,9 +9,7 @@ import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
 import { ServerConstants } from '../../../../constants/server.constants';
 
 @Injectable()
-export class GdprAuditLogPrismaRepository
-  implements IGdprAuditLogPrismaRepository
-{
+export class GdprAuditLogPrismaRepository implements IGdprAuditLogPrismaRepository {
   constructor(
     @InjectTransactionHost(ServerConstants.TransactionConnectionNames.Prisma)
     protected readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
@@ -23,17 +21,13 @@ export class GdprAuditLogPrismaRepository
 
   create(
     args: Prisma.GdprAuditLogCreateArgs,
-  ): Promise<
-    Prisma.GdprAuditLogGetPayload<Prisma.GdprAuditLogCreateArgs>
-  > {
+  ): Promise<Prisma.GdprAuditLogGetPayload<Prisma.GdprAuditLogCreateArgs>> {
     return this.delegate.create(args);
   }
 
   findMany(
     args?: Prisma.GdprAuditLogFindManyArgs,
-  ): Promise<
-    Prisma.GdprAuditLogGetPayload<Prisma.GdprAuditLogFindManyArgs>[]
-  > {
+  ): Promise<Prisma.GdprAuditLogGetPayload<Prisma.GdprAuditLogFindManyArgs>[]> {
     return this.delegate.findMany(args);
   }
 

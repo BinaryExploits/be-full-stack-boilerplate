@@ -406,7 +406,7 @@ const appRouter = t.router({
       message: z.string().optional(),
     })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
   }),
-  gdpr: t.router({ ,
+  gdpr: t.router({
     myData: publicProcedure.output(z.object({
       success: z.boolean(),
       message: z.string().optional(),
@@ -441,12 +441,6 @@ const appRouter = t.router({
           createdAt: z.date(),
         })
         .nullable(),
-      tenantMemberships: z.array(
-        z.object({
-          role: z.string(),
-          createdAt: z.date(),
-        }),
-      ),
     })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     exportData: publicProcedure.output(z.object({
       success: z.boolean(),
@@ -482,19 +476,16 @@ const appRouter = t.router({
           createdAt: z.date(),
         })
         .nullable(),
-      tenantMemberships: z.array(
-        z.object({
-          role: z.string(),
-          createdAt: z.date(),
-        }),
-      ),
     })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     updateProfile: publicProcedure.input(z.object({}).extend({
       name: z
         .string()
         .min(2)
         .max(100)
-        .regex(/^[a-zA-Z\s'-]+$/, 'Name can only contain letters, spaces, hyphens, and apostrophes')
+        .regex(
+          /^[a-zA-Z\s'-]+$/,
+          'Name can only contain letters, spaces, hyphens, and apostrophes',
+        )
         .optional(),
       image: z.string().max(2048).nullable().optional(),
     })).output(z.object({
@@ -514,7 +505,7 @@ const appRouter = t.router({
     })).output(z.object({
       success: z.boolean(),
       message: z.string().optional(),
-    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any)
+    })).mutation(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
   })
 });
 export type AppRouter = typeof appRouter;

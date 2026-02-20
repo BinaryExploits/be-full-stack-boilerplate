@@ -34,12 +34,6 @@ export const ZGdprMyDataResponse = ZBaseResponse.extend({
       createdAt: z.date(),
     })
     .nullable(),
-  tenantMemberships: z.array(
-    z.object({
-      role: z.string(),
-      createdAt: z.date(),
-    }),
-  ),
 });
 
 // ─── Update Profile (Right of Rectification) ───────────────────
@@ -49,7 +43,10 @@ export const ZGdprUpdateProfileRequest = ZBaseRequest.extend({
     .string()
     .min(2)
     .max(100)
-    .regex(/^[a-zA-Z\s'-]+$/, 'Name can only contain letters, spaces, hyphens, and apostrophes')
+    .regex(
+      /^[a-zA-Z\s'-]+$/,
+      'Name can only contain letters, spaces, hyphens, and apostrophes',
+    )
     .optional(),
   image: z.string().max(2048).nullable().optional(),
 });

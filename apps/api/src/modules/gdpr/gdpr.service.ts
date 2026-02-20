@@ -20,7 +20,6 @@ export class GdprService {
 
   async getMyData(
     userId: string,
-    userEmail: string,
     ipAddress: string | null,
   ): Promise<TGdprMyDataResponse> {
     const user = await this.prisma.user.findUniqueOrThrow({
@@ -63,14 +62,6 @@ export class GdprService {
       },
     });
 
-    const tenantMemberships = await this.prisma.tenantMembership.findMany({
-      where: { email: userEmail.trim().toLowerCase() },
-      select: {
-        role: true,
-        createdAt: true,
-      },
-    });
-
     await this.auditLogRepository.create({
       data: {
         userId,
@@ -86,7 +77,6 @@ export class GdprService {
       accounts,
       sessions,
       profile,
-      tenantMemberships,
     };
   }
 
