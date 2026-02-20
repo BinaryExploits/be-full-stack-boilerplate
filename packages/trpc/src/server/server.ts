@@ -412,7 +412,6 @@ const appRouter = t.router({
       message: z.string().optional(),
     }).extend({
       user: z.object({
-        id: z.string(),
         name: z.string(),
         email: z.string(),
         emailVerified: z.boolean(),
@@ -424,16 +423,13 @@ const appRouter = t.router({
       }),
       accounts: z.array(
         z.object({
-          id: z.string(),
           providerId: z.string(),
-          accountId: z.string(),
           scope: z.string().nullable(),
           createdAt: z.date(),
         }),
       ),
       sessions: z.array(
         z.object({
-          id: z.string(),
           ipAddress: z.string().nullable(),
           userAgent: z.string().nullable(),
           createdAt: z.date(),
@@ -442,14 +438,11 @@ const appRouter = t.router({
       ),
       profile: z
         .object({
-          selectedTenantId: z.string().nullable(),
           createdAt: z.date(),
         })
         .nullable(),
       tenantMemberships: z.array(
         z.object({
-          id: z.string(),
-          tenantId: z.string(),
           role: z.string(),
           createdAt: z.date(),
         }),
@@ -460,7 +453,6 @@ const appRouter = t.router({
       message: z.string().optional(),
     }).extend({
       user: z.object({
-        id: z.string(),
         name: z.string(),
         email: z.string(),
         emailVerified: z.boolean(),
@@ -472,16 +464,13 @@ const appRouter = t.router({
       }),
       accounts: z.array(
         z.object({
-          id: z.string(),
           providerId: z.string(),
-          accountId: z.string(),
           scope: z.string().nullable(),
           createdAt: z.date(),
         }),
       ),
       sessions: z.array(
         z.object({
-          id: z.string(),
           ipAddress: z.string().nullable(),
           userAgent: z.string().nullable(),
           createdAt: z.date(),
@@ -490,14 +479,11 @@ const appRouter = t.router({
       ),
       profile: z
         .object({
-          selectedTenantId: z.string().nullable(),
           createdAt: z.date(),
         })
         .nullable(),
       tenantMemberships: z.array(
         z.object({
-          id: z.string(),
-          tenantId: z.string(),
           role: z.string(),
           createdAt: z.date(),
         }),

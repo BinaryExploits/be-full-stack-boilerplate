@@ -264,14 +264,10 @@ export default function ProfilePage() {
 
       await new Promise((r) => setTimeout(r, 800));
 
-      // Session is already cascade-deleted, so signOut will fail with P2025.
-      // Just clear the client-side state silently and redirect.
-      try {
-        if (authClient) await authClient.signOut();
-      } catch {
-        // expected: session record no longer exists
-      }
-
+      // Account and all sessions are cascade-deleted. Do NOT call
+      // authClient.signOut() — the session record no longer exists and
+      // better-auth would throw P2025. Just redirect; the stale session
+      // cookie is harmless since the server will reject it.
       router.replace("/sign-in");
     } catch (err) {
       setDeleteError(

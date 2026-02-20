@@ -26,7 +26,6 @@ export class GdprService {
     const user = await this.prisma.user.findUniqueOrThrow({
       where: { id: userId },
       select: {
-        id: true,
         name: true,
         email: true,
         emailVerified: true,
@@ -41,9 +40,7 @@ export class GdprService {
     const accounts = await this.prisma.account.findMany({
       where: { userId },
       select: {
-        id: true,
         providerId: true,
-        accountId: true,
         scope: true,
         createdAt: true,
       },
@@ -52,7 +49,6 @@ export class GdprService {
     const sessions = await this.prisma.session.findMany({
       where: { userId },
       select: {
-        id: true,
         ipAddress: true,
         userAgent: true,
         createdAt: true,
@@ -63,7 +59,6 @@ export class GdprService {
     const profile = await this.prisma.userProfile.findUnique({
       where: { userId },
       select: {
-        selectedTenantId: true,
         createdAt: true,
       },
     });
@@ -71,8 +66,6 @@ export class GdprService {
     const tenantMemberships = await this.prisma.tenantMembership.findMany({
       where: { email: userEmail.trim().toLowerCase() },
       select: {
-        id: true,
-        tenantId: true,
         role: true,
         createdAt: true,
       },
