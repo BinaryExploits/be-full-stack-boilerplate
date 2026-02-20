@@ -74,11 +74,7 @@ export class GdprRouter {
       });
     }
 
-    await this.gdprService.deleteAccount(
-      user.id,
-      user.email,
-      this.extractIp(ctx),
-    );
+    await this.gdprService.deleteAccount(ctx);
 
     return { success: true };
   }

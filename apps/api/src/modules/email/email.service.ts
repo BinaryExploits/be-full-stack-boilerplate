@@ -16,13 +16,6 @@ import { renderEmail } from './email.renderer';
 import { ResendProvider } from './resend.provider';
 import { AwsSesProvider } from './aws-ses.provider';
 
-function maskEmail(email: string): string {
-  const [local, domain] = email.split('@');
-  if (!local || !domain) return '***';
-  const visible = local.length <= 2 ? local[0] : local.slice(0, 2);
-  return `${visible}***@${domain}`;
-}
-
 @Injectable()
 export class EmailService {
   constructor(
@@ -104,24 +97,19 @@ export class EmailService {
     );
 
     try {
-      let messageId: string;
+      const payload = {
+        to,
+        subject: renderedEmail.subject,
+        html: renderedEmail.html,
+        text: renderedEmail.text,
+      };
 
       switch (provider) {
         case EmailProvider.RESEND:
-          messageId = await this.resendProvider.send({
-            to,
-            subject: renderedEmail.subject,
-            html: renderedEmail.html,
-            text: renderedEmail.text,
-          });
+          await this.resendProvider.send(payload);
           break;
         case EmailProvider.AWS_SES:
-          messageId = await this.awsSesProvider.send({
-            to,
-            subject: renderedEmail.subject,
-            html: renderedEmail.html,
-            text: renderedEmail.text,
-          });
+          await this.awsSesProvider.send(payload);
           break;
         default:
           throw new Error(`Unsupported email provider: ${String(provider)}`);

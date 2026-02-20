@@ -67,7 +67,6 @@ export default function SignUpPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
-  const [success, setSuccess] = useState(false);
 
   const clearFieldError = (field: string) => {
     setFieldErrors((prev) => {
@@ -112,9 +111,9 @@ export default function SignUpPage() {
     setError(null);
 
     const callbackURL =
-      typeof window !== "undefined"
-        ? `${window.location.origin}/verify-email`
-        : "/verify-email";
+      typeof globalThis.location !== "undefined"
+        ? `${globalThis.location.origin}/`
+        : "/";
 
     const fullName = `${firstName.trim()} ${lastName.trim()}`;
 
@@ -139,44 +138,8 @@ export default function SignUpPage() {
       return;
     }
 
-    setSuccess(true);
+    router.replace("/");
   };
-
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
-          <div className="w-14 h-14 mx-auto mb-5 rounded-full bg-emerald-100 flex items-center justify-center">
-            <svg
-              className="w-7 h-7 text-emerald-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-              />
-            </svg>
-          </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-3">
-            {LL.Auth.checkYourInbox()}
-          </h1>
-          <p className="text-gray-600 mb-6">
-            {LL.Auth.checkInboxMessage({ email })}
-          </p>
-          <Link
-            href="/sign-in"
-            className="inline-block text-blue-600 hover:text-blue-700 font-medium transition-colors"
-          >
-            {LL.Auth.goToSignIn()}
-          </Link>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center p-8">

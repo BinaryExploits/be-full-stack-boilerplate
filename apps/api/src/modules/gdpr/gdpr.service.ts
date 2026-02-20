@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { Propagation } from '@nestjs-cls/transactional';
-import { PrismaService } from '../prisma/prisma.service';
-import { GdprAuditLogPrismaRepository } from './repositories/prisma/gdpr-audit-log.prisma-repository';
 import { AutoTransaction } from '../../decorators/class/auto-transaction.decorator';
 import { ServerConstants } from '../../constants/server.constants';
 import { Logger } from '@repo/utils-core';
+import { AuthService } from '../auth/auth.service';
+import { UserPrismaRepository } from '../auth/repositories/prisma/user.prisma-repository';
+import { AccountPrismaRepository } from '../auth/repositories/prisma/account.prisma-repository';
+import { SessionPrismaRepository } from '../auth/repositories/prisma/session.prisma-repository';
+import { UserProfilePrismaRepository } from '../user-profile/repositories/prisma/user-profile.prisma-repository';
+import { GdprAuditLogPrismaRepository } from './repositories/prisma/gdpr-audit-log.prisma-repository';
+import { AppContextType } from '../../app.context';
 import type {
   TGdprMyDataResponse,
   TGdprUpdateProfileResponse,
@@ -17,7 +22,11 @@ import type {
 )
 export class GdprService {
   constructor(
-    private readonly prisma: PrismaService,
+    private readonly authService: AuthService,
+    private readonly userRepository: UserPrismaRepository,
+    private readonly accountRepository: AccountPrismaRepository,
+    private readonly sessionRepository: SessionPrismaRepository,
+    private readonly userProfileRepository: UserProfilePrismaRepository,
     private readonly auditLogRepository: GdprAuditLogPrismaRepository,
   ) {}
 
@@ -29,7 +38,7 @@ export class GdprService {
     userId: string,
     ipAddress: string | null,
   ): Promise<TGdprMyDataResponse> {
-    const user = await this.prisma.user.findUniqueOrThrow({
+    const user = await this.userRepository.findUniqueOrThrow({
       where: { id: userId },
       select: {
         name: true,
@@ -43,7 +52,7 @@ export class GdprService {
       },
     });
 
-    const accounts = await this.prisma.account.findMany({
+    const accounts = await this.accountRepository.findMany({
       where: { userId },
       select: {
         providerId: true,
@@ -52,7 +61,7 @@ export class GdprService {
       },
     });
 
-    const sessions = await this.prisma.session.findMany({
+    const sessions = await this.sessionRepository.findMany({
       where: { userId },
       select: {
         ipAddress: true,
@@ -62,7 +71,7 @@ export class GdprService {
       },
     });
 
-    const profile = await this.prisma.userProfile.findUnique({
+    const profile = await this.userProfileRepository.findUnique({
       where: { userId },
       select: {
         createdAt: true,
@@ -96,7 +105,7 @@ export class GdprService {
     if (data.name !== undefined) updateData.name = data.name.trim();
     if (data.image !== undefined) updateData.image = data.image;
 
-    const user = await this.prisma.user.update({
+    const user = await this.userRepository.update({
       where: { id: userId },
       data: updateData,
       select: {
@@ -123,49 +132,8 @@ export class GdprService {
     return { success: true, user };
   }
 
-  async deleteAccount(
-    userId: string,
-    userEmail: string,
-    ipAddress: string | null,
-  ): Promise<void> {
-    const normalizedEmail = userEmail.trim().toLowerCase();
-
-    await this.auditLogRepository.create({
-      data: {
-        userId,
-        action: 'DATA_DELETION',
-        details: 'Account deletion requested and executed',
-        ipAddress,
-      },
-    });
-
-    await this.prisma.tenantMembership.deleteMany({
-      where: { email: normalizedEmail },
-    });
-
-    await this.prisma.verification.deleteMany({
-      where: { identifier: normalizedEmail },
-    });
-
-    // Cascade handles: Session, Account, UserProfile
-    await this.prisma.user.delete({
-      where: { id: userId },
-    });
-
-    this.logger.info(`Account deleted for user ${userId}`);
-  }
-
-  async cleanupExpiredVerifications(): Promise<number> {
-    const result = await this.prisma.verification.deleteMany({
-      where: { expiresAt: { lt: new Date() } },
-    });
-
-    if (result.count > 0) {
-      this.logger.info(
-        `Cleaned up ${result.count} expired verification tokens`,
-      );
-    }
-
-    return result.count;
+  async deleteAccount(ctx: AppContextType): Promise<void> {
+    await this.authService.deleteUserForContext(ctx);
+    this.logger.info(`Account deleted for user ${ctx.user!.id}`);
   }
 }

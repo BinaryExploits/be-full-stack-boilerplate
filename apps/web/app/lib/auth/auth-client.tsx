@@ -29,9 +29,12 @@ export function AuthClientProvider({
   children: React.ReactNode;
 }) {
   const [client, setClient] = useState<AuthClient | null>(() => {
-    if (typeof window !== "undefined" && window.location?.origin) {
+    if (
+      typeof globalThis.location !== "undefined" &&
+      globalThis.location?.origin
+    ) {
       return createAuthClient({
-        baseURL: window.location.origin,
+        baseURL: globalThis.location.origin,
         plugins: [emailOTPClient()],
       });
     }
@@ -40,11 +43,14 @@ export function AuthClientProvider({
 
   useEffect(() => {
     if (client != null) return;
-    if (typeof window !== "undefined" && window.location?.origin) {
+    if (
+      typeof globalThis.location !== "undefined" &&
+      globalThis.location?.origin
+    ) {
       try {
         setClient(
           createAuthClient({
-            baseURL: window.location.origin,
+            baseURL: globalThis.location.origin,
             plugins: [emailOTPClient()],
           }),
         );

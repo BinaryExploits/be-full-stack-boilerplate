@@ -4,24 +4,24 @@ import {
   InjectTransactionHost,
 } from '@nestjs-cls/transactional';
 import { Prisma } from '@repo/prisma-db';
-import { IGdprAuditLogPrismaRepository } from './gdpr-audit-log.prisma-repository.interface';
+import { ISessionPrismaRepository } from './session.prisma-repository.interface';
 import { PrismaTransactionAdapter } from '../../../prisma/prisma.module';
 import { ServerConstants } from '../../../../constants/server.constants';
 
 @Injectable()
-export class GdprAuditLogPrismaRepository implements IGdprAuditLogPrismaRepository {
+export class SessionPrismaRepository implements ISessionPrismaRepository {
   constructor(
     @InjectTransactionHost(ServerConstants.TransactionConnectionNames.Prisma)
     protected readonly prismaTxHost: TransactionHost<PrismaTransactionAdapter>,
   ) {}
 
-  protected get delegate(): Prisma.GdprAuditLogDelegate {
-    return this.prismaTxHost.tx.gdprAuditLog;
+  protected get delegate(): Prisma.SessionDelegate {
+    return this.prismaTxHost.tx.session;
   }
 
-  create(
-    args: Prisma.GdprAuditLogCreateArgs,
-  ): Promise<Prisma.GdprAuditLogGetPayload<Prisma.GdprAuditLogCreateArgs>> {
-    return this.delegate.create(args);
+  findMany(
+    args?: Prisma.SessionFindManyArgs,
+  ): Promise<Prisma.SessionGetPayload<Prisma.SessionFindManyArgs>[]> {
+    return this.delegate.findMany(args);
   }
 }

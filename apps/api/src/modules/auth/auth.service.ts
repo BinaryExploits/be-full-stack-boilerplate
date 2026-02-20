@@ -53,6 +53,11 @@ export class AuthService {
     return session?.session ?? null;
   }
 
+  async deleteUserForContext(ctx: AppContextType): Promise<void> {
+    const headers = fromNodeHeaders(ctx.req.headers);
+    await this.auth.api.deleteUser({ headers, body: {} });
+  }
+
   async getAccessTokenForContext(
     provider: 'google',
     ctx: AppContextType,

@@ -163,6 +163,42 @@ export const createBetterAuth = (
         },
       },
     },
+    user: {
+      deleteUser: {
+        enabled: true,
+        beforeDelete: async (user, request) => {
+          const email = user.email?.trim().toLowerCase();
+          const ipAddress =
+            request?.headers?.get?.('x-forwarded-for')?.split(',')[0]?.trim() ??
+            request?.headers?.get?.('x-real-ip') ??
+            null;
+
+          try {
+            await basePrisma.gdprAuditLog.create({
+              data: {
+                userId: user.id,
+                action: 'DATA_DELETION',
+                details: 'Account deletion requested and executed',
+                ipAddress,
+              },
+            });
+
+            if (email) {
+              await basePrisma.tenantMembership.deleteMany({
+                where: { email },
+              });
+              await basePrisma.verification.deleteMany({
+                where: { identifier: email },
+              });
+            }
+          } catch (err) {
+            Logger.instance
+              .withContext('Auth')
+              .critical('Failed to execute pre-deletion cleanup', err);
+          }
+        },
+      },
+    },
     emailAndPassword: {
       enabled: true,
       requireEmailVerification: !isDevelopment,
