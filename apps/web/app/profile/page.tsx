@@ -275,7 +275,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-8">
+    <main>
       <div className="max-w-2xl mx-auto">
         <Link
           href="/"

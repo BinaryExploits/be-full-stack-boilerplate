@@ -107,7 +107,7 @@ export default function TenantMembers() {
 
   if (isLoading) {
     return (
-      <main className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 flex items-center justify-center">
+      <main className="flex items-center justify-center py-24">
         <div className="text-center">
           <div
             className="mx-auto h-10 w-10 animate-spin rounded-full border-2 border-b-blue-400 border-transparent"
@@ -123,7 +123,7 @@ export default function TenantMembers() {
 
   if (adminTenants.length === 0) {
     return (
-      <main className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-8">
+      <main>
         <div className="max-w-md mx-auto mt-24 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl p-10 text-center">
           <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">
             {LL.Settings.noAdminAccess()}
@@ -143,8 +143,8 @@ export default function TenantMembers() {
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-8">
-      <div className="max-w-5xl mx-auto">
+    <main>
+      <div>
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-8"

@@ -126,8 +126,8 @@ export default function TenantDashboard() {
     tenantList.error?.message?.toLowerCase().includes("logged in");
 
   return (
-    <main className="min-h-screen bg-gray-50 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-slate-900 p-8">
-      <div className="max-w-4xl mx-auto">
+    <main>
+      <div>
         <Link
           href="/"
           className="inline-flex items-center gap-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-8"

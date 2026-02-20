@@ -49,7 +49,7 @@ export default function ChartsPage() {
   ];
 
   return (
-    <div className="max-w-[1400px] mx-auto">
+    <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
           {LL.Charts.title()}
