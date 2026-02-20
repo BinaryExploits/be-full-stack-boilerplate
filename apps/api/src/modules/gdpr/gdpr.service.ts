@@ -1,6 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { Propagation } from '@nestjs-cls/transactional';
 import { PrismaService } from '../prisma/prisma.service';
 import { GdprAuditLogPrismaRepository } from './repositories/prisma/gdpr-audit-log.prisma-repository';
+import { AutoTransaction } from '../../decorators/class/auto-transaction.decorator';
+import { ServerConstants } from '../../constants/server.constants';
 import { Logger } from '@repo/utils-core';
 import type {
   TGdprMyDataResponse,
@@ -8,6 +11,10 @@ import type {
 } from './gdpr.schema';
 
 @Injectable()
+@AutoTransaction(
+  ServerConstants.TransactionConnectionNames.Prisma,
+  Propagation.Required,
+)
 export class GdprService {
   constructor(
     private readonly prisma: PrismaService,

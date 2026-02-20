@@ -127,12 +127,10 @@ export class EmailService {
           throw new Error(`Unsupported email provider: ${String(provider)}`);
       }
 
-      Logger.instance.info(
-        `Email (${templateName}) sent successfully to ${maskEmail(to)} via ${provider}. ID: ${messageId}`,
-      );
+      Logger.instance.info(`Email (${templateName}) sent successfully`);
     } catch (error) {
       Logger.instance.critical(
-        `Failed to send email (${templateName}) to ${maskEmail(to)} via ${provider}:`,
+        `Failed to send email (${templateName})`,
         error,
       );
     }

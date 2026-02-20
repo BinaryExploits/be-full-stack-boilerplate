@@ -80,7 +80,7 @@ function wrapAccountDelegate(delegate: Record<string, unknown>): unknown {
             }
           }
 
-          const result = await original.apply(target, args);
+          const result: unknown = await original.apply(target, args);
 
           if (READ_METHODS.has(method)) {
             decryptResult(result);
@@ -90,6 +90,7 @@ function wrapAccountDelegate(delegate: Record<string, unknown>): unknown {
         };
       }
 
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return original.bind(target);
     },
   });
@@ -102,6 +103,7 @@ const prisma = new Proxy(basePrisma, {
       return wrapAccountDelegate(value as Record<string, unknown>);
     }
     if (typeof value === 'function') {
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return value.bind(target);
     }
     return value;

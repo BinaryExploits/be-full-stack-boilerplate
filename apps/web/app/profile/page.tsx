@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { useAuthClient } from "../lib/auth/auth-client";
 import { useI18n } from "../hooks/useI18n";
 import { trpc } from "@repo/trpc/client";
@@ -16,7 +15,6 @@ interface AccountInfo {
 export default function ProfilePage() {
   const { LL } = useI18n();
   const authClient = useAuthClient();
-  const router = useRouter();
   const sessionResult = authClient?.useSession?.();
   const session = sessionResult?.data;
   const user = session?.user;
