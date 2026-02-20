@@ -504,7 +504,12 @@ const appRouter = t.router({
       ),
     })).query(async () => "PLACEHOLDER_DO_NOT_REMOVE" as any),
     updateProfile: publicProcedure.input(z.object({}).extend({
-      name: z.string().min(1).max(255).optional(),
+      name: z
+        .string()
+        .min(2)
+        .max(100)
+        .regex(/^[a-zA-Z\s'-]+$/, 'Name can only contain letters, spaces, hyphens, and apostrophes')
+        .optional(),
       image: z.string().max(2048).nullable().optional(),
     })).output(z.object({
       success: z.boolean(),

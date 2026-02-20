@@ -26,6 +26,7 @@ export default function ProfilePage() {
 
   const [editingName, setEditingName] = useState(false);
   const [nameValue, setNameValue] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
   const [nameLoading, setNameLoading] = useState(false);
   const [nameMessage, setNameMessage] = useState<{
     type: "success" | "error";
@@ -33,12 +34,14 @@ export default function ProfilePage() {
   } | null>(null);
 
   const [downloadingData, setDownloadingData] = useState(false);
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
 
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleteConfirmEmail, setDeleteConfirmEmail] = useState("");
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
+  const utils = trpc.useUtils();
   const updateProfileMutation = trpc.gdpr.updateProfile.useMutation();
   const deleteAccountMutation = trpc.gdpr.deleteAccount.useMutation();
 
@@ -182,13 +185,35 @@ export default function ProfilePage() {
     setVerificationSent(true);
   };
 
+  const NAME_REGEX = /^[a-zA-Z\s'-]+$/;
+
+  const validateName = (value: string): string | null => {
+    const trimmed = value.trim();
+    if (!trimmed) return "Name is required";
+    if (trimmed.length < 2) return "Name must be at least 2 characters";
+    if (trimmed.length > 100) return "Name must be at most 100 characters";
+    if (!NAME_REGEX.test(trimmed))
+      return "Name can only contain letters, spaces, hyphens, and apostrophes";
+    return null;
+  };
+
   const handleUpdateName = async () => {
-    if (!nameValue.trim()) return;
+    const error = validateName(nameValue);
+    if (error) {
+      setNameError(error);
+      return;
+    }
     setNameLoading(true);
     setNameMessage(null);
+    setNameError(null);
 
     try {
       await updateProfileMutation.mutateAsync({ name: nameValue.trim() });
+
+      if (authClient) {
+        await authClient.updateUser({ name: nameValue.trim() });
+      }
+
       setNameMessage({ type: "success", text: "Name updated successfully" });
       setEditingName(false);
     } catch (err) {
@@ -202,12 +227,12 @@ export default function ProfilePage() {
 
   const handleDownloadData = async () => {
     setDownloadingData(true);
+    setDownloadSuccess(false);
     try {
-      const response = await fetch(
-        `${typeof window !== "undefined" ? window.location.origin : ""}/api/trpc/gdpr.exportData`,
-        { credentials: "include" },
-      );
-      const data = await response.json();
+      const data = await utils.gdpr.exportData.fetch();
+
+      await new Promise((r) => setTimeout(r, 600));
+
       const blob = new Blob([JSON.stringify(data, null, 2)], {
         type: "application/json",
       });
@@ -219,6 +244,8 @@ export default function ProfilePage() {
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+      setDownloadSuccess(true);
+      setTimeout(() => setDownloadSuccess(false), 3000);
     } catch {
       // download failed silently
     }
@@ -234,9 +261,17 @@ export default function ProfilePage() {
       await deleteAccountMutation.mutateAsync({
         confirmation: deleteConfirmEmail,
       });
-      if (authClient) {
-        await authClient.signOut();
+
+      await new Promise((r) => setTimeout(r, 800));
+
+      // Session is already cascade-deleted, so signOut will fail with P2025.
+      // Just clear the client-side state silently and redirect.
+      try {
+        if (authClient) await authClient.signOut();
+      } catch {
+        // expected: session record no longer exists
       }
+
       router.replace("/sign-in");
     } catch (err) {
       setDeleteError(
@@ -632,6 +667,7 @@ export default function ProfilePage() {
                 setEditingName(true);
                 setNameValue(user.name || "");
                 setNameMessage(null);
+                setNameError(null);
               }}
               className="px-4 py-2 text-sm font-medium text-blue-400 border border-blue-500/50 rounded-lg hover:bg-blue-500/10 transition-colors"
             >
@@ -650,10 +686,20 @@ export default function ProfilePage() {
                   type="text"
                   id="edit-name"
                   value={nameValue}
-                  onChange={(e) => setNameValue(e.target.value)}
-                  className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+                  onChange={(e) => {
+                    setNameValue(e.target.value);
+                    if (nameError) setNameError(null);
+                  }}
+                  maxLength={100}
+                  className={`w-full px-3 py-2 bg-slate-700 border rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm ${nameError ? "border-red-500" : "border-slate-600"}`}
                   placeholder="Your full name"
                 />
+                {nameError && (
+                  <p className="mt-1 text-xs text-red-400">{nameError}</p>
+                )}
+                <p className="mt-1 text-xs text-slate-500">
+                  2-100 characters. Letters, spaces, hyphens, and apostrophes only.
+                </p>
               </div>
               <div className="flex gap-3">
                 <button
@@ -667,6 +713,7 @@ export default function ProfilePage() {
                   onClick={() => {
                     setEditingName(false);
                     setNameMessage(null);
+                    setNameError(null);
                   }}
                   className="px-4 py-2 text-sm font-medium text-slate-400 border border-slate-600 rounded-lg hover:bg-slate-700 transition-colors"
                 >
@@ -699,9 +746,13 @@ export default function ProfilePage() {
               <button
                 onClick={() => void handleDownloadData()}
                 disabled={downloadingData}
-                className="px-4 py-2 text-sm font-medium text-blue-400 border border-blue-500/50 rounded-lg hover:bg-blue-500/10 transition-colors disabled:opacity-50"
+                className={`px-4 py-2 text-sm font-medium border rounded-lg transition-colors disabled:opacity-50 ${downloadSuccess ? "text-emerald-400 border-emerald-500/50" : "text-blue-400 border-blue-500/50 hover:bg-blue-500/10"}`}
               >
-                {downloadingData ? "Downloading..." : "Download"}
+                {downloadingData
+                  ? "Preparing export..."
+                  : downloadSuccess
+                    ? "Downloaded"
+                    : "Download"}
               </button>
             </div>
 
