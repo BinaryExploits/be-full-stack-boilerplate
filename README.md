@@ -8,12 +8,55 @@ A **modern full-stack TypeScript monorepo** using:
 - **tRPC** (End-to-end type-safe API calls)
 - **PostgreSQL** or **MongoDB** (Database - your choice!)
 - **Prisma** or **Mongoose** (ORM/ODM - based on your DB choice)
-- **Better Auth** (Authentication with OAuth, Email OTP)
+- **Better Auth** (Authentication with OAuth, Email OTP, Email & Password)
+- **Multi-Tenancy** (Built-in tenant isolation with role-based access)
+- **Internationalization** (typesafe-i18n with multiple languages)
+- **Data Grids** (TanStack Table with advanced features)
+- **Charts** (Plotly.js with 12+ chart types)
+- **GDPR Compliance** (Consent tracking, audit logs, data export/deletion)
 - **SonarQube** (Code quality)
 - **Rollbar** (Error tracking)
 - **Turborepo** (Build orchestration)
 
 This repository is structured for scalability, developer experience, and seamless cross-platform sharing of logic and types.
+
+---
+
+## ✨ Key Features
+
+### 🏢 Multi-Tenancy
+- Built-in tenant isolation with role-based access control
+- **Single-tenant mode**: Behaves like a tenant-less app when only one default tenant exists
+- **Multi-tenant mode**: Full tenant switching and management UI
+- Three user roles: Super Admin, Tenant Admin, Tenant User
+- [Learn more →](docs/multi-tenancy.md)
+
+### 🔐 Three Authentication Methods
+- **Google OAuth** - Social sign-in with account linking
+- **Email OTP** - Passwordless authentication via one-time codes
+- **Email & Password** - Traditional authentication with encryption
+- OAuth tokens encrypted at rest for security
+- [Learn more →](docs/authentication.md)
+
+### 🌍 Internationalization
+- Type-safe translations powered by **typesafe-i18n**
+- English and Dutch included out of the box
+- Easy to add new languages
+- Runtime-safe with full TypeScript support
+- [Learn more →](docs/internationalization.md)
+
+### 📊 Data Grids & Visualizations
+- **TanStack Table v8**: Editable, sortable, filterable tables with bulk operations
+- **Plotly.js**: 12+ interactive chart types with WebGL support
+- Pre-built components for common data visualization needs
+- [Data Grids →](docs/data-grids.md) | [Charts →](docs/charts-visualizations.md)
+
+### 🔒 GDPR Compliance
+- Automatic consent tracking with IP and timestamp
+- Complete audit log for data subject actions
+- Data export (download my data as JSON)
+- Account deletion with permanent data removal
+- [Learn more →](docs/gdpr-compliance.md)
 
 ---
 
@@ -97,13 +140,26 @@ DB_PROVIDER=postgresql  # or 'mongodb'
 DATABASE_URL_MONGODB=mongodb://localhost:27017/your-db-name  # if using MongoDB
 DATABASE_URL=postgresql://user:password@localhost:5432/db    # if using PostgreSQL
 
+# Multi-Tenancy
+SUPER_ADMIN_EMAILS=admin@example.com,another@example.com  # Comma-separated super admin emails
+
 # Better Auth
 BETTER_AUTH_SECRET=your-secret-key
 BETTER_AUTH_TRUSTED_ORIGINS=http://localhost:3000,http://localhost:8081
 GOOGLE_CLIENT_ID=your-google-client-id
 GOOGLE_CLIENT_SECRET=your-google-client-secret
 
-# Email service, Rollbar, etc.
+# Field-level encryption for OAuth tokens (generate with: openssl rand -hex 32)
+FIELD_ENCRYPTION_KEY=your-64-char-hex-key-here
+
+# Email service (AWS SES or Resend)
+AWS_SES_REGION=us-west-1
+AWS_SES_FROM_EMAIL=noreply@yourdomain.com
+RESEND_API_KEY=re_your_api_key_here
+RESEND_FROM_EMAIL=onboarding@resend.dev
+
+# Error tracking
+ROLLBAR_ACCESS_TOKEN=your-rollbar-token
 ```
 
 Each `.env` file should contain the necessary variables (e.g. database URLs, API base URLs, etc.).
@@ -193,10 +249,30 @@ This command runs all apps (API, Web, and Mobile) concurrently using Turborepo.
   - **PostgreSQL + Prisma** – Relational database with type-safe ORM
   - **MongoDB + Mongoose** – NoSQL database with ODM
 - 🔐 **Better Auth** – Modern authentication framework with:
-  - Email OTP authentication
-  - Google OAuth
+  - Three auth methods: Google OAuth, Email OTP, Email & Password
+  - Account linking across providers
   - Expo mobile support
   - Email verification
+  - OAuth token encryption at rest
+- 🏢 **Multi-Tenancy** – Built-in tenant isolation:
+  - Role-based access control (Super Admin, Tenant Admin, User)
+  - Single-tenant mode for tenant-less applications
+  - Tenant-scoped data models
+- 🌍 **typesafe-i18n** – Type-safe internationalization:
+  - English and Dutch included
+  - Runtime-safe translations with TypeScript
+- 📊 **TanStack Table v8** – Advanced data grids:
+  - Editable, sortable, filterable tables
+  - Bulk operations and row selection
+  - Nested rows and expandable details
+- 📈 **Plotly.js** – Interactive visualizations:
+  - 12+ chart types (line, bar, pie, scatter, 3D, heatmap, etc.)
+  - WebGL support for performance
+  - Zoom, pan, and hover interactions
+- 🔒 **GDPR Compliance** – Privacy-first features:
+  - Consent tracking with audit logs
+  - Data export and deletion
+  - Privacy policy templates
 - 💻 **Next.js** – Web frontend
 - 📱 **Expo (React Native)** – Mobile app
 - 🧱 **NestJS** – Backend API
