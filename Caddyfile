@@ -1,0 +1,18 @@
+# Domain set via APP_DOMAIN env (e.g. myapp.binaryexperiments.com). Default: localhost for local dev.
+{$APP_DOMAIN:localhost} {
+  encode gzip
+
+  handle /trpc/* {
+    reverse_proxy api:4000
+  }
+
+  handle /api/* {
+    reverse_proxy api:4000
+  }
+
+  handle /uploads/* {
+    reverse_proxy api:4000
+  }
+
+  reverse_proxy web:3000
+}

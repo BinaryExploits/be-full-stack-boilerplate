@@ -58,6 +58,11 @@ This repository is structured for scalability, developer experience, and seamles
 - Account deletion with permanent data removal
 - [Learn more →](docs/gdpr-compliance.md)
 
+### 🚀 Deployment (AWS EC2)
+- Copy a single bootstrap script (`bootstrap/go.sh`) to EC2; it installs git, clones the repo, and runs in-repo deploy scripts.
+- Route 53 A record for `<repo-name>.binaryexperiments.com` (zone set in `go.sh`); support for deploying a branch (e.g. for testing before merge).
+- [Deployment guide →](docs/deployment.md)
+
 ---
 
 ## ⚙️ Prerequisites
