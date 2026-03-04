@@ -49,6 +49,11 @@ repo_name="$(basename "${REPO_URL}")"
 repo_name="${repo_name%.git}"
 export TARGET_DIR="${HOME:-/home/ec2-user}/${repo_name}"
 
+# Export so run.sh (and repo-sync) see them when we exec
+export REPO_URL
+export BRANCH
+export GITHUB_TOKEN
+
 # Route 53: binaryexperiments.com zone — set here so run.sh always has it
 export R53_HOSTED_ZONE_ID="Z0760970XXLTORHSTKO2"
 export ROUTE53_DOMAIN_SUFFIX="binaryexperiments.com"
