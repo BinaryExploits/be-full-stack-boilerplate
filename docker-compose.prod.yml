@@ -1,0 +1,106 @@
+# Production stack. Set API_ENV_FILE and WEB_ENV_FILE (e.g. ~/.env.api.production, ~/.env.web.production).
+# Optional: GOOGLE_APPLICATION_CREDENTIALS_FILE for apps that need Google APIs.
+# Optional: APP_DOMAIN for Caddy (e.g. myapp.binaryexperiments.com).
+
+name: be-full-stack
+
+secrets:
+  web_env:
+    file: ${WEB_ENV_FILE}
+
+services:
+  postgres:
+    image: postgres:16
+    env_file:
+      - ${API_ENV_FILE}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mongo:
+    image: mongo:7
+    env_file:
+      - ${API_ENV_FILE}
+    volumes:
+      - mongodata:/data/db
+    healthcheck:
+      test: ["CMD-SHELL", "mongosh --quiet --eval 'db.runCommand({ ping: 1 }).ok'"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ${API_ENV_FILE}
+    command:
+      [
+        "pnpm",
+        "--filter",
+        "api",
+        "exec",
+        "prisma",
+        "migrate",
+        "deploy",
+        "--schema",
+        "../../packages/prisma-db/schema.prisma",
+      ]
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    env_file:
+      - ${API_ENV_FILE}
+    volumes:
+      - uploads:/data/uploads
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      secrets:
+        - web_env
+    env_file:
+      - ${WEB_ENV_FILE}
+    depends_on:
+      - api
+
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:-localhost}
+    depends_on:
+      - web
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  mongodata:
+  uploads:
+  caddy_data:
+  caddy_config:
