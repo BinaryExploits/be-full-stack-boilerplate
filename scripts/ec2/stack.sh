@@ -87,6 +87,16 @@ main() {
     exit 1
   fi
 
+  # Load API env file so Docker Compose can substitute MONGODB_*, etc. (env_file: only feeds containers, not compose ${VAR})
+  if [[ -r "${API_ENV_FILE}" ]]; then
+    set -a
+    # shellcheck source=/dev/null
+    source "${API_ENV_FILE}"
+    set +a
+  else
+    log "Warning: API env file not readable (${API_ENV_FILE}); mongo and other services may fail if compose vars are unset"
+  fi
+
   log "Deploying stack with ${COMPOSE_FILE}"
 
   local -a services=()
