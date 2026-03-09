@@ -116,3 +116,24 @@ resource "aws_instance" "this" {
     Name = var.project_name
   }
 }
+
+# --- Elastic IP (replaces scripts/ec2/elastic-ip.sh when using Terraform) ---
+
+resource "aws_eip" "this" {
+  instance = aws_instance.this.id
+  domain   = "vpc"
+
+  tags = {
+    Name = var.project_name
+  }
+}
+
+# --- Route 53 A record (replaces scripts/ec2/route53-update.sh when using Terraform) ---
+
+resource "aws_route53_record" "this" {
+  zone_id = var.r53_hosted_zone_id
+  name    = var.record_name
+  type    = "A"
+  ttl     = 300
+  records = [aws_eip.this.public_ip]
+}

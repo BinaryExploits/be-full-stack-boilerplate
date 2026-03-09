@@ -4,8 +4,8 @@ output "instance_id" {
 }
 
 output "public_ip" {
-  description = "Public IP of the instance (ephemeral until Elastic IP is attached by deploy scripts)"
-  value       = aws_instance.this.public_ip
+  description = "Public IP of the instance (Elastic IP when managed by Terraform)"
+  value       = aws_eip.this.public_ip
 }
 
 output "security_group_id" {

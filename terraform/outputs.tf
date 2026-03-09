@@ -4,7 +4,7 @@ output "instance_id" {
 }
 
 output "public_ip" {
-  description = "Public IP (ephemeral until Elastic IP is attached by deploy scripts)"
+  description = "Public IP (Elastic IP, Terraform-managed)"
   value       = module.ec2.public_ip
 }
 

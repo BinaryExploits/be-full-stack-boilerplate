@@ -66,17 +66,18 @@ if [[ -x "${SCRIPT_DIR}/install-deps.sh" ]]; then
   "${SCRIPT_DIR}/install-deps.sh" || true
 fi
 
-# 3. Ensure Elastic IP (run elastic-ip.sh first; it allocates only when instance has none), then Route 53 A record
-if [[ -n "${R53_HOSTED_ZONE_ID:-}" && -n "${REPO_URL:-}" ]]; then
+# 3. Elastic IP and Route 53 (skip when Terraform manages them via TERRAFORM_MANAGED_EIP_R53=1)
+if [[ -n "${TERRAFORM_MANAGED_EIP_R53:-}" ]]; then
+  # Terraform already attached EIP and created the A record; set APP_DOMAIN for Caddy
+  export RECORD_NAME="${RECORD_NAME:-}"
+  export APP_DOMAIN="${APP_DOMAIN:-${RECORD_NAME}}"
+elif [[ -n "${R53_HOSTED_ZONE_ID:-}" && -n "${REPO_URL:-}" ]]; then
   repo_name="$(basename "${REPO_URL}" .git)"
   export RECORD_NAME="${RECORD_NAME:-${repo_name}.${ROUTE53_DOMAIN_SUFFIX}}"
-  # Caddy needs APP_DOMAIN for TLS (Let's Encrypt); use same host as Route 53 record.
   export APP_DOMAIN="${APP_DOMAIN:-${RECORD_NAME}}"
-  # Always run elastic-ip.sh; it returns existing EIP or allocates and associates one. Route 53 only runs when we get a valid IP from it.
   PUBLIC_IP=""
   if [[ -f "${SCRIPT_DIR}/elastic-ip.sh" ]]; then
     printf "\n[%s] Ensuring Elastic IP (existing or new)...\n" "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >&2
-    # Run via bash even if executable bit is missing. Capture stdout (IP) separately, stream stderr after.
     _eip_tmp="$(mktemp)"
     _eip_err="$(mktemp)"
     bash "${SCRIPT_DIR}/elastic-ip.sh" > "${_eip_tmp}" 2> "${_eip_err}" || true

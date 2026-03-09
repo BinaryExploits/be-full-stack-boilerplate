@@ -59,6 +59,8 @@ export R53_HOSTED_ZONE_ID="Z0760970XXLTORHSTKO2"
 export ROUTE53_DOMAIN_SUFFIX="binaryexperiments.com"
 # Optional: full record name (e.g. myapp.binaryexperiments.com). If empty, run.sh derives from repo URL.
 export RECORD_NAME=""
+# Set to 1 by Terraform user_data when EIP and Route 53 are managed by Terraform (run.sh skips elastic-ip.sh and route53-update.sh).
+export TERRAFORM_MANAGED_EIP_R53=""
 
 # ---- 1. Install git if missing (required to clone) ----
 if ! command -v git >/dev/null 2>&1; then
