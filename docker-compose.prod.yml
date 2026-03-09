@@ -22,16 +22,25 @@ services:
       retries: 20
 
   mongo:
-    image: mongo:7
+    image: bitnami/mongodb:latest
     env_file:
       - ${API_ENV_FILE}
+    environment:
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_NAME: rs0
+      MONGODB_REPLICA_SET_KEY: ${MONGODB_REPLICA_SET_KEY}
+      MONGODB_ROOT_USER: ${MONGODB_USER}
+      MONGODB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_ADVERTISED_HOSTNAME: mongo
     volumes:
-      - mongodata:/data/db
+      - mongodata:/bitnami/mongodb
     healthcheck:
-      test: ["CMD-SHELL", "mongosh --quiet --eval 'db.runCommand({ ping: 1 }).ok'"]
-      interval: 5s
+      test: >
+        bash -c "mongosh -u $$MONGODB_ROOT_USER -p $$MONGODB_ROOT_PASSWORD --authenticationDatabase admin --quiet --eval 'rs.status().ok' | grep 1"
+      interval: 10s
       timeout: 5s
-      retries: 20
+      retries: 30
+      start_period: 10s
 
   migrate:
     build:

@@ -4,6 +4,15 @@ set -euo pipefail
 exec > /var/log/user-data.log 2>&1
 echo "=== user_data start $(date -u) ==="
 
+# --- Ensure SSM agent is installed and running (first priority, before anything else) ---
+if ! rpm -q amazon-ssm-agent >/dev/null 2>&1; then
+  echo "SSM agent not found, installing..."
+  yum install -y https://s3.amazonaws.com/ec2-downloads-windows/SSMAgent/latest/linux_arm64/amazon-ssm-agent.rpm || true
+fi
+systemctl enable amazon-ssm-agent 2>/dev/null || true
+systemctl start amazon-ssm-agent 2>/dev/null || true
+echo "SSM agent status: $(systemctl is-active amazon-ssm-agent 2>/dev/null || echo 'not running')"
+
 # Deploy the real bootstrap/go.sh (base64-encoded to avoid any escaping issues)
 echo '${go_sh_b64}' | base64 -d > /home/ec2-user/go.sh
 
