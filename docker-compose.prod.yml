@@ -1,0 +1,115 @@
+# Production stack. Set API_ENV_FILE and WEB_ENV_FILE (e.g. ~/.env.api.production, ~/.env.web.production).
+# Optional: GOOGLE_APPLICATION_CREDENTIALS_FILE for apps that need Google APIs.
+# Optional: APP_DOMAIN for Caddy (e.g. myapp.example.com).
+
+name: be-full-stack
+
+secrets:
+  web_env:
+    file: ${WEB_ENV_FILE}
+
+services:
+  postgres:
+    image: postgres:16
+    env_file:
+      - ${API_ENV_FILE}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  mongo:
+    image: bitnami/mongodb:latest
+    env_file:
+      - ${API_ENV_FILE}
+    environment:
+      MONGODB_REPLICA_SET_MODE: primary
+      MONGODB_REPLICA_SET_NAME: rs0
+      MONGODB_REPLICA_SET_KEY: ${MONGODB_REPLICA_SET_KEY}
+      MONGODB_ROOT_USER: ${MONGODB_USER}
+      MONGODB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGODB_ADVERTISED_HOSTNAME: mongo
+    volumes:
+      - mongodata:/bitnami/mongodb
+    healthcheck:
+      test: >
+        bash -c "mongosh -u $$MONGODB_ROOT_USER -p $$MONGODB_ROOT_PASSWORD --authenticationDatabase admin --quiet --eval 'rs.status().ok' | grep 1"
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  migrate:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+    env_file:
+      - ${API_ENV_FILE}
+    command:
+      [
+        "pnpm",
+        "--filter",
+        "api",
+        "exec",
+        "prisma",
+        "migrate",
+        "deploy",
+        "--schema",
+        "../../packages/prisma-db/schema.prisma",
+      ]
+    restart: "no"
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mongo:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    env_file:
+      - ${API_ENV_FILE}
+    volumes:
+      - uploads:/data/uploads
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      secrets:
+        - web_env
+    env_file:
+      - ${WEB_ENV_FILE}
+    depends_on:
+      - api
+
+  caddy:
+    image: caddy:2-alpine
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN:-localhost}
+    depends_on:
+      - web
+      - api
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  mongodata:
+  uploads:
+  caddy_data:
+  caddy_config:
