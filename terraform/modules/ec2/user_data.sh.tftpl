@@ -18,6 +18,16 @@ sed -i 's|^export RECORD_NAME=.*|export RECORD_NAME="${record_name}"|' /home/ec2
 chown ec2-user:ec2-user /home/ec2-user/go.sh
 chmod +x /home/ec2-user/go.sh
 
+# Pull production env files from SSM if parameter names were provided
+if [[ -n "${ssm_param_api_env}" ]]; then
+  aws ssm get-parameter --name "${ssm_param_api_env}" --with-decryption --query Parameter.Value --output text > /home/ec2-user/.env.api.production
+  chown ec2-user:ec2-user /home/ec2-user/.env.api.production
+fi
+if [[ -n "${ssm_param_web_env}" ]]; then
+  aws ssm get-parameter --name "${ssm_param_web_env}" --with-decryption --query Parameter.Value --output text > /home/ec2-user/.env.web.production
+  chown ec2-user:ec2-user /home/ec2-user/.env.web.production
+fi
+
 # Run as ec2-user via `su -` so the environment is identical to a manual SSM session
 su - ec2-user -c '/home/ec2-user/go.sh full'
 

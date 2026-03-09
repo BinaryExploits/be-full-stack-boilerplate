@@ -18,3 +18,8 @@ branch       = "main"
 # subnet_id            = ""
 # r53_hosted_zone_id   = "Z0760970XXLTORHSTKO2"
 # r53_domain_suffix    = "binaryexperiments.com"
+
+# Optional: paths to production env files. If set, Terraform uploads them to SSM and EC2 pulls at boot.
+# Paths are relative to the terraform/ directory (e.g. .env.api.production or ../.env.api.production).
+# env_api_file         = ".env.api.production"
+# env_web_file         = ".env.web.production"

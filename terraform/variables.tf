@@ -87,3 +87,15 @@ variable "r53_domain_suffix" {
   default     = "binaryexperiments.com"
 }
 
+variable "env_api_file" {
+  description = "Path to local .env.api.production file; if set, Terraform uploads it to SSM and EC2 pulls it at boot. Empty = skip."
+  type        = string
+  default     = ""
+}
+
+variable "env_web_file" {
+  description = "Path to local .env.web.production file; if set, Terraform uploads it to SSM and EC2 pulls it at boot. Empty = skip."
+  type        = string
+  default     = ""
+}
+

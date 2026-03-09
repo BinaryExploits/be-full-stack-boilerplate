@@ -20,6 +20,8 @@ terraform plan
 terraform apply
 ```
 
+**Optional — production env files via SSM:** To have the first deploy use real `.env.api.production` and `.env.web.production` (so you don't have to SSM in and edit them), create the files locally (e.g. copy from `bootstrap/env.*.production.sample`, fill in secrets), set `env_api_file` and `env_web_file` in `terraform.tfvars` to their paths (relative to `terraform/`), and run `terraform apply`. Terraform will upload the file contents to SSM Parameter Store and the instance will pull them at boot. Env file contents are stored in Terraform state and in SSM — use an encrypted backend and ensure **instanceRole** has `ssm:GetParameter` (and `kms:Decrypt` for SecureString) in addition to Session Manager. If you leave these variables empty, the instance copies from the bootstrap samples as before.
+
 The instance will fully bootstrap itself on first boot (clone, install Docker, Elastic IP, Route 53, docker-compose up). Monitor progress:
 
 ```bash

@@ -106,6 +106,8 @@ resource "aws_instance" "this" {
     r53_hosted_zone_id = var.r53_hosted_zone_id
     r53_domain_suffix  = var.r53_domain_suffix
     record_name        = var.record_name
+    ssm_param_api_env  = var.ssm_param_api_env
+    ssm_param_web_env  = var.ssm_param_web_env
   }))
 
   user_data_replace_on_change = false

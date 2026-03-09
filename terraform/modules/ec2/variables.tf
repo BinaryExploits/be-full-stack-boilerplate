@@ -86,3 +86,15 @@ variable "record_name" {
   description = "Full Route 53 record name (project_name.r53_domain_suffix from root)"
   type        = string
 }
+
+variable "ssm_param_api_env" {
+  description = "SSM parameter name for .env.api.production; empty = skip, run.sh will copy from sample"
+  type        = string
+  default     = ""
+}
+
+variable "ssm_param_web_env" {
+  description = "SSM parameter name for .env.web.production; empty = skip, run.sh will copy from sample"
+  type        = string
+  default     = ""
+}
