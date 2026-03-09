@@ -84,9 +84,9 @@ apply_sed() {
   sed "$@" "$f" > "$t" && mv "$t" "$f"
 }
 
-# Domain-based
-apply_sed "${tmp_api}" "s|https://your-app\.binaryexperiments\.com|https://${domain_esc}|g"
-apply_sed "${tmp_api}" "s|your-app\.binaryexperiments\.com|${domain_esc}|g"
+# Domain-based (placeholder in samples is your-app.example.com)
+apply_sed "${tmp_api}" "s|https://your-app\.example\.com|https://${domain_esc}|g"
+apply_sed "${tmp_api}" "s|your-app\.example\.com|${domain_esc}|g"
 
 # DB name and Postgres password
 apply_sed "${tmp_api}" "s|^POSTGRES_DB=.*|POSTGRES_DB=${DB_NAME}|"
@@ -113,11 +113,11 @@ apply_sed "${tmp_api}" 's|^FIELD_ENCRYPTION_KEY=.*|FIELD_ENCRYPTION_KEY=your_64_
 mv "${tmp_api}" "${API_SAMPLE}"
 rm -f "${tmp_api}" 2>/dev/null || true
 
-# Web sample: domain only
+# Web sample: domain only (placeholder in samples is your-app.example.com)
 tmp_web="$(mktemp)"
 cp "${WEB_SAMPLE}" "${tmp_web}"
-apply_sed "${tmp_web}" "s|https://your-app\.binaryexperiments\.com|https://${domain_esc}|g"
-apply_sed "${tmp_web}" "s|your-app\.binaryexperiments\.com|${domain_esc}|g"
+apply_sed "${tmp_web}" "s|https://your-app\.example\.com|https://${domain_esc}|g"
+apply_sed "${tmp_web}" "s|your-app\.example\.com|${domain_esc}|g"
 mv "${tmp_web}" "${WEB_SAMPLE}"
 rm -f "${tmp_web}" 2>/dev/null || true
 
