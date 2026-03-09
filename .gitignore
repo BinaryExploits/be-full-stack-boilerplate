@@ -44,3 +44,10 @@ yarn-error.log*
 *.pem
 
 packages/prisma-db/generated/
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example

@@ -19,6 +19,15 @@ if ! command -v aws >/dev/null 2>&1; then
   fi
 fi
 
+if ! command -v nano >/dev/null 2>&1; then
+  log "Installing nano..."
+  if command -v dnf >/dev/null 2>&1; then
+    sudo dnf install -y nano
+  elif command -v yum >/dev/null 2>&1; then
+    sudo yum install -y nano
+  fi
+fi
+
 if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
   log "Docker and docker compose already installed"
   exit 0

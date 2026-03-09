@@ -1,0 +1,20 @@
+# Copy to terraform.tfvars and fill in your values:
+#   cp terraform.tfvars.example terraform.tfvars
+
+project_name = "be-full-stack-boilerplate"
+repo_url     = "https://github.com/org/repo.git"
+github_token = ""    # GitHub PAT (required for private HTTPS repos)
+branch       = "main"
+
+# Optional overrides (uncomment to change from defaults):
+# aws_profile          = "default"
+# aws_region           = "us-east-1"
+# instance_type        = "t4g.medium"
+# volume_size          = 64
+# volume_type          = "gp3"
+# iam_instance_profile = "instanceRole"
+# ingress_ports        = [80, 443]
+# vpc_id               = ""
+# subnet_id            = ""
+# r53_hosted_zone_id   = "Z0760970XXLTORHSTKO2"
+# r53_domain_suffix    = "binaryexperiments.com"
