@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Check and update Route 53 A record for this instance (always run from deploy; skip only when not on EC2 or missing data).
-# Uses R53_HOSTED_ZONE_ID (default in run.sh: binaryexperiments.com zone), RECORD_NAME (<repo-name>.binaryexperiments.com).
+# Uses R53_HOSTED_ZONE_ID and ROUTE53_DOMAIN_SUFFIX (set in go.sh or by Terraform), RECORD_NAME (<repo-name>.<your-domain>).
 # Optional: PUBLIC_IP (default: from instance metadata). IAM: route53:ChangeResourceRecordSets, route53:ListResourceRecordSets.
 
 log() {

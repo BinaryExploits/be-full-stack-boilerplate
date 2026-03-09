@@ -76,15 +76,15 @@ variable "branch" {
 }
 
 variable "r53_hosted_zone_id" {
-  description = "Route 53 hosted zone ID"
+  description = "Route 53 hosted zone ID (set in terraform.tfvars)"
   type        = string
-  default     = "Z0760970XXLTORHSTKO2"
+  default     = ""
 }
 
 variable "r53_domain_suffix" {
-  description = "Domain suffix for Route 53 records"
+  description = "Domain suffix for Route 53 records (e.g. example.com)"
   type        = string
-  default     = "binaryexperiments.com"
+  default     = ""
 }
 
 variable "env_api_file" {

@@ -2,6 +2,8 @@
 
 Provisions an EC2 instance (Amazon Linux 2023, ARM64) with a security group, an Elastic IP, and a Route 53 A record (`project_name.r53_domain_suffix`), then auto-bootstraps the app via `user_data` running `go.sh`. The deploy scripts skip EIP/Route 53 when Terraform has already set them.
 
+**Version control:** Commit `.terraform.lock.hcl` so everyone uses the same provider versions (reproducible builds). It contains only provider version hashes — no secrets; safe for public repos. Do not commit `terraform.tfvars` (use it for your project/credentials).
+
 ## Prerequisites
 
 - Terraform >= 1.5
@@ -14,7 +16,7 @@ Provisions an EC2 instance (Amazon Linux 2023, ARM64) with a security group, an 
 ```bash
 cd terraform
 cp terraform.tfvars.example terraform.tfvars
-# edit terraform.tfvars — set project_name, repo_url, github_token
+# edit terraform.tfvars — set project_name, repo_url, github_token, r53_hosted_zone_id, r53_domain_suffix
 
 terraform init
 terraform plan

@@ -6,7 +6,7 @@ set -euo pipefail
 # does in-place substitutions, and overwrites the same files.
 #
 # Usage: from repo root:
-#   APP_DOMAIN=myapp.binaryexperiments.com ./scripts/ec2/rebrand-env.sh
+#   APP_DOMAIN=myapp.example.com ./scripts/ec2/rebrand-env.sh
 #   REPO_URL=https://github.com/org/myapp.git ./scripts/ec2/rebrand-env.sh   # derives domain
 #
 # Env: APP_DOMAIN (or derived from REPO_URL + ROUTE53_DOMAIN_SUFFIX), APP_SLUG (optional, for DB name).
@@ -14,11 +14,11 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 BOOTSTRAP="${REPO_ROOT}/bootstrap"
-ROUTE53_DOMAIN_SUFFIX="${ROUTE53_DOMAIN_SUFFIX:-binaryexperiments.com}"
+ROUTE53_DOMAIN_SUFFIX="${ROUTE53_DOMAIN_SUFFIX:-example.com}"
 
 log() { printf "[%s] %s\n" "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" "$*" >&2; }
 
-# Derive APP_DOMAIN from REPO_URL if not set (e.g. be-full-stack-boilerplate -> be-full-stack-boilerplate.binaryexperiments.com)
+# Derive APP_DOMAIN from REPO_URL if not set (e.g. myapp -> myapp.example.com)
 if [[ -z "${APP_DOMAIN:-}" && -n "${REPO_URL:-}" ]]; then
   repo_basename="${REPO_URL}"
   repo_basename="${repo_basename%.git}"
@@ -28,12 +28,12 @@ if [[ -z "${APP_DOMAIN:-}" && -n "${REPO_URL:-}" ]]; then
 fi
 
 if [[ -z "${APP_DOMAIN:-}" ]]; then
-  echo "Usage: APP_DOMAIN=myapp.binaryexperiments.com $0" >&2
+  echo "Usage: APP_DOMAIN=myapp.example.com $0" >&2
   echo "   or: REPO_URL=https://github.com/org/repo.git $0" >&2
   exit 1
 fi
 
-# DB name: from APP_SLUG or strip first component of domain (e.g. myapp.binaryexperiments.com -> myapp -> myappdb)
+# DB name: from APP_SLUG or strip first component of domain (e.g. myapp.example.com -> myapp -> myappdb)
 if [[ -n "${APP_SLUG:-}" ]]; then
   DB_NAME="${APP_SLUG}db"
 else

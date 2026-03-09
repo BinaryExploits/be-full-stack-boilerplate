@@ -6,7 +6,7 @@ This guide describes how to deploy a BE Full Stack app (or a derived app like Cu
 
 ## Prerequisites
 
-- AWS account with EC2 and Route 53 (zone for binaryexperiments.com is set in go.sh)
+- AWS account with EC2 and Route 53 (set your hosted zone ID and domain in `go.sh` or via Terraform)
 - EC2 instance (Amazon Linux 2 or 2023)
 - Git repo URL and **GitHub Personal Access Token** (for private HTTPS) or SSH key
 - **No SSH key pair required** for the instance — connect via **AWS Systems Manager Session Manager** only. Do not enable SSH (port 22) in the security group unless you need it for debugging.
@@ -60,7 +60,7 @@ First run will:
    - Pulls the repo (no-op after fresh clone)
    - Installs docker (and docker compose plugin) if missing
    - Ensures the instance has an Elastic IP (allocates and associates one if not already attached)
-   - Updates Route 53 A record for `<repo-name>.binaryexperiments.com` to the instance’s public IP
+   - Updates Route 53 A record for `<repo-name>.<your-domain>` to the instance’s public IP
    - Builds and runs the stack (migrate, seed, then up)
 
 ### 4. Production env files
@@ -70,7 +70,7 @@ If `~/.env.api.production` and `~/.env.web.production` are missing, the deploy c
 **Rebrand before deploy (recommended):** From the repo root, run **`scripts/ec2/rebrand-env.sh`** to set the app domain, DB name, and generate new passwords in the sample files. Use **APP_DOMAIN** or **REPO_URL** (domain is derived from repo name):
 
 ```bash
-APP_DOMAIN=myapp.binaryexperiments.com ./scripts/ec2/rebrand-env.sh
+APP_DOMAIN=myapp.example.com ./scripts/ec2/rebrand-env.sh
 # or: REPO_URL=https://github.com/org/myapp.git ./scripts/ec2/rebrand-env.sh
 ```
 
@@ -101,9 +101,9 @@ The instance role must allow: **ec2:AllocateAddress**, **ec2:AssociateAddress**,
 On each deploy the scripts:
 
 1. Run **`scripts/ec2/elastic-ip.sh`**: if the instance has no Elastic IP, allocate one in the instance’s VPC and associate it. This gives the instance a stable public IP.
-2. Run **`scripts/ec2/route53-update.sh`**: UPSERT the A record for **`<repo-name>.binaryexperiments.com`** to the instance’s current public IP (from metadata or EC2 describe-instances).
+2. Run **`scripts/ec2/route53-update.sh`**: UPSERT the A record for **`<repo-name>.<your-domain>`** to the instance’s current public IP (from metadata or EC2 describe-instances).
 
-- **Hosted zone**: Zone ID for binaryexperiments.com is set in `bootstrap/go.sh` (not configurable via env). The **instanceRole** has the required Route 53 (and EC2) permissions.
+- **Hosted zone**: Set **R53_HOSTED_ZONE_ID** and **ROUTE53_DOMAIN_SUFFIX** in `bootstrap/go.sh` (or pass via Terraform). The **instanceRole** must have the required Route 53 (and EC2) permissions.
 
 ## Troubleshooting
 
@@ -122,6 +122,6 @@ On each deploy the scripts:
 | `scripts/ec2/install-deps.sh` | Installs docker (and docker compose plugin) on Amazon Linux. |
 | `scripts/ec2/elastic-ip.sh` | Ensures instance has an Elastic IP; allocates and associates one if missing. |
 | `scripts/ec2/repo-sync.sh` | Pulls the repo (fetch, checkout, pull). |
-| `scripts/ec2/route53-update.sh` | UPSERTs A record for `<repo-name>.binaryexperiments.com` to instance public IP. Fails if no IP (run after elastic-ip). |
+| `scripts/ec2/route53-update.sh` | UPSERTs A record for `<repo-name>.<your-domain>` to instance public IP. Fails if no IP (run after elastic-ip). |
 | `scripts/ec2/rebrand-env.sh` | Rebrands bootstrap env samples: set APP_DOMAIN, DB name, generate passwords; keeps third-party keys as placeholders. Run from repo root with APP_DOMAIN or REPO_URL. |
 | `scripts/ec2/stack.sh` | Builds and runs `docker-compose.prod.yml`. |

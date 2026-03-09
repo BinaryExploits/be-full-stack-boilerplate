@@ -1,6 +1,6 @@
 # Production stack. Set API_ENV_FILE and WEB_ENV_FILE (e.g. ~/.env.api.production, ~/.env.web.production).
 # Optional: GOOGLE_APPLICATION_CREDENTIALS_FILE for apps that need Google APIs.
-# Optional: APP_DOMAIN for Caddy (e.g. myapp.binaryexperiments.com).
+# Optional: APP_DOMAIN for Caddy (e.g. myapp.example.com).
 
 name: be-full-stack
 

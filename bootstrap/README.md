@@ -18,7 +18,7 @@ Then you can run `./go.sh full` without exporting secrets every time. You can st
 
 ## Route 53
 
-The zone ID for **binaryexperiments.com** is set in `go.sh`. On every run, the deploy checks and updates the Route 53 A record for **`<repo-name>.binaryexperiments.com`**. Ensure the instance has an **Elastic IP** and the **instanceRole** IAM role assigned.
+Set **R53_HOSTED_ZONE_ID** and **ROUTE53_DOMAIN_SUFFIX** in `go.sh` to your Route 53 zone and domain. On every run, the deploy checks and updates the A record for **`<repo-name>.<your-domain>`**. Ensure the instance has an **Elastic IP** and the **instanceRole** IAM role assigned.
 
 ## Run
 
@@ -28,11 +28,11 @@ After editing the script once:
 ./go.sh full
 ```
 
-First run: `go.sh` installs git if missing, clones the repo, then runs `scripts/ec2/run.sh` (which installs docker, pulls, updates Route 53 A record for `<repo-name>.binaryexperiments.com`, and deploys). Subsequent runs: repo already exists, so `go.sh` just runs `run.sh` (pull + Route 53 check/update + deploy).
+First run: `go.sh` installs git if missing, clones the repo, then runs `scripts/ec2/run.sh` (which installs docker, pulls, updates Route 53 A record for `<repo-name>.<your-domain>`, and deploys). Subsequent runs: repo already exists, so `go.sh` just runs `run.sh` (pull + Route 53 check/update + deploy).
 
 ## Production env files
 
-The deploy expects `~/.env.api.production` and `~/.env.web.production` on the EC2 host. If they are missing, **run.sh** copies them from **`bootstrap/env.api.production.sample`** and **`bootstrap/env.web.production.sample`** (from the cloned repo). Before first deploy, run **`scripts/ec2/rebrand-env.sh`** from the repo root (e.g. `APP_DOMAIN=myapp.binaryexperiments.com ./scripts/ec2/rebrand-env.sh`) to set your domain, DB name, and generate new passwords in the samples; then copy the rebranded samples to EC2 or let the deploy copy them and edit only the third-party placeholders (Google, Rollbar, email). Set `API_ENV_FILE` and `WEB_ENV_FILE` if you use different paths.
+The deploy expects `~/.env.api.production` and `~/.env.web.production` on the EC2 host. If they are missing, **run.sh** copies them from **`bootstrap/env.api.production.sample`** and **`bootstrap/env.web.production.sample`** (from the cloned repo). Before first deploy, run **`scripts/ec2/rebrand-env.sh`** from the repo root (e.g. `APP_DOMAIN=myapp.example.com ./scripts/ec2/rebrand-env.sh`) to set your domain, DB name, and generate new passwords in the samples; then copy the rebranded samples to EC2 or let the deploy copy them and edit only the third-party placeholders (Google, Rollbar, email). Set `API_ENV_FILE` and `WEB_ENV_FILE` if you use different paths.
 
 ## Full deployment guide
 

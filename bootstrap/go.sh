@@ -54,10 +54,10 @@ export REPO_URL
 export BRANCH
 export GITHUB_TOKEN
 
-# Route 53: binaryexperiments.com zone — set here so run.sh always has it
-export R53_HOSTED_ZONE_ID="Z0760970XXLTORHSTKO2"
-export ROUTE53_DOMAIN_SUFFIX="binaryexperiments.com"
-# Optional: full record name (e.g. myapp.binaryexperiments.com). If empty, run.sh derives from repo URL.
+# Route 53: set to your hosted zone ID and domain suffix so run.sh can update the A record
+export R53_HOSTED_ZONE_ID=""
+export ROUTE53_DOMAIN_SUFFIX=""
+# Optional: full record name (e.g. myapp.example.com). If empty, run.sh derives from repo URL.
 export RECORD_NAME=""
 # Set to 1 by Terraform user_data when EIP and Route 53 are managed by Terraform (run.sh skips elastic-ip.sh and route53-update.sh).
 export TERRAFORM_MANAGED_EIP_R53=""

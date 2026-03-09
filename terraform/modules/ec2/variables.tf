@@ -73,13 +73,13 @@ variable "branch" {
 variable "r53_hosted_zone_id" {
   description = "Route 53 hosted zone ID for DNS record creation"
   type        = string
-  default     = "Z0760970XXLTORHSTKO2"
+  default     = ""
 }
 
 variable "r53_domain_suffix" {
-  description = "Domain suffix used for Route 53 A records"
+  description = "Domain suffix used for Route 53 A records (e.g. example.com)"
   type        = string
-  default     = "binaryexperiments.com"
+  default     = ""
 }
 
 variable "record_name" {
