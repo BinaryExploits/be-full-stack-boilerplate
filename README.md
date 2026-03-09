@@ -59,9 +59,11 @@ This repository is structured for scalability, developer experience, and seamles
 - [Learn more →](docs/gdpr-compliance.md)
 
 ### 🚀 Deployment (AWS EC2)
-- Copy a single bootstrap script (`bootstrap/go.sh`) to EC2; it installs git, clones the repo, and runs in-repo deploy scripts.
+- **Terraform** (optional): Provision EC2 with security group, Elastic IP, and Route 53 A record; instance auto-bootstraps via `go.sh`. No key pair — use **SSM Session Manager** to connect.
+- **Manual setup**: Copy a single bootstrap script (`bootstrap/go.sh`) to EC2 via Session Manager; no SSH key pair required. The script installs git, clones the repo, and runs in-repo deploy scripts.
 - Route 53 A record for `<repo-name>.binaryexperiments.com` (zone set in `go.sh`); support for deploying a branch (e.g. for testing before merge).
-- [Deployment guide →](docs/deployment.md)
+- **AWS auth**: Use SSO, e.g. `aws sso login --profile=your-profile`, then Terraform or `aws ssm start-session` with that profile.
+- [Deployment guide →](docs/deployment.md) | [Terraform →](terraform/README.md)
 
 ---
 

@@ -2,11 +2,15 @@
 
 This guide describes how to deploy a BE Full Stack app (or a derived app like CuliQuiz) on Amazon Linux EC2 using the minimal bootstrap script and in-repo deploy scripts.
 
+**Option A — Terraform:** Use the [terraform/](../terraform/README.md) setup to provision the EC2 instance (security group, Elastic IP, Route 53 A record); the instance auto-bootstraps via `go.sh`. No key pair; connect via SSM Session Manager. **Option B — Manual:** Create the EC2 instance yourself (no key pair; use Session Manager to connect), copy `bootstrap/go.sh` to the instance, then run it as below.
+
 ## Prerequisites
 
 - AWS account with EC2 and Route 53 (zone for binaryexperiments.com is set in go.sh)
 - EC2 instance (Amazon Linux 2 or 2023)
 - Git repo URL and **GitHub Personal Access Token** (for private HTTPS) or SSH key
+- **No SSH key pair required** for the instance — connect via **AWS Systems Manager Session Manager** only. Do not enable SSH (port 22) in the security group unless you need it for debugging.
+- For Terraform or AWS CLI from your machine: authenticate with SSO, e.g. `aws sso login --profile=your-profile` (e.g. `aws sso login --profile=be-wordpress`), then use that profile for `terraform` or `aws ssm start-session`.
 
 The deploy scripts will **allocate and associate an Elastic IP** to the instance if it does not already have one (so the Route 53 A record stays stable).
 
@@ -19,7 +23,7 @@ The deploy scripts will **allocate and associate an Elastic IP** to the instance
 - **Security group:**
   - Allow **HTTP** (inbound 80) — **required** for Caddy/Let’s Encrypt ACME (certificate issuance and renewal).
   - Allow **HTTPS** (inbound 443)
-  - Uncheck **SSH** (22) — use **Session Manager** instead of SSH to connect and copy `go.sh`
+  - Do **not** allow SSH (22) — use **Session Manager** only to connect and copy `go.sh`. No key pair is needed.
 
 ## Minimal steps
 

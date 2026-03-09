@@ -5,8 +5,9 @@ Provisions an EC2 instance (Amazon Linux 2023, ARM64) with a security group, an 
 ## Prerequisites
 
 - Terraform >= 1.5
-- AWS CLI configured (`aws configure` or SSO)
-- The **instanceRole** IAM instance profile must already exist in your account
+- AWS CLI configured (`aws configure` or SSO). If using SSO: `aws sso login --profile=your-profile` (e.g. `aws sso login --profile=be-wordpress`), then set `aws_profile` in `terraform.tfvars` to that profile.
+- The **instanceRole** IAM instance profile must already exist in your account.
+- **No key pair required** — connect to the instance via **SSM Session Manager** (`aws ssm start-session --target <instance-id>`).
 
 ## Usage
 

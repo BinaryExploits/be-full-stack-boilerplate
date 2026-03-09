@@ -1,17 +1,10 @@
 # Bootstrap: copy only `go.sh` to EC2
 
-Copy **only** `bootstrap/go.sh` to your EC2 home directory. No other files need to be copied.
+Copy **only** `bootstrap/go.sh` to your EC2 home directory. No other files need to be copied. **No SSH key pair is required** — connect via **AWS Systems Manager Session Manager** only.
 
 ## Copy to EC2
 
-Put `go.sh` in the instance **home folder** (`~`). If you use Session Manager, run `cd ~` first (Session Manager does not always start in your home directory), then create or paste `go.sh` there. Make it executable: **`chmod +x ~/go.sh`** (required before running).
-
-```bash
-# From your machine (e.g. scp from the repo)
-scp bootstrap/go.sh ec2-user@<instance>:~/go.sh
-ssh ec2-user@<instance> chmod +x ~/go.sh
-```
-or you can just create a new file and copy paste the contents
+Connect via **Session Manager** (`aws sso login --profile=your-profile` then `aws ssm start-session --target <instance-id>`). Put `go.sh` in the instance **home folder** (`~`). Run `cd ~` first (Session Manager does not always start in your home directory), then create a new file and paste the contents of `bootstrap/go.sh` into `~/go.sh`, or upload the file via an SSM document or S3. Make it executable: **`chmod +x ~/go.sh`** (required before running).
 
 ## Configure once
 
