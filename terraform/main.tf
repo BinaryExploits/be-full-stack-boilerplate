@@ -16,4 +16,5 @@ module "ec2" {
   branch             = var.branch
   r53_hosted_zone_id = var.r53_hosted_zone_id
   r53_domain_suffix  = var.r53_domain_suffix
+  record_name        = "${var.project_name}.${var.r53_domain_suffix}"
 }

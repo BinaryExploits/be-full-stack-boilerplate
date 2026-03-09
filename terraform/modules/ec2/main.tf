@@ -105,6 +105,7 @@ resource "aws_instance" "this" {
     branch             = var.branch
     r53_hosted_zone_id = var.r53_hosted_zone_id
     r53_domain_suffix  = var.r53_domain_suffix
+    record_name        = var.record_name
   }))
 
   user_data_replace_on_change = false

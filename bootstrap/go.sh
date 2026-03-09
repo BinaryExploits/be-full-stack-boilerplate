@@ -57,6 +57,8 @@ export GITHUB_TOKEN
 # Route 53: binaryexperiments.com zone — set here so run.sh always has it
 export R53_HOSTED_ZONE_ID="Z0760970XXLTORHSTKO2"
 export ROUTE53_DOMAIN_SUFFIX="binaryexperiments.com"
+# Optional: full record name (e.g. myapp.binaryexperiments.com). If empty, run.sh derives from repo URL.
+export RECORD_NAME=""
 
 # ---- 1. Install git if missing (required to clone) ----
 if ! command -v git >/dev/null 2>&1; then

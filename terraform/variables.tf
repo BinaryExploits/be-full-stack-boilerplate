@@ -86,3 +86,4 @@ variable "r53_domain_suffix" {
   type        = string
   default     = "binaryexperiments.com"
 }
+

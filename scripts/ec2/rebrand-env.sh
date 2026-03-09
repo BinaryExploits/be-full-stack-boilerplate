@@ -64,8 +64,8 @@ replica_esc="${replica_esc//&/\\&}"
 auth_esc="${BETTER_AUTH_SECRET//\//\\/}"
 auth_esc="${auth_esc//&/\\&}"
 
-API_SAMPLE="${BOOTSTRAP}/.env.api.production.sample"
-WEB_SAMPLE="${BOOTSTRAP}/.env.web.production.sample"
+API_SAMPLE="${BOOTSTRAP}/env.api.production.sample"
+WEB_SAMPLE="${BOOTSTRAP}/env.web.production.sample"
 
 for f in "${API_SAMPLE}" "${WEB_SAMPLE}"; do
   if [[ ! -f "$f" ]]; then

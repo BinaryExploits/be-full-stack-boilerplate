@@ -81,3 +81,8 @@ variable "r53_domain_suffix" {
   type        = string
   default     = "binaryexperiments.com"
 }
+
+variable "record_name" {
+  description = "Full Route 53 record name (project_name.r53_domain_suffix from root)"
+  type        = string
+}

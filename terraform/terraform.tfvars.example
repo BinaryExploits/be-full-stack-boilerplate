@@ -1,7 +1,7 @@
 # Copy to terraform.tfvars and fill in your values:
 #   cp terraform.tfvars.example terraform.tfvars
 
-project_name = "be-full-stack-boilerplate"
+project_name = "boilerplate"
 repo_url     = "https://github.com/org/repo.git"
 github_token = ""    # GitHub PAT (required for private HTTPS repos)
 branch       = "main"
