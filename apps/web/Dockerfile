@@ -6,9 +6,14 @@ ENV PATH=$PNPM_HOME:$PATH
 
 WORKDIR /app
 
+# ca-certificates + python3/make/g++ for node-gyp (native addons e.g. cld in shared deps)
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends ca-certificates \
+  && apt-get install -y --no-install-recommends \
+    ca-certificates openssl \
+    python3 make g++ \
   && rm -rf /var/lib/apt/lists/*
+
+ENV PYTHON=/usr/bin/python3
 
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 

@@ -5,10 +5,15 @@ ENV PATH=$PNPM_HOME:$PATH
 
 WORKDIR /app
 
-# Needed for Prisma + HTTPS downloads during install
+# Needed for Prisma + HTTPS during install; python3 + make + g++ for node-gyp (native addons e.g. cld)
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends ca-certificates openssl \
+  && apt-get install -y --no-install-recommends \
+    ca-certificates openssl \
+    python3 make g++ \
   && rm -rf /var/lib/apt/lists/*
+
+# node-gyp uses PYTHON; slim images have no python on PATH by default for some tools
+ENV PYTHON=/usr/bin/python3
 
 RUN corepack enable && corepack prepare pnpm@9.0.0 --activate
 
