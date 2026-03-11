@@ -13,7 +13,7 @@ import { AppContextType } from '../../app.context';
 import type {
   TGdprMyDataResponse,
   TGdprUpdateProfileResponse,
-} from './gdpr.schema';
+} from '@repo/contracts';
 
 @Injectable()
 @AutoTransaction(

@@ -10,5 +10,5 @@ export default tseslint.config(...nextConfig, {
     },
   },
 }, {
-  ignores: ["eslint.config.mjs", "src/server/*"],
+  ignores: ["eslint.config.mjs", "src/server/*", "scripts/**"],
 });

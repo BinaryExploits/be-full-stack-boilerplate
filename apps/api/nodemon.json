@@ -1,0 +1,5 @@
+{
+  "watch": ["src", "../../packages/contracts/src"],
+  "ext": "ts",
+  "exec": "pnpm --filter @repo/contracts run build && pnpm -C ../.. run generate:trpc && nest start"
+}

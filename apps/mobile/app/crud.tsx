@@ -10,13 +10,9 @@ import {
 import { useState } from "react";
 import { router } from "expo-router";
 import { trpc } from "@repo/trpc/client";
+import type { Crud } from "@repo/contracts";
 
 type DbType = "mongoose" | "prisma";
-
-interface CrudItem {
-  id: string;
-  content: string;
-}
 
 const styles = StyleSheet.create({
   container: {
@@ -325,7 +321,7 @@ function CrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
     void utils.crud[isMongoose ? "findAllMongo" : "findAllPrisma"].invalidate();
   };
 
-  const renderItem = ({ item }: { item: CrudItem }) => (
+  const renderItem = ({ item }: { item: Crud }) => (
     <View style={styles.listItem}>
       {editingId === item.id ? (
         <>

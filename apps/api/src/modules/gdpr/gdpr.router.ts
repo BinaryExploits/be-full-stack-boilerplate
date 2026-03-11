@@ -21,7 +21,7 @@ import {
   TGdprUpdateProfileResponse,
   TGdprDeleteAccountRequest,
   TGdprDeleteAccountResponse,
-} from './gdpr.schema';
+} from '@repo/contracts';
 
 @Router({ alias: 'gdpr' })
 @UseMiddlewares(AuthMiddleware)

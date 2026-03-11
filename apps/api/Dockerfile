@@ -32,6 +32,7 @@ WORKDIR /app/apps/api
 RUN pnpm --filter api exec prisma generate --schema ../../packages/prisma-db/schema.prisma
 
 WORKDIR /app
+RUN pnpm --filter @repo/contracts run build
 RUN pnpm --filter @repo/utils-core build
 RUN pnpm --filter api build
 

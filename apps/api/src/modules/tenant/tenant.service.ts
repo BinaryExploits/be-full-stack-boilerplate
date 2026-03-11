@@ -4,7 +4,7 @@ import { TenantContext } from './tenant.context';
 import type {
   TTenantCreateRequest,
   TTenantUpdateRequest,
-} from './tenant.schema';
+} from '@repo/contracts';
 import { TenantPrismaRepository } from './repositories/prisma/tenant.prisma-repository';
 import { AutoTransaction } from '../../decorators/class/auto-transaction.decorator';
 import { ServerConstants } from '../../constants/server.constants';

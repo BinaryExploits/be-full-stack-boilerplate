@@ -1,7 +1,6 @@
 import { Input, Mutation, Query, Router, UseMiddlewares } from 'nestjs-trpc';
 import { CrudMongooseService } from './services/crud.mongoose.service';
 import { CrudPrismaService } from './services/crud.prisma.service';
-import * as CrudSchema from './schemas/crud.schema';
 import {
   ZCrudCreateRequest,
   ZCrudCreateResponse,
@@ -13,7 +12,17 @@ import {
   ZCrudFindOneResponse,
   ZCrudUpdateRequest,
   ZCrudUpdateResponse,
-} from './schemas/crud.schema';
+  type TCrudCreateRequest,
+  type TCrudCreateResponse,
+  type TCrudFindAllRequest,
+  type TCrudFindAllResponse,
+  type TCrudFindOneRequest,
+  type TCrudFindOneResponse,
+  type TCrudUpdateRequest,
+  type TCrudUpdateResponse,
+  type TCrudDeleteRequest,
+  type TCrudDeleteResponse,
+} from '@repo/contracts';
 
 import { AuthMiddleware } from '../auth/auth.middleware';
 import { TenantResolutionMiddleware } from '../tenant/tenant-resolution.middleware';
@@ -33,8 +42,8 @@ export class CrudRouter {
     output: ZCrudCreateResponse,
   })
   async createCrudMongo(
-    @Input() req: CrudSchema.TCrudCreateRequest,
-  ): Promise<CrudSchema.TCrudCreateResponse> {
+    @Input() req: TCrudCreateRequest,
+  ): Promise<TCrudCreateResponse> {
     const created = await this.crudMongooseService.createCrud(req);
     return {
       success: created != null,
@@ -50,8 +59,8 @@ export class CrudRouter {
     output: ZCrudFindAllResponse,
   })
   async findAllMongo(
-    @Input() req?: CrudSchema.TCrudFindAllRequest,
-  ): Promise<CrudSchema.TCrudFindAllResponse> {
+    @Input() req?: TCrudFindAllRequest,
+  ): Promise<TCrudFindAllResponse> {
     const limit = req?.limit ?? 10;
     const offset = req?.offset ?? 0;
     const data = await this.crudMongooseService.findAll();
@@ -70,8 +79,8 @@ export class CrudRouter {
     output: ZCrudFindOneResponse,
   })
   async findOneCrudMongo(
-    @Input() req: CrudSchema.TCrudFindOneRequest,
-  ): Promise<CrudSchema.TCrudFindOneResponse> {
+    @Input() req: TCrudFindOneRequest,
+  ): Promise<TCrudFindOneResponse> {
     const result = await this.crudMongooseService.findOne(req.id);
     return result ?? null;
   }
@@ -81,8 +90,8 @@ export class CrudRouter {
     output: ZCrudUpdateResponse,
   })
   async updateCrudMongo(
-    @Input() req: CrudSchema.TCrudUpdateRequest,
-  ): Promise<CrudSchema.TCrudUpdateResponse> {
+    @Input() req: TCrudUpdateRequest,
+  ): Promise<TCrudUpdateResponse> {
     const updated = await this.crudMongooseService.update(req.id, req.data);
     return {
       success: updated != null,
@@ -98,8 +107,8 @@ export class CrudRouter {
     output: ZCrudDeleteResponse,
   })
   async deleteCrudMongo(
-    @Input() req: CrudSchema.TCrudDeleteRequest,
-  ): Promise<CrudSchema.TCrudDeleteResponse> {
+    @Input() req: TCrudDeleteRequest,
+  ): Promise<TCrudDeleteResponse> {
     const deleted = await this.crudMongooseService.delete(req.id);
     return {
       success: deleted != null,
@@ -116,8 +125,8 @@ export class CrudRouter {
     output: ZCrudCreateResponse,
   })
   async createCrudPrisma(
-    @Input() req: CrudSchema.TCrudCreateRequest,
-  ): Promise<CrudSchema.TCrudCreateResponse> {
+    @Input() req: TCrudCreateRequest,
+  ): Promise<TCrudCreateResponse> {
     const created = await this.crudPrismaService.createCrud(req);
     return {
       success: created != null,
@@ -133,8 +142,8 @@ export class CrudRouter {
     output: ZCrudFindAllResponse,
   })
   async findAllPrisma(
-    @Input() req?: CrudSchema.TCrudFindAllRequest,
-  ): Promise<CrudSchema.TCrudFindAllResponse> {
+    @Input() req?: TCrudFindAllRequest,
+  ): Promise<TCrudFindAllResponse> {
     const limit = req?.limit ?? 10;
     const offset = req?.offset ?? 0;
     const data = await this.crudPrismaService.findAll();
@@ -153,8 +162,8 @@ export class CrudRouter {
     output: ZCrudFindOneResponse,
   })
   async findOneCrudPrisma(
-    @Input() req: CrudSchema.TCrudFindOneRequest,
-  ): Promise<CrudSchema.TCrudFindOneResponse> {
+    @Input() req: TCrudFindOneRequest,
+  ): Promise<TCrudFindOneResponse> {
     const result = await this.crudPrismaService.findOne(req.id);
     return result ?? null;
   }
@@ -164,8 +173,8 @@ export class CrudRouter {
     output: ZCrudUpdateResponse,
   })
   async updateCrudPrisma(
-    @Input() req: CrudSchema.TCrudUpdateRequest,
-  ): Promise<CrudSchema.TCrudUpdateResponse> {
+    @Input() req: TCrudUpdateRequest,
+  ): Promise<TCrudUpdateResponse> {
     const updated = await this.crudPrismaService.update(req.id, req.data);
     return {
       success: updated != null,
@@ -181,8 +190,8 @@ export class CrudRouter {
     output: ZCrudDeleteResponse,
   })
   async deleteCrudPrisma(
-    @Input() req: CrudSchema.TCrudDeleteRequest,
-  ): Promise<CrudSchema.TCrudDeleteResponse> {
+    @Input() req: TCrudDeleteRequest,
+  ): Promise<TCrudDeleteResponse> {
     const deleted = await this.crudPrismaService.delete(req.id);
     return {
       success: deleted != null,

@@ -3,13 +3,8 @@
 import { useState } from "react";
 import { trpc } from "@repo/trpc/client";
 import Link from "next/link";
+import type { Tenant } from "@repo/contracts";
 import { useI18n } from "../hooks/useI18n";
-
-interface TenantItem {
-  id: string;
-  name: string;
-  slug: string;
-}
 
 export default function TenantDashboard() {
   const { LL } = useI18n();
@@ -24,8 +19,8 @@ export default function TenantDashboard() {
   const tenantList = trpc.tenant.findAll.useQuery(undefined, {
     refetchOnWindowFocus: false,
   });
-  const tenants: TenantItem[] =
-    (tenantList.data as { tenants?: TenantItem[] } | undefined)?.tenants ?? [];
+  const tenants: Tenant[] =
+    (tenantList.data as { tenants?: Tenant[] } | undefined)?.tenants ?? [];
 
   const createTenant = trpc.tenant.create.useMutation({
     onSuccess: () => {
@@ -76,7 +71,7 @@ export default function TenantDashboard() {
     });
   };
 
-  const startEdit = (t: TenantItem) => {
+  const startEdit = (t: Tenant) => {
     setEditingId(t.id);
     setEditName(t.name);
     setEditSlug(t.slug);

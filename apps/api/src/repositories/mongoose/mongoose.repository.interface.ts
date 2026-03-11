@@ -6,7 +6,7 @@ import {
   UpdateQuery,
 } from 'mongoose';
 import { MongooseBaseEntity } from './mongoose.base-entity';
-import { BaseEntity } from '../../schemas/base.schema';
+import { BaseEntity } from '@repo/contracts';
 
 export interface IMongooseRepository<
   TDomainEntity extends BaseEntity,

@@ -8,6 +8,7 @@ import {
   DisclosurePanel,
 } from "@headlessui/react";
 import type { ColumnDef } from "@tanstack/react-table";
+import type { Crud, GlobalCrud } from "@repo/contracts";
 import { trpc } from "@repo/trpc/client";
 import { useI18n } from "../hooks/useI18n";
 import { DataTable } from "../components/grid/data-table";
@@ -150,12 +151,6 @@ export default function GridsPage() {
 /* ================================================================== */
 /* Live Crud Records — fetched from API via tRPC                      */
 /* ================================================================== */
-interface CrudRecord {
-  id: string;
-  content: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
 
 function CrudLiveGrid() {
   const { LL } = useI18n();
@@ -164,10 +159,10 @@ function CrudLiveGrid() {
     { refetchOnWindowFocus: false },
   );
 
-  const data: CrudRecord[] =
-    (query.data as { cruds?: CrudRecord[] } | undefined)?.cruds ?? [];
+  const data: Crud[] =
+    (query.data as { cruds?: Crud[] } | undefined)?.cruds ?? [];
 
-  const columns: ColumnDef<CrudRecord, unknown>[] = [
+  const columns: ColumnDef<Crud, unknown>[] = [
     { accessorKey: "id", header: LL.Grids.colId(), cell: ReadOnlyCell },
     {
       accessorKey: "content",
@@ -249,10 +244,10 @@ function GlobalCrudLiveGrid() {
     { refetchOnWindowFocus: false },
   );
 
-  const data: CrudRecord[] =
-    (query.data as { items?: CrudRecord[] } | undefined)?.items ?? [];
+  const data: GlobalCrud[] =
+    (query.data as { items?: GlobalCrud[] } | undefined)?.items ?? [];
 
-  const columns: ColumnDef<CrudRecord, unknown>[] = [
+  const columns: ColumnDef<GlobalCrud, unknown>[] = [
     { accessorKey: "id", header: LL.Grids.colId(), cell: ReadOnlyCell },
     {
       accessorKey: "content",

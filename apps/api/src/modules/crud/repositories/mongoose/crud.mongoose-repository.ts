@@ -7,7 +7,7 @@ import {
 } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { CrudMongooseEntity } from './crud.mongoose-entity';
-import { Crud } from '../../schemas/crud.schema';
+import { Crud } from '@repo/contracts';
 import { ServerConstants } from '../../../../constants/server.constants';
 import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
 import { TenantContext } from '../../../tenant/tenant.context';

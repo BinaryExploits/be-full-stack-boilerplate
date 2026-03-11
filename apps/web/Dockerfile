@@ -31,6 +31,7 @@ RUN pnpm --filter web... \
   --filter @repo/typescript-config... \
   install --frozen-lockfile --prod=false
 
+RUN pnpm --filter @repo/contracts run build && pnpm run generate:trpc
 RUN pnpm --filter @repo/utils-core build
 
 # Build Next.js using BuildKit secret (WEB_ENV_FILE in docker-compose.prod.yml)

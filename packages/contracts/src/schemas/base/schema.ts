@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const ZBaseRequest = z.object({});
 export const ZBaseResponse = z.object({

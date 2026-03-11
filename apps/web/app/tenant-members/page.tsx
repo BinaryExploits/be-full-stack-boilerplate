@@ -3,22 +3,12 @@
 import { useState } from "react";
 import { trpc } from "@repo/trpc/client";
 import Link from "next/link";
+import type { TMyTenantsResponse, TListMembersResponse } from "@repo/contracts";
 import { useAuthClient } from "../lib/auth/auth-client";
 import { useI18n } from "../hooks/useI18n";
 
-interface TenantInfo {
-  id: string;
-  name: string;
-  slug: string;
-  role: string;
-}
-
-interface MemberItem {
-  id: string;
-  email: string;
-  tenantId: string;
-  role: string;
-}
+type TenantInfo = TMyTenantsResponse["tenants"][number];
+type MemberItem = TListMembersResponse["members"][number];
 
 export default function TenantMembers() {
   const { LL } = useI18n();

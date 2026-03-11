@@ -8,7 +8,7 @@ import {
   QueryOptions,
   UpdateQuery,
 } from 'mongoose';
-import { BaseEntity } from '../../schemas/base.schema';
+import { BaseEntity } from '@repo/contracts';
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { MongooseBaseEntity } from './mongoose.base-entity';

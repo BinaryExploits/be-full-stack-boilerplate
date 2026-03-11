@@ -1,9 +1,5 @@
-import { z } from 'zod';
-import {
-  ZBaseEntity,
-  ZBaseRequest,
-  ZBaseResponse,
-} from '../../../schemas/base.schema';
+import { z } from "zod";
+import { ZBaseEntity, ZBaseRequest, ZBaseResponse } from "../base/schema";
 
 export const ZGlobalCrud = ZBaseEntity.extend({
   content: z.string().min(1).max(1000),
@@ -46,7 +42,7 @@ export const ZGlobalCrudFindAllResponse = ZBaseResponse.extend({
 export const ZGlobalCrudUpdateRequest = ZBaseRequest.extend({
   id: z.string(),
   data: ZUpdateGlobalCrudDto.refine((data) => Object.keys(data).length > 0, {
-    message: 'At least one field must be provided for update',
+    message: "At least one field must be provided for update",
   }),
 });
 

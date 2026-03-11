@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { GlobalCrud } from '../schemas/global-crud.schema';
+import { GlobalCrud } from '@repo/contracts';
 import { NoTransaction } from '../../../decorators/method/no-transaction.decorator';
 import { AutoTransaction } from '../../../decorators/class/auto-transaction.decorator';
 import { ServerConstants } from '../../../constants/server.constants';

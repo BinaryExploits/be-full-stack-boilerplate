@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "lint": "eslint . --max-warnings 0",
-    "lint:fix": "eslint . --fix"
+    "lint:fix": "eslint . --fix",
+    "generate": "ts-node --compilerOptions '{\"module\":\"CommonJS\",\"moduleResolution\":\"node\"}' scripts/generate-router.ts",
+    "build": "pnpm run generate"
   },
   "exports": {
     "./router": "./src/server/server.ts",
@@ -12,10 +14,13 @@
     "./trpc-provider": "./src/client/providers/trpc-provider.tsx"
   },
   "dependencies": {
+    "@repo/contracts": "workspace:*",
     "@repo/utils-core": "workspace:*"
   },
   "devDependencies": {
-    "@repo/eslint-config": "workspace:*"
+    "@repo/eslint-config": "workspace:*",
+    "ts-node": "^10.9.2",
+    "typescript": "5.9.2"
   },
   "peerDependencies": {
     "zod": "4.2.1",
