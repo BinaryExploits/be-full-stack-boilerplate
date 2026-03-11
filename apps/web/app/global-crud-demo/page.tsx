@@ -3,14 +3,13 @@
 import { useState } from "react";
 import { trpc } from "@repo/trpc/client";
 import Link from "next/link";
+import type { GlobalCrud } from "@repo/contracts";
+
+/** List item shape from API (dates are serialized as strings over the wire). */
+type GlobalCrudListItem = Pick<GlobalCrud, "id" | "content">;
 import { useI18n } from "../hooks/useI18n";
 
 type DbType = "mongoose" | "prisma";
-
-interface GlobalCrudItem {
-  id: string;
-  content: string;
-}
 
 function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
   const { LL } = useI18n();
@@ -107,7 +106,7 @@ function GlobalCrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
             </p>
           </div>
           <ul className="divide-y divide-gray-200 dark:divide-slate-600">
-            {list.data.items.map((item: GlobalCrudItem) => (
+            {list.data.items.map((item: GlobalCrudListItem) => (
               <li
                 key={item.id}
                 className="px-6 py-4 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"

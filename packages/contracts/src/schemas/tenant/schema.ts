@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { ZBaseEntity, ZBaseRequest, ZBaseResponse } from './base';
+import { z } from "zod";
+import { ZBaseEntity, ZBaseRequest, ZBaseResponse } from "../base/schema";
 
 // ─── Tenant CRUD ────────────────────────────────────────────────
 
@@ -57,7 +57,7 @@ export const ZTenantMetaIsSuperAdminResponse = ZBaseResponse.extend({
 
 // ─── Tenant Membership ──────────────────────────────────────────
 
-export const ZTenantRole = z.enum(['TENANT_ADMIN', 'TENANT_USER']);
+export const ZTenantRole = z.enum(["TENANT_ADMIN", "TENANT_USER"]);
 export type TTenantRoleValue = z.infer<typeof ZTenantRole>;
 
 export const ZMyTenantsResponse = ZBaseResponse.extend({

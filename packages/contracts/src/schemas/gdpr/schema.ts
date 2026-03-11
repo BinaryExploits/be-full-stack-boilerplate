@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { ZBaseRequest, ZBaseResponse } from './base';
+import { z } from "zod";
+import { ZBaseRequest, ZBaseResponse } from "../base/schema";
 
 // ─── My Data (Right of Access / Portability) ────────────────────
 
@@ -45,7 +45,7 @@ export const ZGdprUpdateProfileRequest = ZBaseRequest.extend({
     .max(100)
     .regex(
       /^[a-zA-Z\s'-]+$/,
-      'Name can only contain letters, spaces, hyphens, and apostrophes',
+      "Name can only contain letters, spaces, hyphens, and apostrophes",
     )
     .optional(),
   image: z.string().max(2048).nullable().optional(),

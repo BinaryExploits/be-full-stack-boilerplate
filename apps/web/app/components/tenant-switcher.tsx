@@ -2,14 +2,10 @@
 
 import { useState, useRef, useEffect } from "react";
 import { trpc } from "@repo/trpc/client";
+import type { TMyTenantsResponse } from "@repo/contracts";
 import { useI18n } from "../hooks/useI18n";
 
-interface TenantInfo {
-  id: string;
-  name: string;
-  slug: string;
-  role: string;
-}
+type TenantInfo = TMyTenantsResponse["tenants"][number];
 
 export function TenantSwitcher() {
   const { LL } = useI18n();

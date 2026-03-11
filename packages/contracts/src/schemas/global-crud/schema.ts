@@ -1,5 +1,5 @@
-import { z } from 'zod';
-import { ZBaseEntity, ZBaseRequest, ZBaseResponse } from './base';
+import { z } from "zod";
+import { ZBaseEntity, ZBaseRequest, ZBaseResponse } from "../base/schema";
 
 export const ZGlobalCrud = ZBaseEntity.extend({
   content: z.string().min(1).max(1000),
@@ -42,7 +42,7 @@ export const ZGlobalCrudFindAllResponse = ZBaseResponse.extend({
 export const ZGlobalCrudUpdateRequest = ZBaseRequest.extend({
   id: z.string(),
   data: ZUpdateGlobalCrudDto.refine((data) => Object.keys(data).length > 0, {
-    message: 'At least one field must be provided for update',
+    message: "At least one field must be provided for update",
   }),
 });
 
@@ -57,9 +57,7 @@ export const ZGlobalCrudDeleteRequest = ZBaseRequest.extend({
 export const ZGlobalCrudDeleteResponse = ZBaseResponse;
 
 export type GlobalCrud = z.infer<typeof ZGlobalCrud>;
-export type TGlobalCrudCreateRequest = z.infer<
-  typeof ZGlobalCrudCreateRequest
->;
+export type TGlobalCrudCreateRequest = z.infer<typeof ZGlobalCrudCreateRequest>;
 export type TGlobalCrudCreateResponse = z.infer<
   typeof ZGlobalCrudCreateResponse
 >;
@@ -75,15 +73,11 @@ export type TGlobalCrudFindAllRequest = z.infer<
 export type TGlobalCrudFindAllResponse = z.infer<
   typeof ZGlobalCrudFindAllResponse
 >;
-export type TGlobalCrudUpdateRequest = z.infer<
-  typeof ZGlobalCrudUpdateRequest
->;
+export type TGlobalCrudUpdateRequest = z.infer<typeof ZGlobalCrudUpdateRequest>;
 export type TGlobalCrudUpdateResponse = z.infer<
   typeof ZGlobalCrudUpdateResponse
 >;
-export type TGlobalCrudDeleteRequest = z.infer<
-  typeof ZGlobalCrudDeleteRequest
->;
+export type TGlobalCrudDeleteRequest = z.infer<typeof ZGlobalCrudDeleteRequest>;
 export type TGlobalCrudDeleteResponse = z.infer<
   typeof ZGlobalCrudDeleteResponse
 >;

@@ -3,15 +3,14 @@
 import { useState } from "react";
 import { trpc } from "@repo/trpc/client";
 import Link from "next/link";
+import type { Crud } from "@repo/contracts";
+
+/** List item shape from API (dates are serialized as strings over the wire). */
+type CrudListItem = Pick<Crud, "id" | "content">;
 import { TenantDashboardOnly } from "../components/tenant-dashboard-only";
 import { useI18n } from "../hooks/useI18n";
 
 type DbType = "mongoose" | "prisma";
-
-interface CrudItem {
-  id: string;
-  content: string;
-}
 
 function CrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
   const { LL } = useI18n();
@@ -111,7 +110,7 @@ function CrudPanel({ dbType }: Readonly<{ dbType: DbType }>) {
             </p>
           </div>
           <ul className="divide-y divide-gray-200 dark:divide-slate-600">
-            {crudList.data.cruds.map((item: CrudItem) => (
+            {crudList.data.cruds.map((item: CrudListItem) => (
               <li
                 key={item.id}
                 className="px-6 py-4 flex justify-between items-center hover:bg-gray-50 dark:hover:bg-slate-600 transition-colors"
