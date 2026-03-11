@@ -1,9 +1,5 @@
 import { z } from 'zod';
-import {
-  ZBaseEntity,
-  ZBaseRequest,
-  ZBaseResponse,
-} from '../../../schemas/base.schema';
+import { ZBaseEntity, ZBaseRequest, ZBaseResponse } from './base';
 
 export const ZCrud = ZBaseEntity.extend({
   content: z.string().min(1).max(1000),

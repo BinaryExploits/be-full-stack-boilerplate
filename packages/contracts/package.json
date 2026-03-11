@@ -1,0 +1,46 @@
+{
+  "name": "@repo/contracts",
+  "version": "1.0.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    },
+    "./base": {
+      "types": "./dist/base.d.ts",
+      "default": "./dist/base.js"
+    },
+    "./tenant": {
+      "types": "./dist/tenant.d.ts",
+      "default": "./dist/tenant.js"
+    },
+    "./crud": {
+      "types": "./dist/crud.d.ts",
+      "default": "./dist/crud.js"
+    },
+    "./gdpr": {
+      "types": "./dist/gdpr.d.ts",
+      "default": "./dist/gdpr.js"
+    },
+    "./global-crud": {
+      "types": "./dist/global-crud.d.ts",
+      "default": "./dist/global-crud.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix"
+  },
+  "dependencies": {
+    "zod": "4.2.1"
+  },
+  "devDependencies": {
+    "@repo/eslint-config": "workspace:*",
+    "typescript": "5.9.2"
+  }
+}

@@ -74,6 +74,9 @@ importers:
       '@prisma/client':
         specifier: ^6.17.1
         version: 6.19.1(prisma@6.19.1(typescript@5.9.2))(typescript@5.9.2)
+      '@repo/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@repo/prisma-db':
         specifier: workspace:*
         version: link:../../packages/prisma-db
@@ -207,6 +210,9 @@ importers:
       '@react-navigation/native':
         specifier: ^7.1.8
         version: 7.1.26(react-native@0.81.4(@babel/core@7.28.5)(@types/react@19.2.8)(react@19.2.3))(react@19.2.3)
+      '@repo/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@repo/trpc':
         specifier: workspace:*
         version: link:../../packages/trpc
@@ -310,6 +316,9 @@ importers:
       '@headlessui/react':
         specifier: ^2.2.9
         version: 2.2.9(react-dom@19.2.3(react@19.2.3))(react@19.2.3)
+      '@repo/contracts':
+        specifier: workspace:*
+        version: link:../../packages/contracts
       '@repo/trpc':
         specifier: workspace:*
         version: link:../../packages/trpc
@@ -389,6 +398,19 @@ importers:
       typesafe-i18n:
         specifier: ^5.27.1
         version: 5.27.1(typescript@5.9.2)
+      typescript:
+        specifier: 5.9.2
+        version: 5.9.2
+
+  packages/contracts:
+    dependencies:
+      zod:
+        specifier: 4.2.1
+        version: 4.2.1
+    devDependencies:
+      '@repo/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
       typescript:
         specifier: 5.9.2
         version: 5.9.2
@@ -479,12 +501,15 @@ importers:
 
   packages/trpc:
     dependencies:
+      '@repo/contracts':
+        specifier: workspace:*
+        version: link:../contracts
       '@repo/utils-core':
         specifier: workspace:*
         version: link:../utils/core
       '@trpc/server':
         specifier: 11.8.1
-        version: 11.8.1(typescript@5.9.3)
+        version: 11.8.1(typescript@5.9.2)
       zod:
         specifier: 4.2.1
         version: 4.2.1
@@ -492,6 +517,12 @@ importers:
       '@repo/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      ts-node:
+        specifier: ^10.9.2
+        version: 10.9.2(@types/node@22.19.3)(typescript@5.9.2)
+      typescript:
+        specifier: 5.9.2
+        version: 5.9.2
 
   packages/typescript-config: {}
 
@@ -12224,10 +12255,6 @@ snapshots:
   '@trpc/server@11.8.1(typescript@5.9.2)':
     dependencies:
       typescript: 5.9.2
-
-  '@trpc/server@11.8.1(typescript@5.9.3)':
-    dependencies:
-      typescript: 5.9.3
 
   '@ts-morph/common@0.23.0':
     dependencies:

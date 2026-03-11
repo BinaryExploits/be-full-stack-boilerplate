@@ -30,7 +30,6 @@ import { GdprModule } from './modules/gdpr/gdpr.module';
       envFilePath: '.env',
     }),
     TRPCModule.forRoot({
-      autoSchemaFile: '../../packages/trpc/src/server',
       context: AppContext,
       errorFormatter: trpcErrorFormatter,
     }),

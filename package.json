@@ -30,6 +30,7 @@
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "check-types": "turbo run check-types",
+    "generate:trpc": "pnpm --filter @repo/trpc run generate",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "clean": "rimraf node_modules .turbo && pnpm recursive exec rimraf dist .next web-build"
   },

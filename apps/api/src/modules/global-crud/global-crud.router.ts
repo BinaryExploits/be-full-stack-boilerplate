@@ -12,7 +12,7 @@ import {
   ZGlobalCrudFindOneResponse,
   ZGlobalCrudUpdateRequest,
   ZGlobalCrudUpdateResponse,
-} from './schemas/global-crud.schema';
+} from '@repo/contracts';
 import type {
   TGlobalCrudCreateRequest,
   TGlobalCrudCreateResponse,
@@ -24,7 +24,7 @@ import type {
   TGlobalCrudUpdateResponse,
   TGlobalCrudDeleteRequest,
   TGlobalCrudDeleteResponse,
-} from './schemas/global-crud.schema';
+} from '@repo/contracts';
 import { AuthMiddleware } from '../auth/auth.middleware';
 
 @Router({ alias: 'globalCrud' })

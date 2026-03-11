@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { ZBaseRequest, ZBaseResponse } from '../../schemas/base.schema';
+import { ZBaseRequest, ZBaseResponse } from './base';
 
 // ─── My Data (Right of Access / Portability) ────────────────────
 

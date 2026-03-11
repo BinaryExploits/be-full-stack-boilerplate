@@ -21,7 +21,7 @@ export function TenantSwitcher() {
     onMutate: async ({ tenantId }) => {
       await utils.tenant.myTenants.cancel();
       const previous = utils.tenant.myTenants.getData();
-      utils.tenant.myTenants.setData(undefined, (old) => {
+      utils.tenant.myTenants.setData(undefined, (old: typeof previous) => {
         if (!old) return old;
         return { ...old, selectedTenantId: tenantId } as typeof old;
       });

@@ -1,9 +1,5 @@
 import { z } from 'zod';
-import {
-  ZBaseEntity,
-  ZBaseRequest,
-  ZBaseResponse,
-} from '../../../schemas/base.schema';
+import { ZBaseEntity, ZBaseRequest, ZBaseResponse } from './base';
 
 export const ZGlobalCrud = ZBaseEntity.extend({
   content: z.string().min(1).max(1000),
@@ -61,7 +57,9 @@ export const ZGlobalCrudDeleteRequest = ZBaseRequest.extend({
 export const ZGlobalCrudDeleteResponse = ZBaseResponse;
 
 export type GlobalCrud = z.infer<typeof ZGlobalCrud>;
-export type TGlobalCrudCreateRequest = z.infer<typeof ZGlobalCrudCreateRequest>;
+export type TGlobalCrudCreateRequest = z.infer<
+  typeof ZGlobalCrudCreateRequest
+>;
 export type TGlobalCrudCreateResponse = z.infer<
   typeof ZGlobalCrudCreateResponse
 >;
@@ -77,11 +75,15 @@ export type TGlobalCrudFindAllRequest = z.infer<
 export type TGlobalCrudFindAllResponse = z.infer<
   typeof ZGlobalCrudFindAllResponse
 >;
-export type TGlobalCrudUpdateRequest = z.infer<typeof ZGlobalCrudUpdateRequest>;
+export type TGlobalCrudUpdateRequest = z.infer<
+  typeof ZGlobalCrudUpdateRequest
+>;
 export type TGlobalCrudUpdateResponse = z.infer<
   typeof ZGlobalCrudUpdateResponse
 >;
-export type TGlobalCrudDeleteRequest = z.infer<typeof ZGlobalCrudDeleteRequest>;
+export type TGlobalCrudDeleteRequest = z.infer<
+  typeof ZGlobalCrudDeleteRequest
+>;
 export type TGlobalCrudDeleteResponse = z.infer<
   typeof ZGlobalCrudDeleteResponse
 >;

@@ -53,7 +53,7 @@ import {
   TListMembersRequest,
   TListMembersResponse,
   TTenantRoleValue,
-} from './tenant.schema';
+} from '@repo/contracts';
 import { TRPCError } from '@trpc/server';
 import type { TenantRole } from '@repo/prisma-db';
 

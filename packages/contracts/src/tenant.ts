@@ -1,9 +1,5 @@
 import { z } from 'zod';
-import {
-  ZBaseEntity,
-  ZBaseRequest,
-  ZBaseResponse,
-} from '../../schemas/base.schema';
+import { ZBaseEntity, ZBaseRequest, ZBaseResponse } from './base';
 
 // ─── Tenant CRUD ────────────────────────────────────────────────
 

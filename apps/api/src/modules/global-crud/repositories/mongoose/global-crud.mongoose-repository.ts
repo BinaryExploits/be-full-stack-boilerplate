@@ -7,7 +7,7 @@ import {
 } from '@nestjs-cls/transactional';
 import { TransactionalAdapterMongoose } from '@nestjs-cls/transactional-adapter-mongoose';
 import { GlobalCrudMongooseEntity } from './global-crud.mongoose-entity';
-import { GlobalCrud } from '../../schemas/global-crud.schema';
+import { GlobalCrud } from '@repo/contracts';
 import { ServerConstants } from '../../../../constants/server.constants';
 import { MongooseBaseRepository } from '../../../../repositories/mongoose/mongoose.base-repository';
 
